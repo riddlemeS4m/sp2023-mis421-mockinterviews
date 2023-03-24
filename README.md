@@ -1,12 +1,12 @@
 # MIS 521/421 Group Project
 
-Team Members: <br>
+Team Members: <br><br>
 
 
-Logan Thompson
+Logan Thompson<br>
 
-Erin O'Laughlin
+Erin O'Laughlin<br>
 
-Jaehee Kim - UI/UX Lead
+Jaehee Kim - UI/UX Lead<br>
 
-Sam Riddle - IT Lead
+Sam Riddle - IT Lead<br>
