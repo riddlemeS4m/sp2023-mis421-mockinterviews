@@ -3,6 +3,9 @@
 Team Members:
 
 Logan Thompson
+
 Erin O'Laughlin
+
 Jaehee Kim - UI/UX Lead
+
 Sam Riddle - IT Lead
