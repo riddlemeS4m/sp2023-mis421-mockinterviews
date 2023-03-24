@@ -1,6 +1,6 @@
 # MIS 521/421 Group Project
 
-Team Members:
+Team Members: <br>
 
 
 Logan Thompson
