@@ -1,1 +1,8 @@
-# sp2023-mis421-mockinterviews
+# MIS 521/421 Group Project
+
+Team Members:
+
+Logan Thompson
+Erin O'Laughlin
+Jaehee Kim - UI/UX Lead
+Sam Riddle - IT Lead
