@@ -1,12 +1,6 @@
-# MIS 521/421 Group Project
+# MIS 521/421 Group Project: Mock Interviews Scheduling Tool
 
 Team Members: <br><br>
 
 
-Logan Thompson<br>
-
-Erin O'Laughlin<br>
-
-Jaehee Kim - UI/UX Lead<br>
-
-Sam Riddle - IT Lead<br>
+Logan Thompson, Erin O'Laughlin, Jaehee Kim - UI/UX Lead, Sam Riddle - IT Lead
