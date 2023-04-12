@@ -10,7 +10,7 @@ using sp2023_mis421_mockinterviews.Data;
 
 namespace sp2023_mis421_mockinterviews.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(UserDataDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

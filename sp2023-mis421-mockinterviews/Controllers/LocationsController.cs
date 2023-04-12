@@ -12,9 +12,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class LocationsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MockInterviewDataDbContext _context;
 
-        public LocationsController(ApplicationDbContext context)
+        public LocationsController(MockInterviewDataDbContext context)
         {
             _context = context;
         }

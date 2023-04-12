@@ -11,7 +11,7 @@ using sp2023_mis421_mockinterviews.Data;
 
 namespace sp2023_mis421_mockinterviews.Data.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
+    [DbContext(typeof(MockInterviewDataDbContext))]
     [Migration("20230411173531_initial")]
     partial class initial
     {

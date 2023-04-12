@@ -1,12 +1,11 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Models;
 
 namespace sp2023_mis421_mockinterviews.Data
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class MockInterviewDataDbContext : DbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public MockInterviewDataDbContext(DbContextOptions<MockInterviewDataDbContext> options)
             : base(options)
         {
         }

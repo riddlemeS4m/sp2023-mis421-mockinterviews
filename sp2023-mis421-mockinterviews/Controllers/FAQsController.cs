@@ -12,9 +12,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class FAQsController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly MockInterviewDataDbContext _context;
 
-        public FAQsController(ApplicationDbContext context)
+        public FAQsController(MockInterviewDataDbContext context)
         {
             _context = context;
         }
