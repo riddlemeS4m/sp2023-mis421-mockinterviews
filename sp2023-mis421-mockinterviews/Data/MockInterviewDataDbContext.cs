@@ -13,5 +13,13 @@ namespace sp2023_mis421_mockinterviews.Data
         public DbSet<FAQs>? FAQs { get; set; }
         public DbSet<Location>? Location { get; set; }
         public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.Interviewer>? Interviewer { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent>? InterviewEvent { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.LocationInterviewer>? LocationInterviewer { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.MaxTimeSlots>? MaxTimeSlots { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewer>? SignupInterviewer { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot>? SignupInterviewerTimeslot { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.Student>? Student { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot>? Timeslot { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>? VolunteerEvent { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string IsTechnical { get; set; }
         public string IsBehavioral { get; set; }
         [ForeignKey("Interviewer")]
-        public string InterviewerId { get; set; }
+        public int InterviewerId { get; set; }
         public Interviewer Interviewer { get; set; }
     }
 }

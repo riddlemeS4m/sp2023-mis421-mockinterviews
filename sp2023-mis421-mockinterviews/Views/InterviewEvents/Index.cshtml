@@ -1,0 +1,83 @@
+﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Student)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Location)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslot)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewerRating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewerFeedback)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.ProcessFeedback)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SignupInterviewerTimeslot)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Student.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Location.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Timeslot.Id)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InterviewType)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Status)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InterviewerRating)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.InterviewerFeedback)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ProcessFeedback)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SignupInterviewerTimeslot.Id)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
