@@ -9,6 +9,7 @@ namespace sp2023_mis421_mockinterviews.Data
             : base(options)
         {
         }
+
         public DbSet<sp2023_mis421_mockinterviews.Models.FAQs>? FAQs { get; set; }
         public DbSet<sp2023_mis421_mockinterviews.Models.Location>? Location { get; set; }
     }

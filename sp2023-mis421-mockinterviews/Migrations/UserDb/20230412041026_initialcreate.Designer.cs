@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sp2023_mis421_mockinterviews.Data;
 
 #nullable disable
 
-namespace sp2023_mis421_mockinterviews.Data.Migrations
+namespace sp2023_mis421_mockinterviews.Migrations.UserDb
 {
     [DbContext(typeof(UserDataDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230412041026_initialcreate")]
+    partial class initialcreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
