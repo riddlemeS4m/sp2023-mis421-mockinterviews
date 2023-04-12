@@ -1,4 +1,4 @@
-﻿namespace sp2023_mis421_mockinterviews.Models
+﻿namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
     public class FAQs
     {

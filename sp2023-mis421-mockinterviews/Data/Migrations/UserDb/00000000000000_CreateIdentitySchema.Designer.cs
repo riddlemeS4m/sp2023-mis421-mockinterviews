@@ -9,7 +9,7 @@ using System;
 
 namespace sp2023_mis421_mockinterviews.Data.Migrations
 {
-    [DbContext(typeof(MockInterviewDataDbContext))]
+    [DbContext(typeof(UserDataDbContext))]
     [Migration("00000000000000_CreateIdentitySchema")]
     partial class CreateIdentitySchema
     {

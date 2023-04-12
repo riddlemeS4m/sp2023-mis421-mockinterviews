@@ -16,10 +16,20 @@ namespace sp2023_mis421_mockinterviews
             var connectionString = configuration.GetConnectionString("UserDataConnection") ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(connectionString));
-            
+
+            //when updating the userdb, first...
+            //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
+            //second...
+            //update-database -context userdatadbcontext
+
             var interviewDataConnectionString = configuration.GetConnectionString("MockInterviewDataConnection") ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
             services.AddDbContext<MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(interviewDataConnectionString));
+
+            //when updating the mockinterviewdb, first...
+            //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
+            //second...
+            //update-database -context mockinterviewdatadbcontext
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
