@@ -10,87 +10,87 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
-    public class FAQsController : Controller
+    public class InterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
 
-        public FAQsController(MockInterviewDataDbContext context)
+        public InterviewersController(MockInterviewDataDbContext context)
         {
             _context = context;
         }
 
-        // GET: FAQs
+        // GET: Interviewers
         public async Task<IActionResult> Index()
         {
-              return _context.FAQs != null ? 
-                          View(await _context.FAQs.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+              return _context.Interviewer != null ? 
+                          View(await _context.Interviewer.ToListAsync()) :
+                          Problem("Entity set 'MockInterviewDataDbContext.Interviewer'  is null.");
         }
 
-        // GET: FAQs/Details/5
+        // GET: Interviewers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Interviewer == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs
+            var interviewer = await _context.Interviewer
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (fAQs == null)
+            if (interviewer == null)
             {
                 return NotFound();
             }
 
-            return View(fAQs);
+            return View(interviewer);
         }
 
-        // GET: FAQs/Create
+        // GET: Interviewers/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: FAQs/Create
+        // POST: Interviewers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,question,answer")] FAQs fAQs)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,Rating,IsActive")] Interviewer interviewer)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(fAQs);
+                _context.Add(interviewer);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(fAQs);
+            return View(interviewer);
         }
 
-        // GET: FAQs/Edit/5
+        // GET: Interviewers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Interviewer == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs.FindAsync(id);
-            if (fAQs == null)
+            var interviewer = await _context.Interviewer.FindAsync(id);
+            if (interviewer == null)
             {
                 return NotFound();
             }
-            return View(fAQs);
+            return View(interviewer);
         }
 
-        // POST: FAQs/Edit/5
+        // POST: Interviewers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,question,answer")] FAQs fAQs)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,Rating,IsActive")] Interviewer interviewer)
         {
-            if (id != fAQs.Id)
+            if (id != interviewer.Id)
             {
                 return NotFound();
             }
@@ -99,12 +99,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 try
                 {
-                    _context.Update(fAQs);
+                    _context.Update(interviewer);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!FAQsExists(fAQs.Id))
+                    if (!InterviewerExists(interviewer.Id))
                     {
                         return NotFound();
                     }
@@ -115,49 +115,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(fAQs);
+            return View(interviewer);
         }
 
-        // GET: FAQs/Delete/5
+        // GET: Interviewers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Interviewer == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs
+            var interviewer = await _context.Interviewer
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (fAQs == null)
+            if (interviewer == null)
             {
                 return NotFound();
             }
 
-            return View(fAQs);
+            return View(interviewer);
         }
 
-        // POST: FAQs/Delete/5
+        // POST: Interviewers/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.FAQs == null)
+            if (_context.Interviewer == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.Interviewer'  is null.");
             }
-            var fAQs = await _context.FAQs.FindAsync(id);
-            if (fAQs != null)
+            var interviewer = await _context.Interviewer.FindAsync(id);
+            if (interviewer != null)
             {
-                _context.FAQs.Remove(fAQs);
+                _context.Interviewer.Remove(interviewer);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool FAQsExists(int id)
+        private bool InterviewerExists(int id)
         {
-          return (_context.FAQs?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Interviewer?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using sp2023_mis421_mockinterviews.Models;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
 using System.Diagnostics;
 
 namespace sp2023_mis421_mockinterviews.Controllers

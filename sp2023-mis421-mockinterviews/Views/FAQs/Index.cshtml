@@ -1,4 +1,6 @@
-﻿@model IEnumerable<FAQs>
+﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
+
+@model IEnumerable<FAQs>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,10 +15,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.question)
+                @Html.DisplayNameFor(model => model.Question)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.answer)
+                @Html.DisplayNameFor(model => model.Answer)
             </th>
             <th></th>
         </tr>
@@ -25,15 +27,15 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.question)
+                @Html.DisplayFor(modelItem => item.Question)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.answer)
+                @Html.DisplayFor(modelItem => item.Answer)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

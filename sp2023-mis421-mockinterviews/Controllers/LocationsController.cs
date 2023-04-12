@@ -36,7 +36,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var location = await _context.Location
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
             {
                 return NotFound();
@@ -90,7 +90,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("id,room,isVirtual,isPerson")] Location location)
         {
-            if (id != location.id)
+            if (id != location.Id)
             {
                 return NotFound();
             }
@@ -104,7 +104,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!LocationExists(location.id))
+                    if (!LocationExists(location.Id))
                     {
                         return NotFound();
                     }
@@ -127,7 +127,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var location = await _context.Location
-                .FirstOrDefaultAsync(m => m.id == id);
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
             {
                 return NotFound();
@@ -157,7 +157,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool LocationExists(int id)
         {
-          return (_context.Location?.Any(e => e.id == id)).GetValueOrDefault();
+          return (_context.Location?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
