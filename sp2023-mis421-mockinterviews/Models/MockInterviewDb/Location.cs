@@ -2,9 +2,9 @@
 {
     public class Location
     {
-        public int id { get; set; }
-        public string room { get; set; }
-        public bool isVirtual { get; set; }
-        public bool isPerson { get; set; }
+        public int Id { get; set; }
+        public string Room { get; set; }
+        public bool IsVirtual { get; set; }
+        public bool InPerson { get; set; }
     }
 }
