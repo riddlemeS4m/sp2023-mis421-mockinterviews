@@ -5,6 +5,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
     public class SignupInterviewer
     {
         //could have location field here or on interviewer
+        //not sure what you mean 
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }

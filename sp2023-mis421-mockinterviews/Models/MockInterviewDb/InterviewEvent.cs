@@ -7,6 +7,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         //probably our most important entity
         //not 100% sure what fields need to be nullable or not, would help to doublecheck
         //also not 100% sure about the relationship with signupinterviewertimeslot
+        //LT - I think status should be not null with a default
         public int Id { get; set; }
         [ForeignKey("Student")]
         public int StudentId { get; set; }
