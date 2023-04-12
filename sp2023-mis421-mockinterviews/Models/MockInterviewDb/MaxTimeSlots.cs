@@ -2,5 +2,8 @@
 {
     public class MaxTimeSlots
     {
+        //will only have one entry
+        public int Id { get; set; }
+        public int Limit { get; set; }
     }
 }
