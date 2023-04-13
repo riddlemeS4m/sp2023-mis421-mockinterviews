@@ -9,13 +9,14 @@ namespace sp2023_mis421_mockinterviews
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-                        var connectionString = builder.Configuration.GetConnectionString("UserDataDbContextConnection") ?? throw new InvalidOperationException("Connection string 'UserDataDbContextConnection' not found.");
 
-                                    builder.Services.AddDbContext<UserDataDbContext>(options =>
-                options.UseSqlServer(connectionString));
+            //scaffolded in with identity
+            //var connectionString = builder.Configuration.GetConnectionString("UserDataDbContextConnection") ?? throw new InvalidOperationException("Connection string 'UserDataDbContextConnection' not found.");
+            //builder.Services.AddDbContext<UserDataDbContext>(options =>
+            //    options.UseSqlServer(connectionString));
+            //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<UserDataDbContext>();
 
-                                                builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<UserDataDbContext>();
             var services = builder.Services;
             var configuration = builder.Configuration;
 
