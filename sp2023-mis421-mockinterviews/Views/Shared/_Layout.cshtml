@@ -36,7 +36,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interview Signup</a>
                             </li>
                         }
-                        @if(!User.IsInRole(Roles.AdminRole))
+                        @if(User.IsInRole(Roles.AdminRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Manage Interviews</a>
