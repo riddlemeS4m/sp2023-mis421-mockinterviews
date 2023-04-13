@@ -19,10 +19,12 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
+    <PackageReference Include="sendgrid" Version="9.28.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Models\UserDb\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
 </Project>
