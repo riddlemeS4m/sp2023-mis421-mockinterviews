@@ -3,7 +3,6 @@
     public class Roles
     {
         public static string AdminRole = "admin";
-        public static string VolunteerRole = "volunteer";
         public static string StudentRole = "student";
         public static string InterviewerRole = "interviewer";
     }
