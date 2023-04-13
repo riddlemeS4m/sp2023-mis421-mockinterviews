@@ -88,7 +88,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,room,isVirtual,isPerson")] Location location)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Room,IsVirtual,InPerson")] Location location)
         {
             if (id != location.Id)
             {
@@ -139,13 +139,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: Locations/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(int Id)
         {
             if (_context.Location == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Location'  is null.");
             }
-            var location = await _context.Location.FindAsync(id);
+            var location = await _context.Location.FindAsync(Id);
             if (location != null)
             {
                 _context.Location.Remove(location);

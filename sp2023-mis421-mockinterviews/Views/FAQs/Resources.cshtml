@@ -1,0 +1,44 @@
+﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
+@model IEnumerable<FAQs>
+
+<!DOCTYPE html>
+<html>
+<head>
+	<h1>ADD MORE CONTENT HERE</h1>
+	<title>FAQs</title>
+	<style>
+		.faq {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			margin-bottom: 20px;
+			max-width: 600px;
+			padding: 20px;
+			border: 1px solid #ccc;
+			border-radius: 5px;
+			text-align: center;
+		}
+		.question {
+			font-size: 24px;
+			font-weight: bold;
+			margin-bottom: 10px;
+		}
+		.answer {
+			font-size: 16px;
+			margin-left: 20px;
+		}
+	</style>
+</head>
+<body>
+	<h1>FAQs</h1>
+	@foreach (var faq in Model)
+	{
+		<div class="faq">
+			<div class="question">@faq.Question</div>
+			<div class="answer">@faq.Answer</div>
+		</div>
+	}
+</body>
+</html>
+
+

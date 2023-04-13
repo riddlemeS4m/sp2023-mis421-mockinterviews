@@ -26,9 +26,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                           View(await _context.FAQs.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
         }
+		public async Task<IActionResult> Resources()
+		{
+			return _context.FAQs != null ?
+						View(await _context.FAQs.ToListAsync()) :
+						Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+		}
 
-        // GET: FAQs/Details/5
-        public async Task<IActionResult> Details(int? id)
+		// GET: FAQs/Details/5
+		public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.FAQs == null)
             {
@@ -56,7 +62,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,question,answer")] FAQs fAQs)
+        public async Task<IActionResult> Create([Bind("Id,Question,Answer")] FAQs fAQs)
         {
             if (ModelState.IsValid)
             {
@@ -88,7 +94,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("id,question,answer")] FAQs fAQs)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Question,Answer")] FAQs fAQs)
         {
             if (id != fAQs.Id)
             {
