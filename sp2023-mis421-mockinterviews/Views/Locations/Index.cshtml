@@ -2,10 +2,10 @@
 @model IEnumerable<Location>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Room Locations";
 }
 
-<h1>Index</h1>
+<h1>Room Locations</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -17,10 +17,10 @@
                 @Html.DisplayNameFor(model => model.Room)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.IsVirtual)
+                Virtual Interviewer
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InPerson)
+                In-Person Interviewer
             </th>
             <th></th>
         </tr>

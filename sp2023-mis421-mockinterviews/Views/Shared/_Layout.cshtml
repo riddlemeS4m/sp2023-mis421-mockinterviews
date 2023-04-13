@@ -36,7 +36,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interview Signup</a>
                             </li>
                         }
-                        @if(User.IsInRole(Roles.AdminRole))
+                        @if(!User.IsInRole(Roles.AdminRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Manage Interviews</a>
@@ -77,6 +77,11 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js" integrity="sha384-apERv/vfl/R6zmx+HUeBeGTjYRpHuiF1JRYCuBd9KhRME4NTtll1FkO+CelUWYgp" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('.table').DataTable();
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

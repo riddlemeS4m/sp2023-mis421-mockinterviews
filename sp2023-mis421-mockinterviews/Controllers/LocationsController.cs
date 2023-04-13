@@ -56,7 +56,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("id,room,isVirtual,isPerson")] Location location)
+        public async Task<IActionResult> Create([Bind("Id,Room,IsVirtual,InPerson")] Location location)
         {
             if (ModelState.IsValid)
             {
