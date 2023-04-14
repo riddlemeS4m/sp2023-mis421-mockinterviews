@@ -12,18 +12,9 @@ namespace sp2023_mis421_mockinterviews
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
-            //scaffolded in with identity
-            //var connectionString = builder.Configuration.GetConnectionString("UserDataDbContextConnection") ?? throw new InvalidOperationException("Connection string 'UserDataDbContextConnection' not found.");
-            //builder.Services.AddDbContext<UserDataDbContext>(options =>
-            //    options.UseSqlServer(connectionString));
-            //builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<UserDataDbContext>();
-
             var services = builder.Services;
             var configuration = builder.Configuration;
 
-            // Add services to the container.
             var connectionString = configuration.GetConnectionString("UserDataConnection") ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -68,7 +59,6 @@ namespace sp2023_mis421_mockinterviews
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseMigrationsEndPoint();
@@ -76,7 +66,6 @@ namespace sp2023_mis421_mockinterviews
             else
             {
                 app.UseDeveloperExceptionPage();
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
