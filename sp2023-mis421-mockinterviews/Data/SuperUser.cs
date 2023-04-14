@@ -2,10 +2,10 @@
 {
     public class SuperUser
     {
-        public static string UserName = "mismockinterviews@gmail.com";
-        public static string FirstName = "Program";
-        public static string LastName = "Support";
-        public static string Email = "mismockinterviews@gmail.com";
-        public static string Password = "RollTide1831!";
+        public const string UserName = "mismockinterviews@gmail.com";
+        public const string FirstName = "Program";
+        public const string LastName = "Support";
+        public const string Email = "mismockinterviews@gmail.com";
+        public const string Password = "RollTide1831!";
     }
 }

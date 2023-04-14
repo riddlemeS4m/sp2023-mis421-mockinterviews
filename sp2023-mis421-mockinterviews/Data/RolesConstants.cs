@@ -2,9 +2,9 @@
 {
     public class RolesConstants
     {
-        public static string AdminRole = "admin";
-        public static string StudentRole = "student";
-        public static string InterviewerRole = "interviewer";
-        public static string DesignateStudent = "crimson.ua.edu";
+        public const string AdminRole = "admin";
+        public const string StudentRole = "student";
+        public const string InterviewerRole = "interviewer";
+        public const string DesignateStudent = "crimson.ua.edu";
     }
 }
