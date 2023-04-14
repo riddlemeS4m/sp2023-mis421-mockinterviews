@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Data;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 {
@@ -31,6 +32,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public string Username { get; set; }
+        public string Id { get; set; }
+
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -56,6 +59,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
+            ///
             [Display(Name = "First Name")]
             public string FirstName { get; set; }
             [Display(Name = "Last Name")]
@@ -65,6 +69,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
+            [Display(Name = "Resume")]
+            public byte[] Resume { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -74,13 +80,16 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var firstName = user.FirstName;
             var lastName = user.LastName;
             var profilePicture = user.ProfilePicture;
+            var resume = user.Resume;
             Username = userName;
+            Id = user.Id;
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
                 FirstName = firstName,
                 LastName = lastName,
-                ProfilePicture = profilePicture
+                ProfilePicture = profilePicture,
+                Resume = resume
             };
         }
 
@@ -94,6 +103,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 
             await LoadAsync(user);
             return Page();
+            //return RedirectToAction("ProfileView","Users");
         }
 
         public async Task<IActionResult> OnPostAsync()
@@ -125,15 +135,33 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 
             if (Request.Form.Files.Count > 0)
             {
-                IFormFile file = Request.Form.Files.FirstOrDefault();
-                using (var dataStream = new MemoryStream())
+                // profile picture
+                var profilePictureFile = Request.Form.Files["profilePicture"];
+                if (profilePictureFile != null)
                 {
-                    await file.CopyToAsync(dataStream);
-                    user.ProfilePicture = dataStream.ToArray();
+                    using (var dataStream = new MemoryStream())
+                    {
+                        await profilePictureFile.CopyToAsync(dataStream);
+                        user.ProfilePicture = dataStream.ToArray();
+                    }
+                    await _userManager.UpdateAsync(user);
                 }
-                await _userManager.UpdateAsync(user);
-            }
 
+                // resume
+                if (User.IsInRole(RolesConstants.StudentRole))
+                {
+                    var resumeFile = Request.Form.Files["resume"];
+                    if (resumeFile != null)
+                    {
+                        using (var dataStream = new MemoryStream())
+                        {
+                            await resumeFile.CopyToAsync(dataStream);
+                            user.Resume = dataStream.ToArray();
+                        }
+                        await _userManager.UpdateAsync(user);
+                    }
+                }
+            }
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             if (Input.PhoneNumber != phoneNumber)
             {

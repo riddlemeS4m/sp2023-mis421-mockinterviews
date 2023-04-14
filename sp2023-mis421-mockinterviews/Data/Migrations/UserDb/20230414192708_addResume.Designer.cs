@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sp2023_mis421_mockinterviews.Data;
 
 #nullable disable
 
-namespace sp2023_mis421_mockinterviews.Data.Migrations
+namespace sp2023_mis421_mockinterviews.Data.Migrations.UserDb
 {
     [DbContext(typeof(UserDataDbContext))]
-    partial class UserDataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230414192708_addResume")]
+    partial class addResume
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

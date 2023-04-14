@@ -1,4 +1,5 @@
 ﻿@page
+@using sp2023_mis421_mockinterviews.Data
 @model IndexModel
 @{
     ViewData["Title"] = "Profile";
@@ -33,6 +34,19 @@
                         <input asp-for="Input.PhoneNumber" class="form-control" />
                         <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                     </div>
+                    @if (User.IsInRole(RolesConstants.StudentRole))
+                    {
+                        <div class="form-group">
+                            <label asp-for="Input.Resume"></label>
+                            <input type="file"
+                                   accept=".docx,.doc"
+                                   asp-for="Input.Resume"
+                                   class="form-control-file"
+                                   name="resume"
+                                   maxlength="2097152">
+                            <span asp-validation-for="Input.Resume" class="text-danger"></span>
+                        </div>
+                    }
                     <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
                 </div>
                 <div class="col-md-6">
@@ -52,12 +66,22 @@
                                asp-for="Input.ProfilePicture"
                                class="form-control"
                                style="border:0px!important;padding: 0px;padding-top: 10px;padding-bottom: 30px;"
-                               onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" />
+                               onchange="document.getElementById('profilePicture').src = window.URL.createObjectURL(this.files[0])" 
+                               name="profilePicture"
+                               maxlength="5242880" />
                         <span asp-validation-for="Input.ProfilePicture" class="text-danger"></span>
                     </div>
                 </div>
             </div>
         </form>
+        @if (Model.Input.Resume != null)
+        {
+            <a href="@Url.Action("DownloadResume", "Users", new { userId = Model.Id })" class="btn btn-primary">Download Resume</a>
+        }
+        else
+        {
+            <p>No resume available.</p>
+        }
     </div>
 </div>
 

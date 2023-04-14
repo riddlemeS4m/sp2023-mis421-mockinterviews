@@ -76,7 +76,10 @@ namespace sp2023_mis421_mockinterviews
 
             app.UseAuthentication();
             app.UseAuthorization();
-
+            //app.MapControllerRoute(
+            //    name: "downloadResume",
+            //    pattern: "Users/DownloadResume",
+            //    defaults: new { controller = "Users", action = "DownloadResume" });
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
