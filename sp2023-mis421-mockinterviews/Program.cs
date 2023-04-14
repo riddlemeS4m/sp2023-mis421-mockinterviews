@@ -104,9 +104,11 @@ namespace sp2023_mis421_mockinterviews
                     var context = newservices.GetRequiredService<UserDataDbContext>();
                     var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
+                    var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
 
-                    ContextSeed.SeedRolesAsync(userManager, roleManager).Wait();
-                    ContextSeed.SeedSuperAdminAsync(userManager, roleManager).Wait();
+                    UserDbContextSeed.SeedRolesAsync(userManager, roleManager).Wait();
+                    UserDbContextSeed.SeedSuperAdminAsync(userManager, roleManager).Wait();
+                    MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
                 }
                 catch (Exception ex)
                 {

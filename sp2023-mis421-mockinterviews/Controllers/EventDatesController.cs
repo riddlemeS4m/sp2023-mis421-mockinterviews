@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -11,89 +10,87 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
-    public class TimeslotsController : Controller
+    public class EventDatesController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
 
-        public TimeslotsController(MockInterviewDataDbContext context)
+        public EventDatesController(MockInterviewDataDbContext context)
         {
             _context = context;
         }
 
-        // GET: Timeslots
+        // GET: EventDates
         public async Task<IActionResult> Index()
         {
-              return _context.Timeslot != null ? 
-                          View(await _context.Timeslot.ToListAsync()) :
-                          Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
+              return _context.EventDate != null ? 
+                          View(await _context.EventDate.ToListAsync()) :
+                          Problem("Entity set 'MockInterviewDataDbContext.EventDate'  is null.");
         }
 
-        // GET: Timeslots/Details/5
-        public async Task<IActionResult> Details(int? id)
+        // GET: EventDates/Details/5
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.EventDate == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot
+            var eventDate = await _context.EventDate
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (timeslot == null)
+            if (eventDate == null)
             {
                 return NotFound();
             }
 
-            return View(timeslot);
+            return View(eventDate);
         }
 
-        // GET: Timeslots/Create
+        // GET: EventDates/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Timeslots/Create
+        // POST: EventDates/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent")] Timeslot timeslot)
+        public async Task<IActionResult> Create([Bind("Id,Date")] EventDate eventDate)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(timeslot);
+                _context.Add(eventDate);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(timeslot);
+            return View(eventDate);
         }
 
-        [Authorize(Roles =RolesConstants.AdminRole)]
-        // GET: Timeslots/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        // GET: EventDates/Edit/5
+        public async Task<IActionResult> Edit(string id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.EventDate == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot.FindAsync(id);
-            if (timeslot == null)
+            var eventDate = await _context.EventDate.FindAsync(id);
+            if (eventDate == null)
             {
                 return NotFound();
             }
-            return View(timeslot);
+            return View(eventDate);
         }
 
-        // POST: Timeslots/Edit/5
+        // POST: EventDates/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent")] Timeslot timeslot)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date")] EventDate eventDate)
         {
-            if (id != timeslot.Id)
+            if (id != eventDate.Id)
             {
                 return NotFound();
             }
@@ -102,12 +99,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 try
                 {
-                    _context.Update(timeslot);
+                    _context.Update(eventDate);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!TimeslotExists(timeslot.Id))
+                    if (!EventDateExists(eventDate.Id))
                     {
                         return NotFound();
                     }
@@ -118,52 +115,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(timeslot);
+            return View(eventDate);
         }
 
-
-        [Authorize(Roles = RolesConstants.AdminRole)]
-        // GET: Timeslots/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        // GET: EventDates/Delete/5
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.EventDate == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot
+            var eventDate = await _context.EventDate
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (timeslot == null)
+            if (eventDate == null)
             {
                 return NotFound();
             }
 
-            return View(timeslot);
+            return View(eventDate);
         }
 
-        // POST: Timeslots/Delete/5
-        [Authorize(Roles = RolesConstants.AdminRole)]
+        // POST: EventDates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            if (_context.Timeslot == null)
+            if (_context.EventDate == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.EventDate'  is null.");
             }
-            var timeslot = await _context.Timeslot.FindAsync(id);
-            if (timeslot != null)
+            var eventDate = await _context.EventDate.FindAsync(id);
+            if (eventDate != null)
             {
-                _context.Timeslot.Remove(timeslot);
+                _context.EventDate.Remove(eventDate);
             }
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool TimeslotExists(int id)
+        private bool EventDateExists(int id)
         {
-          return (_context.Timeslot?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.EventDate?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

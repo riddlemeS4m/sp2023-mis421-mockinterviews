@@ -4,7 +4,7 @@ using System;
 
 namespace sp2023_mis421_mockinterviews.Data
 {
-    public static class ContextSeed
+    public static class UserDbContextSeed
     {
         public static async Task SeedRolesAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
         {
@@ -36,7 +36,6 @@ namespace sp2023_mis421_mockinterviews.Data
                     await userManager.AddToRoleAsync(defaultUser, RolesConstants.StudentRole);
                     await userManager.AddToRoleAsync(defaultUser, RolesConstants.InterviewerRole);
                 }
-
             }
         }
     }
