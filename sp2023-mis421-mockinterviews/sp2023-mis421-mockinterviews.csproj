@@ -23,7 +23,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\UserDb\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

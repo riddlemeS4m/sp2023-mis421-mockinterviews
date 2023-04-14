@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+﻿@using sp2023_mis421_mockinterviews.Data;
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -21,7 +22,7 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if(User.IsInRole(Roles.StudentRole) || User.IsInRole(Roles.AdminRole))
+                        @if(User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Interview Signup</a>
@@ -30,13 +31,13 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteer Signup</a>
                             </li>
                         }
-                        @if(User.IsInRole(Roles.InterviewerRole))
+                        @if(User.IsInRole(RolesConstants.InterviewerRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interview Signup</a>
                             </li>
                         }
-                        @if(User.IsInRole(Roles.AdminRole))
+                        @if(User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Manage Interviews</a>

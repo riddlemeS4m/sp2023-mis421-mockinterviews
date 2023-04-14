@@ -1,6 +1,9 @@
+using EllipticCurve;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Hosting;
 using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -41,9 +44,20 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<UserDataDbContext>();
+            services.AddIdentity<ApplicationUser, IdentityRole>()
+                .AddEntityFrameworkStores<UserDataDbContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
+
+            services.AddScoped<RoleManager<IdentityRole>>();
+            services.AddScoped<UserManager<ApplicationUser>>();
+
+            //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
+            //    .AddEntityFrameworkStores<UserDataDbContext>();
             services.AddControllersWithViews();
+            services.AddRazorPages();
+
+            
 
             //services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             //{
@@ -79,7 +93,30 @@ namespace sp2023_mis421_mockinterviews
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            //seed three default roles if they don't exist, seed super user if doesn't exist
+            using (var scope = app.Services.CreateScope())
+            {
+                var newservices = scope.ServiceProvider;
+                var loggerFactory = newservices.GetRequiredService<ILoggerFactory>();
+
+                try
+                {
+                    var context = newservices.GetRequiredService<UserDataDbContext>();
+                    var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
+
+                    ContextSeed.SeedRolesAsync(userManager, roleManager).Wait();
+                    ContextSeed.SeedSuperAdminAsync(userManager, roleManager).Wait();
+                }
+                catch (Exception ex)
+                {
+                    var logger = loggerFactory.CreateLogger<Program>();
+                    logger.LogError(ex, "An error occurred seeding the DB.");
+                }
+            }
+
             app.Run();
+            Task.WaitAll(app.RunAsync());
         }
     }
 }
