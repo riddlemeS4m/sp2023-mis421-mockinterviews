@@ -17,5 +17,6 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public bool IsVolunteer { get; set; }
         public bool IsInterviewer { get; set; }
         public bool IsStudent { get; set; }
+        public int MaxSignUps { get; set; }
     }
 }
