@@ -131,26 +131,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
         //    return View();
         //}
 
-        [HttpGet]
-        public async Task<IActionResult> ProfileView()
-        {
-            // Retrieve the current user's information from the database
-            var user = await _userManager.GetUserAsync(User);
+        //[HttpGet]
+        //public async Task<IActionResult> ProfileView()
+        //{
+        //    // Retrieve the current user's information from the database
+        //    var user = await _userManager.GetUserAsync(User);
 
-            // Create a view model with the user's data
-            var viewModel = new UserProfileViewModel
-            {
-                Id = user.Id,
-                FirstName = user.FirstName,
-                LastName = user.LastName,
-                PhoneNumber = user.PhoneNumber,
-                ProfilePicture = user.ProfilePicture,
-                Resume = user.Resume
-            };
+        //    // Create a view model with the user's data
+        //    var viewModel = new UserProfileViewModel
+        //    {
+        //        Id = user.Id,
+        //        FirstName = user.FirstName,
+        //        LastName = user.LastName,
+        //        PhoneNumber = user.PhoneNumber,
+        //        ProfilePicture = user.ProfilePicture,
+        //        Resume = user.Resume
+        //    };
 
-            // Return the ProfileView with the view model
-            return View("ProfileView", viewModel);
-        }
+        //    // Return the ProfileView with the view model
+        //    return View("ProfileView", viewModel);
+        //}
 
         //[HttpGet]
         //[Route("Users/DownloadResume/{userId}")]

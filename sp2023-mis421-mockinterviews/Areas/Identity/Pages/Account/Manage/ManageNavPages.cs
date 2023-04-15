@@ -60,6 +60,7 @@ namespace  sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
         public static string TwoFactorAuthentication => "TwoFactorAuthentication";
+        public static string ProfileEdit => "ProfileEdit";
 
         /// <summary>
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -77,6 +78,7 @@ namespace  sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
         ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
         ///     directly from your code. This API may change or be removed in future releases.
         /// </summary>
+        public static string ProfileEditClass(ViewContext viewContext) => PageNavClass(viewContext, ProfileEdit);
         public static string ChangePasswordNavClass(ViewContext viewContext) => PageNavClass(viewContext, ChangePassword);
 
         /// <summary>
@@ -117,6 +119,11 @@ namespace  sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
         {
             var activePage = viewContext.ViewData["ActivePage"] as string
                 ?? System.IO.Path.GetFileNameWithoutExtension(viewContext.ActionDescriptor.DisplayName);
+
+            //if (string.IsNullOrEmpty(activePage))
+            //{
+            //    activePage = ProfileEdit; // set "ProfileView" as the default active page
+            //}
             return string.Equals(activePage, page, StringComparison.OrdinalIgnoreCase) ? "active" : null;
         }
     }
