@@ -11,8 +11,6 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string InPerson { get; set; }
         public string IsTechnical { get; set; }
         public string IsBehavioral { get; set; }
-        [ForeignKey("Interviewer")]
-        public int InterviewerId { get; set; }
-        public Interviewer Interviewer { get; set; }
+        public string InterviewerId { get; set; }
     }
 }

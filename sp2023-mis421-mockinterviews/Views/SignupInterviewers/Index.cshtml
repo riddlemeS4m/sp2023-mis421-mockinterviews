@@ -31,7 +31,7 @@
                 @Html.DisplayNameFor(model => model.IsBehavioral)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Interviewer)
+                @Html.DisplayNameFor(model => model.InterviewerId)
             </th>
             <th></th>
         </tr>
@@ -58,7 +58,7 @@
                 @Html.DisplayFor(modelItem => item.IsBehavioral)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Interviewer.Id)
+                @Html.DisplayFor(modelItem => item.InterviewerId)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

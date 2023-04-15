@@ -24,7 +24,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: SignupInterviewers
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.SignupInterviewer.Include(s => s.Interviewer);
+            var mockInterviewDataDbContext = _context.SignupInterviewer;
             return View(await mockInterviewDataDbContext.ToListAsync());
         }
 
@@ -37,7 +37,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var signupInterviewer = await _context.SignupInterviewer
-                .Include(s => s.Interviewer)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (signupInterviewer == null)
             {
@@ -50,7 +49,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: SignupInterviewers/Create
         public IActionResult Create()
         {
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
             var client = new SendGridClient("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");
             var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
             var subject = "Sending with SendGrid is Fun";
@@ -76,7 +75,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
             return View(signupInterviewer);
         }
 
@@ -93,7 +92,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return NotFound();
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
             return View(signupInterviewer);
         }
 
@@ -129,7 +128,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
             return View(signupInterviewer);
         }
 
@@ -142,7 +141,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var signupInterviewer = await _context.SignupInterviewer
-                .Include(s => s.Interviewer)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (signupInterviewer == null)
             {
