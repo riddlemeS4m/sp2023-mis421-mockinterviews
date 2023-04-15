@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent
+﻿@using sp2023_mis421_mockinterviews.Data;
+@model sp2023_mis421_mockinterviews.Models.ViewModels.VolunteerEventsViewModel;
 
 @{
     ViewData["Title"] = "Create";
@@ -16,10 +17,20 @@
                 <label asp-for="StudentId" class="control-label"></label>
                 <select asp-for="StudentId" class ="form-control" asp-items="ViewBag.StudentId"></select>
             </div>*@
-            <div class="form-group">
+
+            @foreach(var timeslot in Model.Timeslots)
+            {
+                <div>
+                    <input type="checkbox" id="@timeslot.Id" name="timeslotIds" value="@timeslot.Id">
+                    <label for="@timeslot.Id">@timeslot.Time</label>
+                </div>
+            }
+
+            @*<div class="form-group">
                 <label asp-for="TimeslotId" class="control-label"></label>
                 <select asp-for="TimeslotId" class ="form-control" asp-items="ViewBag.TimeslotId"></select>
-            </div>
+            </div>*@
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -27,9 +38,13 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@if(User.IsInRole(RolesConstants.AdminRole))
+{
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

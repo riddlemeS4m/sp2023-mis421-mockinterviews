@@ -12,8 +12,8 @@ using sp2023_mis421_mockinterviews.Data;
 namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 {
     [DbContext(typeof(MockInterviewDataDbContext))]
-    [Migration("20230415010323_removedmaxtimeslot")]
-    partial class removedmaxtimeslot
+    [Migration("20230415081922_CompleteNewMigration")]
+    partial class CompleteNewMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -106,7 +106,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Property<string>("InterviewerRating")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("LocationId")
+                    b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("ProcessFeedback")
@@ -119,8 +119,9 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeslotId")
                         .HasColumnType("int");
@@ -130,8 +131,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.HasIndex("LocationId");
 
                     b.HasIndex("SignupInterviewerTimeslotId");
-
-                    b.HasIndex("StudentId");
 
                     b.HasIndex("TimeslotId");
 
@@ -249,40 +248,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.ToTable("SignupInterviewerTimeslot");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Student", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAdmin")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsAmbassador")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Semester")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Student");
-                });
-
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
                 {
                     b.Property<int>("Id")
@@ -328,15 +293,14 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("StudentId")
-                        .HasColumnType("int");
+                    b.Property<string>("StudentId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeslotId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("StudentId");
 
                     b.HasIndex("TimeslotId");
 
@@ -347,19 +311,11 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 {
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", "Location")
                         .WithMany()
-                        .HasForeignKey("LocationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("LocationId");
 
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot", "SignupInterviewerTimeslot")
                         .WithMany()
                         .HasForeignKey("SignupInterviewerTimeslotId");
-
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
                         .WithMany()
@@ -370,8 +326,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Navigation("Location");
 
                     b.Navigation("SignupInterviewerTimeslot");
-
-                    b.Navigation("Student");
 
                     b.Navigation("Timeslot");
                 });
@@ -438,19 +392,11 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Student", "Student")
-                        .WithMany()
-                        .HasForeignKey("StudentId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
                         .WithMany()
                         .HasForeignKey("TimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Student");
 
                     b.Navigation("Timeslot");
                 });

@@ -22,7 +22,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.InterviewEvent.Include(i => i.Location).Include(i => i.SignupInterviewerTimeslot).Include(i => i.Student).Include(i => i.Timeslot);
+            var mockInterviewDataDbContext = _context.InterviewEvent.Include(i => i.Location).Include(i => i.SignupInterviewerTimeslot).Include(i => i.Timeslot);
             return View(await mockInterviewDataDbContext.ToListAsync());
         }
 
@@ -37,7 +37,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var interviewEvent = await _context.InterviewEvent
                 .Include(i => i.Location)
                 .Include(i => i.SignupInterviewerTimeslot)
-                .Include(i => i.Student)
                 .Include(i => i.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (interviewEvent == null)
@@ -53,7 +52,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id");
             ViewData["SignupInterviewerTimeslotId"] = new SelectList(_context.Set<SignupInterviewerTimeslot>(), "Id", "Id");
-            ViewData["StudentId"] = new SelectList(_context.Set<Student>(), "Id", "Id");
             ViewData["TimeslotId"] = new SelectList(_context.Set<Timeslot>(), "Id", "Id");
             return View();
         }
@@ -73,7 +71,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", interviewEvent.LocationId);
             ViewData["SignupInterviewerTimeslotId"] = new SelectList(_context.Set<SignupInterviewerTimeslot>(), "Id", "Id", interviewEvent.SignupInterviewerTimeslotId);
-            ViewData["StudentId"] = new SelectList(_context.Set<Student>(), "Id", "Id", interviewEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Set<Timeslot>(), "Id", "Id", interviewEvent.TimeslotId);
             return View(interviewEvent);
         }
@@ -93,7 +90,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", interviewEvent.LocationId);
             ViewData["SignupInterviewerTimeslotId"] = new SelectList(_context.Set<SignupInterviewerTimeslot>(), "Id", "Id", interviewEvent.SignupInterviewerTimeslotId);
-            ViewData["StudentId"] = new SelectList(_context.Set<Student>(), "Id", "Id", interviewEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Set<Timeslot>(), "Id", "Id", interviewEvent.TimeslotId);
             return View(interviewEvent);
         }
@@ -132,7 +128,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", interviewEvent.LocationId);
             ViewData["SignupInterviewerTimeslotId"] = new SelectList(_context.Set<SignupInterviewerTimeslot>(), "Id", "Id", interviewEvent.SignupInterviewerTimeslotId);
-            ViewData["StudentId"] = new SelectList(_context.Set<Student>(), "Id", "Id", interviewEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Set<Timeslot>(), "Id", "Id", interviewEvent.TimeslotId);
             return View(interviewEvent);
         }
@@ -145,10 +140,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent
-                .Include(i => i.Location)
-                .Include(i => i.SignupInterviewerTimeslot)
-                .Include(i => i.Student)
+            var interviewEvent = await _context.InterviewEvent.Include(i => i.Location).Include(i => i.SignupInterviewerTimeslot)
                 .Include(i => i.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (interviewEvent == null)

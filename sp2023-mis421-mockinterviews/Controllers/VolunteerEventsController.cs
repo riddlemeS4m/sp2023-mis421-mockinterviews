@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -10,20 +11,16 @@ using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]
     public class VolunteerEventsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private async Task<ActionResult> GetUserId()
-        {
-            var user = await _userManager.GetUserAsync(User);
-            return Content(user.Id);
-        }
-
-
+    
         public VolunteerEventsController(MockInterviewDataDbContext context)
         {
             _context = context;
@@ -32,7 +29,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: VolunteerEvents
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.VolunteerEvent.Include(v => v.Student).Include(v => v.Timeslot);
+            var mockInterviewDataDbContext = _context.VolunteerEvent.Include(v => v.Timeslot);
             return View(await mockInterviewDataDbContext.ToListAsync());
         }
 
@@ -45,7 +42,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var volunteerEvent = await _context.VolunteerEvent
-                .Include(v => v.Student)
                 .Include(v => v.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (volunteerEvent == null)
@@ -59,10 +55,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: VolunteerEvents/Create
         public IActionResult Create()
         {
-         
-            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id");
-            ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id");
-            return View();
+            var timeslotsTask = _context.Timeslot.ToListAsync();
+            timeslotsTask.GetAwaiter().GetResult();
+            var timeslots = timeslotsTask.Result;
+            VolunteerEventsViewModel volunteerEventsViewModel = new VolunteerEventsViewModel
+            {
+                Timeslots = timeslots
+            };
+            return View(volunteerEventsViewModel);
         }
 
         // POST: VolunteerEvents/Create
@@ -70,20 +70,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,TimeslotId")] VolunteerEvent volunteerEvent)
+        public async Task<IActionResult> Create(VolunteerEventsViewModel volunteerEventsViewModel)
         {
-            volunteerEvent.StudentId = int.Parse(GetUserId().ToString());
-            if (ModelState.IsValid)
+            foreach(VolunteerEvent volunteerEvent in volunteerEventsViewModel.VolunteerEvent)
             {
-                _context.Add(volunteerEvent);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                if (ModelState.IsValid)
+                {
+                    volunteerEvent.StudentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    _context.Add(volunteerEvent);
+                    await _context.SaveChangesAsync();
+                    //return RedirectToAction(nameof(Index));
+                }
             }
-            var user = await _userManager.GetUserAsync(User);
-            Console.WriteLine(user);
-            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
-            ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
-            return View(volunteerEvent);
+            
+            //var user = await _userManager.GetUserAsync(User);
+            //Console.WriteLine(user);
+            //ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
+            //ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
+            return View(volunteerEventsViewModel);
         }
 
         // GET: VolunteerEvents/Edit/5
@@ -99,7 +103,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return NotFound();
             }
-            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);
         }
@@ -136,7 +139,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
+            //ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);
         }
@@ -150,7 +153,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var volunteerEvent = await _context.VolunteerEvent
-                .Include(v => v.Student)
                 .Include(v => v.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (volunteerEvent == null)
@@ -183,6 +185,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private bool VolunteerEventExists(int id)
         {
           return (_context.VolunteerEvent?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private async Task<ActionResult> GetUserId()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return Content(user.Id);
         }
     }
 }

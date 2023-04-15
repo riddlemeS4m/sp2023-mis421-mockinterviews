@@ -10,12 +10,10 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
         //LT - I think status should be not null with a default
         public int Id { get; set; }
-        [ForeignKey("Student")]
-        public int StudentId { get; set; }
-        public Student Student { get; set; }
+        public string StudentId { get; set; }
         [ForeignKey("Location")]
-        public int LocationId { get; set; }
-        public Location Location { get; set; }
+        public int? LocationId { get; set; }
+        public Location? Location { get; set; }
         [ForeignKey("Timeslot")]
         public int TimeslotId { get; set; }
         public Timeslot Timeslot { get; set; }

@@ -4,44 +4,36 @@
 
 namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 {
-    public partial class addedAllModels : Migration
+    public partial class CompleteNewMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.RenameColumn(
-                name: "room",
-                table: "Location",
-                newName: "Room");
+            migrationBuilder.CreateTable(
+                name: "EventDate",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Date = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EventDate", x => x.Id);
+                });
 
-            migrationBuilder.RenameColumn(
-                name: "isVirtual",
-                table: "Location",
-                newName: "IsVirtual");
-
-            migrationBuilder.RenameColumn(
-                name: "id",
-                table: "Location",
-                newName: "Id");
-
-            migrationBuilder.RenameColumn(
-                name: "isPerson",
-                table: "Location",
-                newName: "InPerson");
-
-            migrationBuilder.RenameColumn(
-                name: "question",
-                table: "FAQs",
-                newName: "Question");
-
-            migrationBuilder.RenameColumn(
-                name: "answer",
-                table: "FAQs",
-                newName: "Answer");
-
-            migrationBuilder.RenameColumn(
-                name: "id",
-                table: "FAQs",
-                newName: "Id");
+            migrationBuilder.CreateTable(
+                name: "FAQs",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Question = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Answer = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_FAQs", x => x.Id);
+                });
 
             migrationBuilder.CreateTable(
                 name: "Interviewer",
@@ -60,34 +52,18 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "MaxTimeSlots",
+                name: "Location",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Limit = table.Column<int>(type: "int", nullable: false)
+                    Room = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsVirtual = table.Column<bool>(type: "bit", nullable: false),
+                    InPerson = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_MaxTimeSlots", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Student",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Semester = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    IsAdmin = table.Column<bool>(type: "bit", nullable: false),
-                    IsAmbassador = table.Column<bool>(type: "bit", nullable: false),
-                    IsActive = table.Column<bool>(type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Student", x => x.Id);
+                    table.PrimaryKey("PK_Location", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,38 +73,20 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Time = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    EventDateId = table.Column<int>(type: "int", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     IsVolunteer = table.Column<bool>(type: "bit", nullable: false),
                     IsInterviewer = table.Column<bool>(type: "bit", nullable: false),
-                    IsStudent = table.Column<bool>(type: "bit", nullable: false)
+                    IsStudent = table.Column<bool>(type: "bit", nullable: false),
+                    MaxSignUps = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Timeslot", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LocationInterviewer",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    InterviewerId = table.Column<int>(type: "int", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LocationInterviewer", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_LocationInterviewer_Interviewer_InterviewerId",
-                        column: x => x.InterviewerId,
-                        principalTable: "Interviewer",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_LocationInterviewer_Location_LocationId",
-                        column: x => x.LocationId,
-                        principalTable: "Location",
+                        name: "FK_Timeslot_EventDate_EventDateId",
+                        column: x => x.EventDateId,
+                        principalTable: "EventDate",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -159,23 +117,43 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "LocationInterviewer",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    InterviewerId = table.Column<int>(type: "int", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LocationInterviewer", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_LocationInterviewer_Interviewer_InterviewerId",
+                        column: x => x.InterviewerId,
+                        principalTable: "Interviewer",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_LocationInterviewer_Location_LocationId",
+                        column: x => x.LocationId,
+                        principalTable: "Location",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VolunteerEvent",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeslotId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_VolunteerEvent", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_VolunteerEvent_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_VolunteerEvent_Timeslot_TimeslotId",
                         column: x => x.TimeslotId,
@@ -216,8 +194,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    StudentId = table.Column<int>(type: "int", nullable: false),
-                    LocationId = table.Column<int>(type: "int", nullable: false),
+                    StudentId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LocationId = table.Column<int>(type: "int", nullable: true),
                     TimeslotId = table.Column<int>(type: "int", nullable: false),
                     InterviewType = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
@@ -233,19 +211,12 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         name: "FK_InterviewEvent_Location_LocationId",
                         column: x => x.LocationId,
                         principalTable: "Location",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_InterviewEvent_SignupInterviewerTimeslot_SignupInterviewerTimeslotId",
                         column: x => x.SignupInterviewerTimeslotId,
                         principalTable: "SignupInterviewerTimeslot",
                         principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_InterviewEvent_Student_StudentId",
-                        column: x => x.StudentId,
-                        principalTable: "Student",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_InterviewEvent_Timeslot_TimeslotId",
                         column: x => x.TimeslotId,
@@ -263,11 +234,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 name: "IX_InterviewEvent_SignupInterviewerTimeslotId",
                 table: "InterviewEvent",
                 column: "SignupInterviewerTimeslotId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_InterviewEvent_StudentId",
-                table: "InterviewEvent",
-                column: "StudentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InterviewEvent_TimeslotId",
@@ -300,9 +266,9 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 column: "TimeslotId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_VolunteerEvent_StudentId",
-                table: "VolunteerEvent",
-                column: "StudentId");
+                name: "IX_Timeslot_EventDateId",
+                table: "Timeslot",
+                column: "EventDateId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VolunteerEvent_TimeslotId",
@@ -313,13 +279,13 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
+                name: "FAQs");
+
+            migrationBuilder.DropTable(
                 name: "InterviewEvent");
 
             migrationBuilder.DropTable(
                 name: "LocationInterviewer");
-
-            migrationBuilder.DropTable(
-                name: "MaxTimeSlots");
 
             migrationBuilder.DropTable(
                 name: "VolunteerEvent");
@@ -328,7 +294,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 name: "SignupInterviewerTimeslot");
 
             migrationBuilder.DropTable(
-                name: "Student");
+                name: "Location");
 
             migrationBuilder.DropTable(
                 name: "SignupInterviewer");
@@ -339,40 +305,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
             migrationBuilder.DropTable(
                 name: "Interviewer");
 
-            migrationBuilder.RenameColumn(
-                name: "Room",
-                table: "Location",
-                newName: "room");
-
-            migrationBuilder.RenameColumn(
-                name: "IsVirtual",
-                table: "Location",
-                newName: "isVirtual");
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "Location",
-                newName: "id");
-
-            migrationBuilder.RenameColumn(
-                name: "InPerson",
-                table: "Location",
-                newName: "isPerson");
-
-            migrationBuilder.RenameColumn(
-                name: "Question",
-                table: "FAQs",
-                newName: "question");
-
-            migrationBuilder.RenameColumn(
-                name: "Answer",
-                table: "FAQs",
-                newName: "answer");
-
-            migrationBuilder.RenameColumn(
-                name: "Id",
-                table: "FAQs",
-                newName: "id");
+            migrationBuilder.DropTable(
+                name: "EventDate");
         }
     }
 }
