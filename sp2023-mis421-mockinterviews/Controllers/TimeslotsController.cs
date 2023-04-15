@@ -23,8 +23,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots
         public async Task<IActionResult> Index()
         {
-              return _context.Timeslot != null ? 
-                          View(await _context.Timeslot.ToListAsync()) :
+            return _context.Timeslot != null ?
+                        View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
                           Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
         }
 
@@ -36,7 +36,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot
+            var timeslot = await _context.Timeslot.Include(t => t.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (timeslot == null)
             {
