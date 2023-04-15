@@ -21,9 +21,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
     
-        public VolunteerEventsController(MockInterviewDataDbContext context)
+        public VolunteerEventsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: VolunteerEvents
