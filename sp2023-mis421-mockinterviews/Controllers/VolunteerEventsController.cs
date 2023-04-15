@@ -1,18 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class VolunteerEventsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private async Task<ActionResult> GetUserId()
+        {
+            var user = await _userManager.GetUserAsync(User);
+            return Content(user.Id);
+        }
+
 
         public VolunteerEventsController(MockInterviewDataDbContext context)
         {
@@ -49,6 +59,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: VolunteerEvents/Create
         public IActionResult Create()
         {
+         
             ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id");
             ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id");
             return View();
@@ -59,14 +70,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StudentId,TimeslotId")] VolunteerEvent volunteerEvent)
+        public async Task<IActionResult> Create([Bind("Id,TimeslotId")] VolunteerEvent volunteerEvent)
         {
+            volunteerEvent.StudentId = int.Parse(GetUserId().ToString());
             if (ModelState.IsValid)
             {
                 _context.Add(volunteerEvent);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            var user = await _userManager.GetUserAsync(User);
+            Console.WriteLine(user);
             ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
             ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);

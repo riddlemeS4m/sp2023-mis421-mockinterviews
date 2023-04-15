@@ -63,7 +63,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StudentId,LocationId,TimeslotId,InterviewType,Status,InterviewerRating,InterviewerFeedback,ProcessFeedback,SignupInterviewerTimeslotId")] InterviewEvent interviewEvent)
+        public async Task<IActionResult> Create([Bind("Id,StudentId,LocationId,TimeslotId,InterviewType,Status,SignupInterviewerTimeslotId")] InterviewEvent interviewEvent)
         {
             if (ModelState.IsValid)
             {

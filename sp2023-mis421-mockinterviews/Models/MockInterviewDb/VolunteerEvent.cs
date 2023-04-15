@@ -8,7 +8,6 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
         //LT - yes it should be
         public int Id { get; set; }
-        [ForeignKey("Student")]
         public int StudentId { get; set; }
         public Student Student { get; set; }
         [ForeignKey("Timeslot")]

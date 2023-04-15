@@ -28,16 +28,16 @@
                         @if(User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Interview Signup</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Create">Interview Signup</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteer Signup</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Create">Volunteer Signup</a>
                             </li>
                         }
                         @if(User.IsInRole(RolesConstants.InterviewerRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interview Signup</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Create">Interviewer Signup</a>
                             </li>
                         }
                         @if(User.IsInRole(RolesConstants.AdminRole))
@@ -62,6 +62,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="FAQs" asp-action="Index">Manage FAQs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Timeslots" asp-action="Index">Manage Timeslots</a>
                             </li>
 
                         }
