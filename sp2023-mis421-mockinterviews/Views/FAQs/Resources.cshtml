@@ -28,6 +28,30 @@
 			margin-left: 20px;
 		}
 	</style>
+	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+	<script>
+		function generateText() {
+			const prompt = document.getElementById("prompt").value;
+
+			axios.post("https://api.openai.com/v1/engines/davinci/completions", {
+				prompt: prompt,
+				temperature: 0.5,
+				max_tokens: 50
+			}, {
+				headers: {
+					"Authorization": "Bearer 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"
+				}
+			})
+				.then(response => {
+					const text = response.data.choices[0].text;
+					document.getElementById("output").innerText = text;
+				})
+				.catch(error => {
+					console.error(error);
+					document.getElementById("output").innerText = "Error: " + error.message;
+				});
+		}
+	</script>
 </head>
 <body>
 	<h1>FAQs</h1>
@@ -38,7 +62,18 @@
 			<div class="answer">@faq.Answer</div>
 		</div>
 	}
-</body>
+
+
+
+
+		<h1>OpenAI Demo</h1>
+		<label for="prompt">Enter a prompt:</label>
+		<input type="text" id="prompt" />
+		<br />
+		<button onclick="generateText()">Generate Text</button>
+		<br />
+		<div id="output"></div>
+	</body>
 </html>
 
 

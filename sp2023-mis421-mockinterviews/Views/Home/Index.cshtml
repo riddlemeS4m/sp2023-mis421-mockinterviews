@@ -5,12 +5,14 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-@*    @model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>
-    @foreach (var vol in ViewData["events"] as IList<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>)
+       @model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>
+@*    @foreach (var vol in ViewData["events"] as IList<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>)
     {
         <p>@vol.Timeslot</p>
     }*@
-    @Html.Partial("VolunteerEventsHome")
+    @*@Html.Partial("VolunteerEventsHome",Model)*@
+
+
     <div style="text-align:center">
         <h2>Welcome, @User.Identity.Name.Split()[0]!</h2>
     </div>

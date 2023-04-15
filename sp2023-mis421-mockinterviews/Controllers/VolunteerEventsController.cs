@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
@@ -111,8 +113,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Create(int[] SelectedEventIds)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string email = User.FindFirstValue(ClaimTypes.Email);
+            string username = User.FindFirstValue(ClaimTypes.Name);
+            var student = await _userManager.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
 
-            foreach(int id in SelectedEventIds)
+            foreach (int id in SelectedEventIds)
             {
                 VolunteerEvent volunteerEvent = new VolunteerEvent
                 {
@@ -126,7 +131,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     //return RedirectToAction(nameof(Index));
                 }
             }
-
+            var client = new SendGridClient("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");
+            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject = "Mock Interviews Volunteer Sign-Up Confirmation";
+            var to = new EmailAddress(email);
+            var plainTextContent = "";
+            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for Volunteering "+student.FirstName+"!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be a volunteer for MIS Mock Interviews. This email serves as a confirmation that your volunteer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
+            System.Console.WriteLine(response);
+            var client2 = new SendGridClient("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");
+            var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject2 = "Mock Interviews Volunteer Sign-Up Confirmation";
+            var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
+            var plainTextContent2 = "";
+            var htmlContent2 = $"<h1>{student.FirstName} {student.LastName} has signed up to volunteer at Mock Interviews</h1>";
+            var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
+            var response2 = client.SendEmailAsync(msg2);
+            System.Console.WriteLine(response2);
             //var timeslots = await _context.Timeslot
             //    .Where(x => x.IsVolunteer == true)
             //    .Include(y => y.EventDate)
