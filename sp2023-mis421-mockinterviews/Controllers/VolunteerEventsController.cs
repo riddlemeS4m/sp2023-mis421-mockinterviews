@@ -56,7 +56,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: VolunteerEvents/Create
         public IActionResult Create()
         {
-            var timeslotsTask = _context.Timeslot.ToListAsync();
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var timeslotsTask = _context.Timeslot
+                .Where(x => x.IsVolunteer == true)
+                .Include(y => y.EventDate)
+                .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
             VolunteerEventsViewModel volunteerEventsViewModel = new VolunteerEventsViewModel
@@ -71,24 +77,35 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(VolunteerEventsViewModel volunteerEventsViewModel)
+        public async Task<IActionResult> Create(int[] SelectedEventIds)
         {
-            foreach(VolunteerEvent volunteerEvent in volunteerEventsViewModel.VolunteerEvent)
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            foreach(int id in SelectedEventIds)
             {
+                VolunteerEvent volunteerEvent = new VolunteerEvent
+                {
+                    TimeslotId = id,
+                    StudentId = userId
+                };
                 if (ModelState.IsValid)
                 {
-                    volunteerEvent.StudentId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                     _context.Add(volunteerEvent);
                     await _context.SaveChangesAsync();
                     //return RedirectToAction(nameof(Index));
                 }
             }
-            
-            //var user = await _userManager.GetUserAsync(User);
-            //Console.WriteLine(user);
-            //ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
-            //ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
-            return View(volunteerEventsViewModel);
+
+            //var timeslots = await _context.Timeslot
+            //    .Where(x => x.IsVolunteer == true)
+            //    .Include(y => y.EventDate)
+            //    .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+            //    .ToListAsync();
+            //VolunteerEventsViewModel volunteerEventsViewModel = new VolunteerEventsViewModel
+            //{
+            //    Timeslots = timeslots
+            //};
+            return RedirectToAction("Index", "Home");
         }
 
         // GET: VolunteerEvents/Edit/5
