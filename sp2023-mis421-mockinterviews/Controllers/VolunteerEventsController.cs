@@ -51,6 +51,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return View(viewModel);
         }
+        
+        public async Task<IActionResult> IndexSpecific()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var mockInterviewDataDbContext = _context.VolunteerEvent.Where(m => m.StudentId == userId).Include(m => m.Timeslot);
+            //ViewData["events"] = await mockInterviewDataDbContext.ToListAsync();
+
+            return PartialView("VolunteerEventsHome", await mockInterviewDataDbContext.ToListAsync());
+        }
 
         // GET: VolunteerEvents/Details/5
         public async Task<IActionResult> Details(int? id)
