@@ -9,9 +9,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
         //LT-I like the setup of having table of locations we can update
         public int Id { get; set; }
-        [ForeignKey("Interviewer")]
-        public int InterviewerId { get; set; }
-        public Interviewer Interviewer { get; set; }
+        public string InterviewerId { get; set; }
         [ForeignKey("Location")]
         public int LocationId { get; set; }
         public Location Location { get; set; }

@@ -22,7 +22,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.LocationInterviewer.Include(l => l.Interviewer).Include(l => l.Location);
+            var mockInterviewDataDbContext = _context.LocationInterviewer.Include(l => l.Location);
             return View(await mockInterviewDataDbContext.ToListAsync());
         }
 
@@ -35,7 +35,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var locationInterviewer = await _context.LocationInterviewer
-                .Include(l => l.Interviewer)
                 .Include(l => l.Location)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
@@ -49,7 +48,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers/Create
         public IActionResult Create()
         {
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id");
             return View();
         }
@@ -67,7 +66,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
             return View(locationInterviewer);
         }
@@ -85,7 +84,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return NotFound();
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
             return View(locationInterviewer);
         }
@@ -122,7 +121,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
+            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
             ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
             return View(locationInterviewer);
         }
@@ -136,7 +135,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var locationInterviewer = await _context.LocationInterviewer
-                .Include(l => l.Interviewer)
                 .Include(l => l.Location)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
