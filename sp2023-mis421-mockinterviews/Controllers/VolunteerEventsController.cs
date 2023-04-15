@@ -31,6 +31,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Index()
         {
             var mockInterviewDataDbContext = _context.VolunteerEvent.Include(v => v.Timeslot);
+
             return View(await mockInterviewDataDbContext.ToListAsync());
         }
 
@@ -45,6 +46,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var volunteerEvent = await _context.VolunteerEvent
                 .Include(v => v.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
+            var specificTimeslot = await _context.Timeslot
+                .Include(v => v.EventDate)
+                .FirstOrDefaultAsync(m => m.Id == volunteerEvent.Timeslot.Id);
+            volunteerEvent.Timeslot = specificTimeslot;
             if (volunteerEvent == null)
             {
                 return NotFound();

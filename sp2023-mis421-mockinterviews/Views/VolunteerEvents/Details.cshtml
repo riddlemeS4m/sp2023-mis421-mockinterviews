@@ -13,9 +13,16 @@
         <dt class = "col-sm-2">
             @Html.DisplayNameFor(model => model.Timeslot)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Timeslot.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Timeslot.Time)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
+        </dd>
+
     </dl>
 </div>
 <div>

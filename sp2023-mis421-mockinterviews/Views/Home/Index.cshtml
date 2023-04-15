@@ -1,16 +1,23 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+@{
+    ViewBag.Title = "Welcome to UA MIS Mock Interviews";
 }
-   
-    
 
-@if (User.Identity.IsAuthenticated){
-     <p>You are signed in</p>
-     <span>@User.Identity.Name</span>
+@if (User.Identity.IsAuthenticated)
+{
+    <div style="text-align:center">
+        <h2>Welcome, @User.Identity.Name.Split()[0]!</h2>
+    </div>
+    <p style="font-size:20px; text-align:center">
+        Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience.
+    </p>
 }
-else{
-      <div class="text-center">
-    <h1 class="display-4">Welcome!</h1>
-    <p>Please Login or Sign Up to Continue</p>
-</div> 
+else
+{
+    <div style="text-align:center">
+        <h2>@ViewBag.Title</h2>
+    </div>
+    <p style="font-size:20px; text-align:center">
+        Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
+    </p>
 }
