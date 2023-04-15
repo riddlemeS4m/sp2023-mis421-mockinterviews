@@ -34,10 +34,10 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Create">Volunteer Signup</a>
                             </li>
                         }
-                        @if(User.IsInRole(RolesConstants.InterviewerRole))
+                        @if(User.IsInRole(RolesConstants.InterviewerRole) || User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewers" asp-action="Create">Interviewer Signup</a>
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Create">Interviewer Signup</a>
                             </li>
                         }
                         @if(User.IsInRole(RolesConstants.AdminRole))
