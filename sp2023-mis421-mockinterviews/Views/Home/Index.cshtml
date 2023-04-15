@@ -1,15 +1,16 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@if (User.Identity.IsAuthenticated)
-{
-    <p>You are signed in</p>
+   
+    
+
+@if (User.Identity.IsAuthenticated){
+     <p>You are signed in</p>
+     <span>@User.Identity.Name</span>
 }
-else
-{
-  <div class="text-center">
+else{
+      <div class="text-center">
     <h1 class="display-4">Welcome!</h1>
     <p>Please Login or Sign Up to Continue</p>
-</div>  
+</div> 
 }
-
