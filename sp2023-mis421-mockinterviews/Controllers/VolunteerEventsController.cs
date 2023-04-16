@@ -262,7 +262,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var volunteerEvent = await _context.VolunteerEvent
-                .Include(v => v.Timeslot)
+                .Include(v => v.Timeslot).ThenInclude(y => y.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (volunteerEvent == null)
             {
