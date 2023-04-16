@@ -13,10 +13,19 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.SignupInterviewer)
+                @Html.DisplayNameFor(model => model.SignupInterviewer.FirstName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslot)
+                @Html.DisplayNameFor(model => model.SignupInterviewer.IsBehavioral)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SignupInterviewer.InPerson)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslot.Time)
             </th>
             <th></th>
         </tr>
@@ -25,14 +34,37 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.SignupInterviewer.Id)
+                    @Html.DisplayFor(modelItem => item.SignupInterviewer.FirstName) @Html.DisplayFor(modelItem => item.SignupInterviewer.LastName)
+            </td>
+                @if(item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
+                {
+                    <td>Behavioral, Technical</td>       
+                } 
+                else if(item.SignupInterviewer.IsBehavioral && !item.SignupInterviewer.IsTechnical) 
+                {
+                    <td>Behavioral</td>
+                }
+                else if (!item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
+                {
+                    <td>Technical</td>
+                }
+                @if(item.SignupInterviewer.IsVirtual)
+                {
+                    <td>Virtual</td>
+                } 
+                else if(item.SignupInterviewer.InPerson)
+                {
+                    <td>In Person</td>
+                }
+            <td>
+                @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Timeslot.Id)
+                @Html.DisplayFor(modelItem => item.Timeslot.Time)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+@*                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+*@                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>

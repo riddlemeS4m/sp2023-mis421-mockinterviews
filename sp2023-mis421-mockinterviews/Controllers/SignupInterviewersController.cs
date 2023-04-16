@@ -9,9 +9,11 @@ using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using SendGrid;
 using SendGrid.Helpers.Mail;
+using Microsoft.AspNetCore.Authorization;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    [Authorize(Roles=RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;

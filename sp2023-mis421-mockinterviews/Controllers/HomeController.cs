@@ -47,6 +47,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 
             }
 
+            model.SignupInterviewerTimeslots = new List<SignupInterviewerTimeslot>();
+            if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
+            {
+                var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
+                    .Include(v => v.SignupInterviewer)
+                    .Where(v => v.SignupInterviewer.InterviewerId == userId && v.Timeslot.IsInterviewer)
+                    .ToListAsync();
+
+                if (signupInterviewTimeslots != null)
+                {
+                    foreach (SignupInterviewerTimeslot signupInterviewerTimeslot in signupInterviewTimeslots)
+                    {
+                        model.SignupInterviewerTimeslots.Add(signupInterviewerTimeslot);
+                    }
+                }
+            }
+
             return View(model);
         }
 

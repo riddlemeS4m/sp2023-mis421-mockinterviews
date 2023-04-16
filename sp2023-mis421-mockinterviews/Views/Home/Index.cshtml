@@ -30,5 +30,10 @@ else
     @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
 }
 
+@if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.InterviewerRole))
+{
+    @await Html.PartialAsync("_SignupInterviewerTimeslotsPartial", Model.SignupInterviewerTimeslots)
+}
+
 
 

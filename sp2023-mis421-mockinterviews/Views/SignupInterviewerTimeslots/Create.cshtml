@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.SignupInterviewerTimeslotsViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -6,29 +6,64 @@
 
 <h1>Create</h1>
 
-<h4>SignupInterviewerTimeslot</h4>
+<h4>Sign up to Interview</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="SignupInterviewerId" class="control-label"></label>
-                <select asp-for="SignupInterviewerId" class ="form-control" asp-items="ViewBag.SignupInterviewerId"></select>
+            <label asp-for="SignupInterviewer.InPerson" class="control-label">How would you like to interview?</label><br />
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="SignupInterviewer.InPerson" value="true">
+                <label class="form-check-label" for="InPersonTrue">In Person</label>
             </div>
-            <div class="form-group">
-                <label asp-for="TimeslotId" class="control-label"></label>
-                <select asp-for="TimeslotId" class ="form-control" asp-items="ViewBag.TimeslotId"></select>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="SignupInterviewer.InPerson" value="false">
+                <label class="form-check-label" for="InPersonFalse">Virtual</label>
             </div>
+            <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
+            <div class="form-group">
+                <label asp-for="SignupInterviewer.IsTechnical" class="control-label"></label>
+                <input type="checkbox" name="SignupInterviewer.IsTechnical" value="true" />
+@*                <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
+*@            </div>
+            <div class="form-group">
+                <label asp-for="SignupInterviewer.IsBehavioral" class="control-label"></label>
+                <input type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" />
+@*                <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
+*@            </div>
+            
+            <h3>Day @Model.Timeslots[0].EventDateId</h3>
+            <h4>@Model.Timeslots[0].EventDate.Date</h4>
+            @foreach (var timeslot in Model.Timeslots)
+            {
+                if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
+                {
+                    <div>
+                        <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
+                        <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
+                        <label for="@timeslot.Id">@timeslot.Time</label>
+                    </div>
+                }
+            }
+            <h3>Day @Model.Timeslots[^1].EventDateId</h3>
+            <h4>@Model.Timeslots[^1].EventDate.Date</h4>
+            @foreach (var timeslot in Model.Timeslots)
+            {
+                if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                {
+                    <div>
+                        <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
+                        <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
+                        <label for="@timeslot.Id">@timeslot.Time</label>
+                    </div>
+                }
+            }
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

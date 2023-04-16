@@ -11,17 +11,51 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SignupInterviewer)
+            @Html.DisplayNameFor(model => model.SignupInterviewer.FirstName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SignupInterviewer.Id)
+            @Html.DisplayFor(model => model.SignupInterviewer.FirstName) @Html.DisplayFor(model => model.SignupInterviewer.LastName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Timeslot)
+            @Html.DisplayNameFor(model => model.Timeslot.Time)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Timeslot.Id)
+            @Html.DisplayFor(model => model.Timeslot.Time)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
+        </dd>
+        <dt>
+            @Html.DisplayNameFor(model => model.SignupInterviewer.IsBehavioral)
+        </dt>
+
+        @if (Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Behavioral, Technical</dd>
+        }
+        else if (Model.SignupInterviewer.IsBehavioral && !Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Behavioral</dd>
+        }
+        else if (!Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Technical</dd>
+        }
+        <dt>
+            @Html.DisplayNameFor(model => model.SignupInterviewer.InPerson)
+        </dt>
+
+        @if (Model.SignupInterviewer.IsVirtual)
+        {
+            <dd>Virtual</dd>
+        }
+        else if (Model.SignupInterviewer.InPerson)
+        {
+            <dd>In Person</dd>
+        }
     </dl>
 </div>
 <div>
