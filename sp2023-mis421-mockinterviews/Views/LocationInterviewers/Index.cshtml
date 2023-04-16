@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Interviewer/Location Pairings</h1>
 
 <p>
     <a asp-action="Create">Create New</a>
@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.LocationInterviewers[0].InterviewerName)
+                Interviewer
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.LocationInterviewers[0].LocationInterviewer.Location.Room)
+                Room Location
             </th>
             <th></th>
         </tr>
