@@ -19,7 +19,7 @@
                 <span asp-validation-for="Room" class="text-danger"></span>
             </div>
             <p></p>
-            <div class="form-group form-check">
+            @*<div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IsVirtual" /> Virtual Interviewer
                 </label>
@@ -31,6 +31,20 @@
                 </label>
             </div>
             <p></p>
+            <label asp-for="InPerson" class="control-label">How would you like to interview?</label><br />*@
+            <div class="form-group">
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="InPerson" value="true">
+                    <label class="form-check-label" for="InPersonTrue">In Person Interviewer</label>
+                </div>
+                <p></p>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="InPerson" value="false">
+                    <label class="form-check-label" for="InPersonFalse">Virtual Interviewer</label>
+                </div>
+                <span asp-validation-for="InPerson" class="text-danger"></span>
+            </div>
+            <p></p>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -39,7 +53,7 @@
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-controller="LocationInterviewers" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

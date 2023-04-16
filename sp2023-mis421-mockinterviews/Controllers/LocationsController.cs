@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    [Authorize(Roles = RolesConstants.AdminRole)]
     public class LocationsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -60,9 +62,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (ModelState.IsValid)
             {
+                if(!location.InPerson)
+                {
+                    location.IsVirtual = true;
+                }
                 _context.Add(location);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index", "LocationInterviewers");
             }
             return View(location);
         }
@@ -152,7 +158,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index","LocationInterviewers");
         }
 
         private bool LocationExists(int id)

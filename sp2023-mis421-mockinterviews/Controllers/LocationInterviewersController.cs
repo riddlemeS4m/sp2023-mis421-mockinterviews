@@ -2,28 +2,58 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    [Authorize(Roles = RolesConstants.AdminRole)]
     public class LocationInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public LocationInterviewersController(MockInterviewDataDbContext context)
+        public LocationInterviewersController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: LocationInterviewers
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.LocationInterviewer.Include(l => l.Location);
-            return View(await mockInterviewDataDbContext.ToListAsync());
+            var locationInterviewers = await _context.LocationInterviewer
+                .Include(v => v.Location)
+                .ToListAsync();
+            var interviewerIds = locationInterviewers.Select(v => v.InterviewerId).Distinct().ToList();
+
+            var interviewers = await _userManager.Users.Where(u => interviewerIds.Contains(u.Id)).ToListAsync();
+
+            var query = from locationInterviewer in locationInterviewers
+                        join interviewer in interviewers on locationInterviewer.InterviewerId equals interviewer.Id
+                        select new LocationInterviewerWithName
+                        {
+                            LocationInterviewer = locationInterviewer,
+                            InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
+                        };
+
+            var locationInterviewersWithNames = query.ToList();
+            var locations = await _context.Location.ToListAsync();
+
+
+            var viewModel = new LocationInterviewerViewModel
+            {
+                Locations = locations,
+                LocationInterviewers = locationInterviewersWithNames
+            };
+            return View(viewModel);
         }
 
         // GET: LocationInterviewers/Details/5
@@ -42,15 +72,39 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            return View(locationInterviewer);
+            var interviewer = await _userManager.FindByIdAsync(locationInterviewer.InterviewerId);
+            var locationInterviewerWithName = new LocationInterviewerWithName
+            {
+                LocationInterviewer = locationInterviewer,
+                InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
+            };
+
+            return View(locationInterviewerWithName);
         }
 
         // GET: LocationInterviewers/Create
         public IActionResult Create()
         {
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
-            ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id");
-            return View();
+            var usersTask = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole);
+            usersTask.GetAwaiter().GetResult();
+            var users = usersTask.Result.ToList();
+
+            var interviewerSelectList = users.Select(i => new SelectListItem
+            {
+                Value = i.Id,
+                Text = i.FirstName + " " + i.LastName
+            }).ToList();
+
+
+
+            var viewModel = new LocationInterviewerCreateViewModel
+            {
+                LocationInterviewer = new LocationInterviewer(),
+                InterviewerNames = interviewerSelectList,
+                Locations = new SelectList(_context.Location, "Id", "Room")
+            };
+
+            return View(viewModel);
         }
 
         // POST: LocationInterviewers/Create
@@ -67,8 +121,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
-            ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
-            return View(locationInterviewer);
+            //ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
+
+            var usersTask = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole);
+            usersTask.GetAwaiter().GetResult();
+            var users = usersTask.Result.ToList();
+
+            var interviewerSelectList = users.Select(i => new SelectListItem
+            {
+                Value = i.Id,
+                Text = i.FirstName + " " + i.LastName
+            }).ToList();
+            
+            var viewModel = new LocationInterviewerCreateViewModel
+            {
+                LocationInterviewer = new LocationInterviewer(),
+                InterviewerNames = interviewerSelectList,
+                Locations = new SelectList(_context.Location, "Id", "Room")
+            };
+
+            return View(viewModel);
         }
 
         // GET: LocationInterviewers/Edit/5
@@ -84,9 +156,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return NotFound();
             }
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
-            ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
-            return View(locationInterviewer);
+
+            var usersTask = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole);
+            usersTask.GetAwaiter().GetResult();
+            var users = usersTask.Result.ToList();
+
+            var interviewerSelectList = users.Select(i => new SelectListItem
+            {
+                Value = i.Id,
+                Text = i.FirstName + " " + i.LastName
+            }).ToList();
+
+            var viewModel = new LocationInterviewerCreateViewModel
+            {
+                LocationInterviewer = locationInterviewer,
+                InterviewerNames = interviewerSelectList,
+                Locations = new SelectList(_context.Location, "Id", "Room")
+            };
+
+            return View(viewModel);
         }
 
         // POST: LocationInterviewers/Edit/5
@@ -122,7 +210,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return RedirectToAction(nameof(Index));
             }
             //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
-            ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
+            //ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
             return View(locationInterviewer);
         }
 
@@ -142,7 +230,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            return View(locationInterviewer);
+            var interviewer = await _userManager.FindByIdAsync(locationInterviewer.InterviewerId);
+            var locationInterviewerWithName = new LocationInterviewerWithName
+            {
+                LocationInterviewer = locationInterviewer,
+                InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
+            };
+
+            return View(locationInterviewerWithName);
         }
 
         // POST: LocationInterviewers/Delete/5

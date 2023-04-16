@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
@@ -12,6 +13,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string InterviewerId { get; set; }
         [ForeignKey("Location")]
         public int LocationId { get; set; }
+        [ValidateNever]
         public Location Location { get; set; }
     }
 }

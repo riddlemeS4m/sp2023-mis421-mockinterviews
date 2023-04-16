@@ -139,9 +139,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             List<VolunteerEvent> volEvents = new List<VolunteerEvent>();
 
             var allVolunteerEvents = await _context.VolunteerEvent
-    .Include(v => v.Timeslot)
-    .ThenInclude(y => y.EventDate)
-    .ToListAsync();
+                .Include(v => v.Timeslot)
+                .ThenInclude(y => y.EventDate)
+                .ToListAsync();
 
             var studentIds = allVolunteerEvents.Select(v => v.StudentId).Distinct().ToList();
 
@@ -158,8 +158,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     _context.Add(volunteerEvent);
                     await _context.SaveChangesAsync();
                     var newEvent = await _context.VolunteerEvent
-    .Include(v => v.Timeslot)
-    .ThenInclude(y => y.EventDate).Where(v => v.Id == volunteerEvent.Id).FirstOrDefaultAsync();
+                        .Include(v => v.Timeslot)
+                        .ThenInclude(y => y.EventDate)
+                        .Where(v => v.Id == volunteerEvent.Id)
+                        .FirstOrDefaultAsync();
                     volEvents.Add(newEvent);
                     //return RedirectToAction(nameof(Index));
                 }
