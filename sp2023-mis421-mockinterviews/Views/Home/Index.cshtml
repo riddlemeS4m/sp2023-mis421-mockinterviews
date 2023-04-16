@@ -1,31 +1,21 @@
-﻿
+﻿@using sp2023_mis421_mockinterviews.Models.ViewModels
+@using sp2023_mis421_mockinterviews.Data
+@model IndexViewModel
+
 @{
     ViewBag.Title = "Welcome to UA MIS Mock Interviews";
 }
 
-@if (User.Identity.IsAuthenticated)
+<div style="text-align:center">
+    <h2>@ViewBag.Title</h2>
+</div>
+<p style="font-size:20px; text-align:center">
+    Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
+</p>
+@if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 {
-       @model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>
-@*    @foreach (var vol in ViewData["events"] as IList<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>)
-    {
-        <p>@vol.Timeslot</p>
-    }*@
-    @*@Html.Partial("VolunteerEventsHome",Model)*@
+    @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
+}
 
 
-    <div style="text-align:center">
-        <h2>Welcome, @User.Identity.Name.Split()[0]!</h2>
-    </div>
-    <p style="font-size:20px; text-align:center">
-        Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience.
-    </p>
-}
-else
-{
-    <div style="text-align:center">
-        <h2>@ViewBag.Title</h2>
-    </div>
-    <p style="font-size:20px; text-align:center">
-        Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
-    </p>
-}
+

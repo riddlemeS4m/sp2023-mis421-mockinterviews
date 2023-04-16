@@ -53,15 +53,35 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return View(viewModel);
         }
-        
+
+        [Route("VolunteerEvents/IndexSpecific")]
         public async Task<IActionResult> IndexSpecific()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var mockInterviewDataDbContext = _context.VolunteerEvent.Where(m => m.StudentId == userId).Include(m => m.Timeslot);
-            //ViewData["events"] = await mockInterviewDataDbContext.ToListAsync();
 
-            return PartialView("VolunteerEventsHome", await mockInterviewDataDbContext.ToListAsync());
+            var volunteerEvents = await _context.VolunteerEvent
+                .Include(v => v.Timeslot)
+                .ThenInclude(y => y.EventDate)
+                .Where(v => v.StudentId == userId)
+                .ToListAsync();
+
+            var studentIds = volunteerEvents.Select(v => v.StudentId).Distinct().ToList();
+
+            var students = await _userManager.Users.Where(u => studentIds.Contains(u.Id)).ToListAsync();
+
+            var query = from volunteerEvent in volunteerEvents
+                        join student in students on volunteerEvent.StudentId equals student.Id
+                        select new VolunteerEventViewModel
+                        {
+                            VolunteerEvent = volunteerEvent,
+                            StudentName = student.FirstName + " " + student.LastName,
+                        };
+
+            var viewModel = query.ToList();
+
+            return Json(viewModel);
         }
+
 
         // GET: VolunteerEvents/Details/5
         public async Task<IActionResult> Details(int? id)
