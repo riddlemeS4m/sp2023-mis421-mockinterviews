@@ -146,24 +146,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             foreach (int id in SelectedEventIds)
             {
-                var timeslots = new List<SignupInterviewerTimeslot>
+                var timeslot = new SignupInterviewerTimeslot { TimeslotId = id, SignupInterviewerId = signupInterviewerId };
+                
+                if (ModelState.IsValid)
                 {
-                    new SignupInterviewerTimeslot { TimeslotId = id, SignupInterviewerId = signupInterviewerId },
-                    new SignupInterviewerTimeslot { TimeslotId = id + 1, SignupInterviewerId = signupInterviewerId }
-                };
-
-                foreach (var timeslot in timeslots)
-                {
-                    if (ModelState.IsValid)
-                    {
-                        _context.Add(timeslot);
-                        await _context.SaveChangesAsync();
-                        var newEvent = await _context.SignupInterviewerTimeslot
-.Include(v => v.Timeslot)
-.ThenInclude(y => y.EventDate).Where(v => v.Id == timeslot.Id).FirstOrDefaultAsync();
-                        emailTimes.Add(newEvent);
-                    }
+                    _context.Add(timeslot);
+                    await _context.SaveChangesAsync();
+                    var newEvent = await _context.SignupInterviewerTimeslot
+                        .Include(v => v.Timeslot)
+                        .ThenInclude(y => y.EventDate).Where(v => v.Id == timeslot.Id).FirstOrDefaultAsync();
+                    emailTimes.Add(newEvent);
                 }
+                
             }
             var client = new SendGridClient("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");
             var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
@@ -226,6 +220,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: SignupInterviewerTimeslots/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //currently not used -sam
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SignupInterviewerId,TimeslotId")] SignupInterviewerTimeslot signupInterviewerTimeslot)

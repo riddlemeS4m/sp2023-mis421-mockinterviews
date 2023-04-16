@@ -55,16 +55,18 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             /// </summary>
             ///
             [Display(Name = "First Name")]
-            public string FirstName { get; set; }
+            public string? FirstName { get; set; }
             [Display(Name = "Last Name")]
-            public string LastName { get; set; }
+            public string? LastName { get; set; }
             [Phone]
             [Display(Name = "Phone number")]
-            public string PhoneNumber { get; set; }
+            public string? PhoneNumber { get; set; }
+            [Display(Name = "Class")]
+            public string? Class { get; set; }
             [Display(Name = "Profile Picture")]
-            public byte[] ProfilePicture { get; set; }
+            public byte[]? ProfilePicture { get; set; }
             [Display(Name = "Resume")]
-            public byte[] Resume { get; set; }
+            public byte[]? Resume { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -73,6 +75,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var firstName = user.FirstName;
             var lastName = user.LastName;
+            var userClass = user.Class;
             var profilePicture = user.ProfilePicture;
             var resume = user.Resume;
             Username = userName;
@@ -82,6 +85,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 FirstName = firstName,
                 LastName = lastName,
+                Class = userClass,
                 ProfilePicture = profilePicture,
                 Resume = resume
             };
@@ -116,14 +120,20 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 
             var firstName = user.FirstName;
             var lastName = user.LastName;
-            if (Input.FirstName != firstName)
+            var userClass = user.Class;
+            if (Input.FirstName != firstName && Input.FirstName != null)
             {
                 user.FirstName = Input.FirstName;
                 await _userManager.UpdateAsync(user);
             }
-            if (Input.LastName != lastName)
+            if (Input.LastName != lastName && Input.LastName != null)
             {
                 user.LastName = Input.LastName;
+                await _userManager.UpdateAsync(user);
+            }
+            if (Input.Class != userClass && Input.Class != null)
+            {
+                user.Class = Input.Class;
                 await _userManager.UpdateAsync(user);
             }
 
@@ -157,7 +167,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 }
             }
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
-            if (Input.PhoneNumber != phoneNumber)
+            if (Input.PhoneNumber != phoneNumber && Input.PhoneNumber != null)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);
                 if (!setPhoneResult.Succeeded)

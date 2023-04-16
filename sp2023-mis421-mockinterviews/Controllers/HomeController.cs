@@ -30,9 +30,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             IndexViewModel model = new IndexViewModel();
             model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
-            model.Name = $"{userFull.FirstName} {userFull.LastName}";
+            if(User.Identity.IsAuthenticated)
+            {
+                model.Name = $"{userFull.FirstName} {userFull.LastName}";
+            }
 
-            if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
+            if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
                 var volunteerEvents = await _context.VolunteerEvent
                     .Include(v => v.Timeslot)

@@ -67,6 +67,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             [Phone]
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
+            [Display(Name = "Class")]
+            public string Class { get; set; }
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
             [Display(Name = "Resume")]
@@ -79,6 +81,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
             var firstName = user.FirstName;
             var lastName = user.LastName;
+            var userClass = user.Class;
             var profilePicture = user.ProfilePicture;
             var resume = user.Resume;
             Username = userName;
@@ -88,6 +91,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 FirstName = firstName,
                 LastName = lastName,
+                Class = userClass,
                 ProfilePicture = profilePicture,
                 Resume = resume
             };

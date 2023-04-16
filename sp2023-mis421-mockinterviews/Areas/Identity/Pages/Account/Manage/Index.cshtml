@@ -10,13 +10,31 @@
 
 <div class="row">
     <div class="col-md-6">
-        <div>
-            <label>Phone number:</label>
+        <label>Phone number:</label>
+        @if(Model.Input.PhoneNumber != null)
+        {
             <span>@Model.Input.PhoneNumber</span>
+        }
+        else
+        {
+            <span>No phone number specified</span>
+        }
+        <div>
         </div>
 
         @if (User.IsInRole(RolesConstants.StudentRole))
         {
+            <div>
+                <label>Class:</label>
+                @if(Model.Input.Class != null)
+                {
+                    <span>@Model.Input.Class</span>
+                }
+                else
+                {
+                    <span>No class specified</span>
+                }
+            </div>
             <div>
                 <label>Resume:</label>
                 @if (Model.Input.Resume != null)

@@ -24,8 +24,8 @@ namespace sp2023_mis421_mockinterviews.Data
             "4:30 PM",
         };
 
-        public static readonly bool[] Interviewer = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
-        public static readonly bool[] Student = { false, false, true, true, true, true, true, true, false, false, true, true, true, true, true, true, false, false };
+        public static readonly bool[] Student = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
+        public static readonly bool[] Interviewer = { false, false, true, true, true, true, true, true, false, false, true, true, true, true, true, true, false, false };
 
         public static List<Timeslot> SeedTimeslots(List<EventDate> dates)
         {
