@@ -4,9 +4,9 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h1>Update</h1>
 
-<h4>LocationInterviewer</h4>
+<h4>Interviewer Location</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
@@ -14,15 +14,15 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="LocationInterviewer.Id" />
             <div class="form-group">
-                <label asp-for="@Model.LocationInterviewer.InterviewerId" class="control-label"></label>
+                <label asp-for="@Model.LocationInterviewer.InterviewerId" class="control-label">Interviewer</label>
                 <select asp-for="@Model.LocationInterviewer.InterviewerId" class="form-control" asp-items="@Model.InterviewerNames"></select>
             </div>
             <div class="form-group">
-                <label asp-for="@Model.LocationInterviewer.LocationId" class="control-label"></label>
+                <label asp-for="@Model.LocationInterviewer.LocationId" class="control-label">Location</label>
                 <select asp-for="@Model.LocationInterviewer.LocationId" class="form-control" asp-items="@Model.Locations"></select>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Update" class="btn btn-primary" />
             </div>
         </form>
     </div>

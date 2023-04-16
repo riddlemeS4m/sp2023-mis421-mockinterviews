@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
@@ -13,7 +15,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
     public class FAQsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
-
+        private readonly string endpointUrl = "https://api.openai.com/v1/engines/davinci/completions";
         public FAQsController(MockInterviewDataDbContext context)
         {
             _context = context;
@@ -159,6 +161,30 @@ namespace sp2023_mis421_mockinterviews.Controllers
             
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+        [HttpPost]
+        public async Task<ActionResult<string>> Chat(string prompt)
+        {
+            try
+            {
+                using (var client = new HttpClient())
+                {
+                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", " 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");
+                    var content = new StringContent("{\"prompt\": \"" + prompt + "\",\"max_tokens\": 60,\"temperature\": 0.7,\"top_p\": 1,\"n\": 1,\"stop\": [\"\\n\"]}", Encoding.UTF8, "application/json");
+
+                    var response = await client.PostAsync(endpointUrl, content);
+                    var responseContent = await response.Content.ReadAsStringAsync();
+
+					var jsonObject = JObject.Parse(responseContent);
+					string textResponse = jsonObject["choices"][0]["text"].ToString();
+
+					return PartialView("_ChatResponse", textResponse);
+				}
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         private bool FAQsExists(int id)

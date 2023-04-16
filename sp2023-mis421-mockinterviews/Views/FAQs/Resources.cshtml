@@ -66,13 +66,19 @@
 
 
 
-		<h1>OpenAI Demo</h1>
-		<label for="prompt">Enter a prompt:</label>
-		<input type="text" id="prompt" />
-		<br />
-		<button onclick="generateText()">Generate Text</button>
-		<br />
-		<div id="output"></div>
+
+@using (Html.BeginForm("Chat", "FAQs", FormMethod.Post))
+{
+    <div class="form-group">
+        <label for="prompt">Prompt:</label>
+        <input type="text" name="prompt" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+}
+
+<div id="response">
+    @Html.Partial("_ChatResponse")
+</div>
 	</body>
 </html>
 

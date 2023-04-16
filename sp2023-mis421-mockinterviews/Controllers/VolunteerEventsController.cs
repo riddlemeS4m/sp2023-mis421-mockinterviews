@@ -279,14 +279,35 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.VolunteerEvent == null)
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			string email = User.FindFirstValue(ClaimTypes.Email);
+			string username = User.FindFirstValue(ClaimTypes.Name);
+			var student = await _userManager.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+			if (_context.VolunteerEvent == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.VolunteerEvent'  is null.");
             }
             var volunteerEvent = await _context.VolunteerEvent.FindAsync(id);
             if (volunteerEvent != null)
             {
-                _context.VolunteerEvent.Remove(volunteerEvent);
+				var volunteerEventLocal = await _context.VolunteerEvent
+	            .Include(v => v.Timeslot)
+	            .FirstOrDefaultAsync(m => m.Id == id);
+				var specificTimeslot = await _context.Timeslot
+					.Include(v => v.EventDate)
+					.FirstOrDefaultAsync(m => m.Id == volunteerEvent.Timeslot.Id);
+                volunteerEventLocal.Timeslot = specificTimeslot;
+				var client2 = new SendGridClient("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");
+				var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+				var subject2 = "Mock Interviews Volunteer Canellation";
+				var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
+				var plainTextContent2 = "";
+				var htmlContent2 = $"<h1>{student.FirstName} {student.LastName} has cancelled their volunteering for Mock Interviews for {volunteerEventLocal.Timeslot.Time} on {volunteerEventLocal.Timeslot.EventDate.Date}</h1>";
+				var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
+				var response2 = client2.SendEmailAsync(msg2);
+
+				_context.VolunteerEvent.Remove(volunteerEvent);
             }
             
             await _context.SaveChangesAsync();
