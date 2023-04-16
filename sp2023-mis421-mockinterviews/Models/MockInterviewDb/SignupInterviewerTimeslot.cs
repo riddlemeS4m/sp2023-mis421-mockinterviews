@@ -14,5 +14,9 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         [ForeignKey("Timeslot")]
         public int TimeslotId { get; set; }
         public Timeslot Timeslot { get; set; }
+        public override string ToString()
+        {
+            return $"{this.Timeslot.Time} on {this.Timeslot.EventDate.Date} <br>";
+        }
     }
 }

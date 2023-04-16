@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using System.Diagnostics;
 using System.Security.Claims;
@@ -11,21 +12,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+/*        private readonly ILogger<HomeController> _logger;*/
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, MockInterviewDataDbContext context)
+        public HomeController(/*ILogger<HomeController> logger,*/ MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
-            _logger = logger;
+/*            _logger = logger;*/
             _context = context;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userFull = await _userManager.FindByIdAsync(userId);
 
             IndexViewModel model = new IndexViewModel();
             model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
+            model.Name = $"{userFull.FirstName} {userFull.LastName}";
 
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {

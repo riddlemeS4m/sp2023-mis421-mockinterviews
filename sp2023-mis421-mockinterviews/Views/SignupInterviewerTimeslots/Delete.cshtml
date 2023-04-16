@@ -4,15 +4,14 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Delete</h1>
+<h1>Interviewer Cancellation</h1>
 
-<h3>Are you sure you want to delete this?</h3>
+<h3>Are you sure you want to cancel this?</h3>
 <div>
-    <h4>SignupInterviewerTimeslot</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.SignupInterviewer.FirstName)
+            Name
         </dt>
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.SignupInterviewer.FirstName) @Html.DisplayFor(model => model.SignupInterviewer.LastName)
@@ -30,7 +29,7 @@
             @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.SignupInterviewer.IsBehavioral)
+            Behavioral and/or Technical:
         </dt>
 
         @if (Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
@@ -46,7 +45,7 @@
             <dd>Technical</dd>
         }
         <dt>
-            @Html.DisplayNameFor(model => model.SignupInterviewer.InPerson)
+            In-Person or Virtual:
         </dt>
 
         @if (Model.SignupInterviewer.IsVirtual)
@@ -61,7 +60,12 @@
     
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
+        <input type="submit" value="Cancel" class="btn btn-danger" /> |
+        @Html.ActionLink("Return to Home",
+        "Index",   // <-- ActionMethod
+        "Home",  // <-- Controller Name.
+        null, // <-- Route arguments.
+        null
+        )
     </form>
 </div>

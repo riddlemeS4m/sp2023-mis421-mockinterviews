@@ -8,6 +8,7 @@
             <tr>
                 <th>Date</th>
                 <th>Time</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -16,6 +17,15 @@
                 <tr>
                     <td>@volunteerEvent.VolunteerEvent.Timeslot.EventDate.Date</td>
                     <td>@volunteerEvent.VolunteerEvent.Timeslot.Time</td>
+                    <td>
+                        @Html.ActionLink("Cancel",
+                "Delete",   // <-- ActionMethod
+                "VolunteerEvents",  // <-- Controller Name.
+                new { volunteerEvent.VolunteerEvent.Id }, // <-- Route arguments.
+                null  
+                )
+                       
+                    </td>
                 </tr>
             }
         </tbody>

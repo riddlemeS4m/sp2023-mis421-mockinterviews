@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
@@ -140,6 +142,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             int signupInterviewerId = post.Id;
+            var emailTimes = new List<SignupInterviewerTimeslot>();
 
             foreach (int id in SelectedEventIds)
             {
@@ -155,10 +158,36 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     {
                         _context.Add(timeslot);
                         await _context.SaveChangesAsync();
+                        var newEvent = await _context.SignupInterviewerTimeslot
+.Include(v => v.Timeslot)
+.ThenInclude(y => y.EventDate).Where(v => v.Id == timeslot.Id).FirstOrDefaultAsync();
+                        emailTimes.Add(newEvent);
                     }
                 }
             }
-
+            var client = new SendGridClient("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");
+            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject = "Interviewer Sign-Up Confirmation";
+            var to = new EmailAddress(user.Email);
+            var plainTextContent = "";
+            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for signing up " + user.FirstName + "!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be an interviewer for MIS Mock Interviews for the following times:<br>";
+            foreach (SignupInterviewerTimeslot interview in emailTimes)
+            {
+                htmlContent += interview.ToString();
+            }
+            htmlContent += "This email serves as a confirmation that your interviewer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
+            System.Console.WriteLine(response);
+            var client2 = new SendGridClient("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");
+            var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject2 = "Mock Interviews Interviewer Sign-Up Confirmation";
+            var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
+            var plainTextContent2 = "";
+            var htmlContent2 = $"<h1>{user.FirstName} {user.LastName} has signed up to interview at Mock Interviews</h1>";
+            var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
+            var response2 = client.SendEmailAsync(msg2);
+            System.Console.WriteLine(response2);
             return RedirectToAction("Index", "Home");
         }
 
@@ -241,7 +270,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var signupInterviewerTimeslot = await _context.SignupInterviewerTimeslot
                 .Include(s => s.SignupInterviewer)
-                .Include(s => s.Timeslot)
+                .Include(s => s.Timeslot).ThenInclude(y => y.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (signupInterviewerTimeslot == null)
             {
