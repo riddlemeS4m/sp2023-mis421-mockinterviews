@@ -136,6 +136,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string email = User.FindFirstValue(ClaimTypes.Email);
             string username = User.FindFirstValue(ClaimTypes.Name);
             var student = await _userManager.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            List<VolunteerEvent> volEvents = new List<VolunteerEvent>();
+
+            var allVolunteerEvents = await _context.VolunteerEvent
+    .Include(v => v.Timeslot)
+    .ThenInclude(y => y.EventDate)
+    .ToListAsync();
+
+            var studentIds = allVolunteerEvents.Select(v => v.StudentId).Distinct().ToList();
 
             foreach (int id in SelectedEventIds)
             {
@@ -146,8 +154,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 };
                 if (ModelState.IsValid)
                 {
+                    
                     _context.Add(volunteerEvent);
                     await _context.SaveChangesAsync();
+                    var newEvent = await _context.VolunteerEvent
+    .Include(v => v.Timeslot)
+    .ThenInclude(y => y.EventDate).Where(v => v.Id == volunteerEvent.Id).FirstOrDefaultAsync();
+                    volEvents.Add(newEvent);
                     //return RedirectToAction(nameof(Index));
                 }
             }
@@ -156,7 +169,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var subject = "Mock Interviews Volunteer Sign-Up Confirmation";
             var to = new EmailAddress(email);
             var plainTextContent = "";
-            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for Volunteering "+student.FirstName+"!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be a volunteer for MIS Mock Interviews. This email serves as a confirmation that your volunteer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
+            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for Volunteering "+student.FirstName+"!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be a volunteer for MIS Mock Interviews for the following times:<br>";
+            foreach(VolunteerEvent vol in volEvents)
+            {
+                htmlContent += vol.ToString();
+            }
+            htmlContent += "This email serves as a confirmation that your volunteer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
             var response = client.SendEmailAsync(msg);
             System.Console.WriteLine(response);
