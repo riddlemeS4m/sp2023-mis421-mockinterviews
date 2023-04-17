@@ -1,40 +1,37 @@
-﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent>
+﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventViewModel>
 
 @{
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1>Interviews</h1>
 
-<p>
+@*<p>
     <a asp-action="Create">Create New</a>
-</p>
+</p>*@
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Location)
+                @Html.DisplayNameFor(model => model.StudentName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslot)
+                @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewType)
+                @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.EventDate.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.InterviewEvent.Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewerRating)
+                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewerFeedback)
+                @Html.DisplayNameFor(model => model.InterviewerName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.ProcessFeedback)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.SignupInterviewerTimeslot)
+                @Html.DisplayNameFor(model => model.InterviewEvent.Location)
             </th>
             <th></th>
         </tr>
@@ -43,35 +40,99 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Location.Id)
+                @Html.DisplayFor(modelItem => item.StudentName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Timeslot.Id)
+                @Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InterviewType)
+                @Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.EventDate.Date)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Status)
+                @Html.DisplayFor(modelItem => item.InterviewEvent.Status)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InterviewerRating)
+                @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.InterviewerFeedback)
+                @Html.DisplayFor(modelItem => item.InterviewerName)
             </td>
+            @if(item.InterviewEvent.Location == null)
+            {
+                <td>Not Assigned</td>    
+            }
+            else
+            {
+                <td>
+                    @Html.DisplayFor(modelItem => item.InterviewEvent.Location.Room)
+                </td>
+            }
+                
             <td>
-                @Html.DisplayFor(modelItem => item.ProcessFeedback)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.SignupInterviewerTimeslot.Id)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
+                <a asp-action="Edit" asp-route-id="@item.InterviewEvent.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.InterviewEvent.Id">Details</a>
+    @*          <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+*@          </td>
         </tr>
 }
+    </tbody>
+</table>
+<hr />
+<h1>Interview Feedback</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.StudentName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewType)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerRating)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerFeedback)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InterviewEvent.ProcessFeedback)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            if (item.InterviewEvent.InterviewerRating != null)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.StudentName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InterviewerName)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewerRating)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewerFeedback)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.InterviewEvent.ProcessFeedback)
+                    </td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@item.InterviewEvent.Id">Details</a>
+                    </td>
+                </tr>
+            }
+        }
     </tbody>
 </table>

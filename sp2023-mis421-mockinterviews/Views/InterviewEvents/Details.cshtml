@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -10,57 +10,69 @@
     <h4>InterviewEvent</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Location)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StudentName)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Location.Id)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.StudentName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Timeslot)
+            @Html.DisplayNameFor(model => model.InterviewerName)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Timeslot.Id)
+            @Html.DisplayFor(model => model.InterviewerName)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InterviewType)
+            @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.EventDate.Date)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InterviewType)
+            @Html.DisplayFor(model => model.InterviewEvent.Timeslot.EventDate.Date)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.Time)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InterviewEvent.Timeslot.Time)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Status)
+            @Html.DisplayNameFor(model => model.InterviewEvent.InterviewType)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Status)
+            @Html.DisplayFor(model => model.InterviewEvent.InterviewType)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InterviewEvent.Location)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.InterviewEvent.Location.Room)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InterviewerRating)
+            @Html.DisplayNameFor(model => model.InterviewEvent.Status)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InterviewerRating)
+            @Html.DisplayFor(model => model.InterviewEvent.Status)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.InterviewerFeedback)
+            @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerRating)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.InterviewerFeedback)
+            @Html.DisplayFor(model => model.InterviewEvent.InterviewerRating)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProcessFeedback)
+            @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerFeedback)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProcessFeedback)
+            @Html.DisplayFor(model => model.InterviewEvent.InterviewerFeedback)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.SignupInterviewerTimeslot)
+            @Html.DisplayNameFor(model => model.InterviewEvent.ProcessFeedback)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.SignupInterviewerTimeslot.Id)
+            @Html.DisplayFor(model => model.InterviewEvent.ProcessFeedback)
         </dd>
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?InterviewEvent.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>

@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent
+﻿@using sp2023_mis421_mockinterviews.Data;
+@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventManageViewModel
 
 @{
     ViewData["Title"] = "Edit";
@@ -12,33 +13,25 @@
     <div class="col-md-4">
         <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="InterviewEvent.Id" />
+            <input type="hidden" asp-for="InterviewEvent.StudentId" />
+            <input type="hidden" asp-for="InterviewEvent.TimeslotId" />
+
             <div class="form-group">
-                <label asp-for="StudentId" class="control-label"></label>
-                <select asp-for="StudentId" class="form-control" asp-items="ViewBag.StudentId"></select>
-                <span asp-validation-for="StudentId" class="text-danger"></span>
+                <label asp-for="InterviewEvent.InterviewType" class="control-label"></label>
+                <select asp-for="InterviewEvent.InterviewType" class="form-control" asp-items='@InterviewTypesConstants.GetInterviewTypesOptions()'>
+                    <option value="">-- Select One --</option>
+                </select>
+                <span asp-validation-for="InterviewEvent.InterviewType" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <select asp-for="LocationId" class="form-control" asp-items="ViewBag.LocationId"></select>
-                <span asp-validation-for="LocationId" class="text-danger"></span>
+                <label asp-for="InterviewEvent.Status" class="control-label"></label>
+                <select asp-for="InterviewEvent.Status" class="form-control" asp-items='@StatusConstants.GetStatusOptions()'>
+                    <option value="">-- Select One --</option>
+                </select>
+                <span asp-validation-for="InterviewEvent.Status" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TimeslotId" class="control-label"></label>
-                <select asp-for="TimeslotId" class="form-control" asp-items="ViewBag.TimeslotId"></select>
-                <span asp-validation-for="TimeslotId" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InterviewType" class="control-label"></label>
-                <input asp-for="InterviewType" class="form-control" />
-                <span asp-validation-for="InterviewType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
+            @*<div class="form-group">
                 <label asp-for="InterviewerRating" class="control-label"></label>
                 <input asp-for="InterviewerRating" class="form-control" />
                 <span asp-validation-for="InterviewerRating" class="text-danger"></span>
@@ -52,11 +45,16 @@
                 <label asp-for="ProcessFeedback" class="control-label"></label>
                 <input asp-for="ProcessFeedback" class="form-control" />
                 <span asp-validation-for="ProcessFeedback" class="text-danger"></span>
-            </div>
+            </div>*@
+            @*<div class="form-group">
+                <label asp-for="InterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId" class="control-label"></label>
+                <select asp-for="InterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId" class="form-control" asp-items="@Model.InterviewerNames"></select>
+                <span asp-validation-for="InterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId" class="text-danger"></span>
+            </div>*@
             <div class="form-group">
-                <label asp-for="SignupInterviewerTimeslotId" class="control-label"></label>
-                <select asp-for="SignupInterviewerTimeslotId" class="form-control" asp-items="ViewBag.SignupInterviewerTimeslotId"></select>
-                <span asp-validation-for="SignupInterviewerTimeslotId" class="text-danger"></span>
+                <label asp-for="InterviewerId" class="control-label"></label>
+                <select asp-for="InterviewerId" class="form-control" asp-items="@Model.InterviewerNames"></select>
+                <span asp-validation-for="InterviewerId" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Save" class="btn btn-primary" />

@@ -29,12 +29,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var userFull = await _userManager.FindByIdAsync(userId);
 
             IndexViewModel model = new IndexViewModel();
-            model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
             if(User.Identity.IsAuthenticated)
             {
                 model.Name = $"{userFull.FirstName} {userFull.LastName}";
             }
 
+            model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
                 var volunteerEvents = await _context.VolunteerEvent
@@ -70,6 +70,33 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     foreach (SignupInterviewerTimeslot signupInterviewerTimeslot in signupInterviewTimeslots)
                     {
                         model.SignupInterviewerTimeslots.Add(signupInterviewerTimeslot);
+                    }
+                }
+            }
+
+            model.InterviewEvents = new List<InterviewEventViewModel>();
+            if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
+            {
+                var interviewEvents = await _context.InterviewEvent
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
+                    .Include(v => v.SignupInterviewerTimeslot)
+                    .Where(v => v.StudentId == userId)
+                    .ToListAsync();
+
+                if (interviewEvents != null)
+                {
+                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    {
+                        string interviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                        var interviewer = await _userManager.FindByIdAsync(interviewerId);
+
+                        model.InterviewEvents.Add(new InterviewEventViewModel()
+                        {
+                            InterviewEvent = interviewEvent,
+                            StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                            InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+                        });
                     }
                 }
             }

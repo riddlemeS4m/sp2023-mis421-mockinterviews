@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventSignupViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -6,63 +6,76 @@
 
 <h1>Create</h1>
 
-<h4>InterviewEvent</h4>
+<h4>Sign up for an Interview!</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StudentId" class="control-label"></label>
-                <select asp-for="StudentId" class ="form-control" asp-items="ViewBag.StudentId"></select>
+        @if(Model.ApplicationUser.Resume == null)
+        {
+            <div class="alert alert-danger" role="alert">
+                You must upload a resume before you can sign up for an interview.
+                Go to your profile, upload your resume, save your profile, and then come back here.
             </div>
-            <div class="form-group">
-                <label asp-for="LocationId" class="control-label"></label>
-                <select asp-for="LocationId" class ="form-control" asp-items="ViewBag.LocationId"></select>
+        }
+        else if (Model.ApplicationUser.Class == null)
+        {
+            <div class="alert alert-danger" role="alert">
+                You must specify which class you are in before you can sign up for an interview.
+                Go to your profile, select your class, save your profile, and then come back here.
             </div>
-            <div class="form-group">
-                <label asp-for="TimeslotId" class="control-label"></label>
-                <select asp-for="TimeslotId" class ="form-control" asp-items="ViewBag.TimeslotId"></select>
+        }
+        else if (Model.SignedUp)
+        {
+            <div class="alert alert-danger" role="alert">
+                You have already signed up for an interview.
             </div>
-            <div class="form-group">
-                <label asp-for="InterviewType" class="control-label"></label>
-                <input asp-for="InterviewType" class="form-control" />
-                <span asp-validation-for="InterviewType" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Status" class="control-label"></label>
-                <input asp-for="Status" class="form-control" />
-                <span asp-validation-for="Status" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InterviewerRating" class="control-label"></label>
-                <input asp-for="InterviewerRating" class="form-control" />
-                <span asp-validation-for="InterviewerRating" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="InterviewerFeedback" class="control-label"></label>
-                <input asp-for="InterviewerFeedback" class="form-control" />
-                <span asp-validation-for="InterviewerFeedback" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProcessFeedback" class="control-label"></label>
-                <input asp-for="ProcessFeedback" class="form-control" />
-                <span asp-validation-for="ProcessFeedback" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="SignupInterviewerTimeslotId" class="control-label"></label>
-                <select asp-for="SignupInterviewerTimeslotId" class ="form-control" asp-items="ViewBag.SignupInterviewerTimeslotId"></select>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+            
+        }
+        else
+        {
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h3>Day @Model.Timeslots[0].EventDateId</h3>
+                        <h4>@Model.Timeslots[0].EventDate.Date</h4>
+                        @foreach (var timeslot in Model.Timeslots)
+                        {
+                            if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
+                            {
+                                <div>
+                                    <input type="radio" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
+                                    <label for="@timeslot.Id">@timeslot.Time</label>
+                                </div>
+                            }
+                        }
+                    </div>
+                    <div class="col-md-6">
+                        <h3>Day @Model.Timeslots[^1].EventDateId</h3>
+                        <h4>@Model.Timeslots[^1].EventDate.Date</h4>
+                        @foreach (var timeslot in Model.Timeslots)
+                        {
+                            if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                            {
+                                <div>
+                                    <input type="radio" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
+                                    <label for="@timeslot.Id">@timeslot.Time</label>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+                <div class="form-group">
+                    <input type="hidden" name="SelectedEventIds" id="SelectedEventIds">
+                    <input type="submit" value="Sign Up!" class="btn btn-danger" />
+                </div>
+            </form>
+
+        }
+        
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

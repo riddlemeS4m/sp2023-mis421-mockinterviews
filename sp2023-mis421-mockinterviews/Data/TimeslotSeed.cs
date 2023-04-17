@@ -4,6 +4,7 @@ namespace sp2023_mis421_mockinterviews.Data
 {
     public class TimeslotSeed
     {
+        public const int MaxSignups = 2;
         public static readonly string[] Times = { "8:00 AM",
             "8:30 AM",
             "9:00 AM",
@@ -42,6 +43,7 @@ namespace sp2023_mis421_mockinterviews.Data
                     timeslot.IsVolunteer = true;
                     timeslot.IsInterviewer = Interviewer[i];
                     timeslot.IsStudent = Student[i];
+                    timeslot.MaxSignUps = MaxSignups;
                     timeslots.Add(timeslot);
                 }
             }
