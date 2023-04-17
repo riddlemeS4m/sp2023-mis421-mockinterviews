@@ -81,6 +81,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
                     .Include(v => v.SignupInterviewerTimeslot)
+                    .ThenInclude(v => v.SignupInterviewer)
                     .Where(v => v.StudentId == userId)
                     .ToListAsync();
 
@@ -88,8 +89,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     foreach (InterviewEvent interviewEvent in interviewEvents)
                     {
-                        string interviewerId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                        var interviewer = await _userManager.FindByIdAsync(interviewerId);
+                        var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
 
                         model.InterviewEvents.Add(new InterviewEventViewModel()
                         {
