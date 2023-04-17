@@ -291,7 +291,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+			return RedirectToAction("Index", "Home");
         }
 
         private bool SignupInterviewerTimeslotExists(int id)
