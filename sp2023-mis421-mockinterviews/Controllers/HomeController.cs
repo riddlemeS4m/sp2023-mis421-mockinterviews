@@ -78,10 +78,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
                 var interviewEvents = await _context.InterviewEvent
-                    .Include(v => v.Timeslot)
-                    .ThenInclude(v => v.EventDate)
                     .Include(v => v.SignupInterviewerTimeslot)
                     .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.Location)
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
                     .Where(v => v.StudentId == userId)
                     .ToListAsync();
 
@@ -89,14 +90,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     foreach (InterviewEvent interviewEvent in interviewEvents)
                     {
-                        var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
-
-                        model.InterviewEvents.Add(new InterviewEventViewModel()
+                        if(interviewEvent.SignupInterviewerTimeslot != null)
                         {
-                            InterviewEvent = interviewEvent,
-                            StudentName = $"{userFull.FirstName} {userFull.LastName}",
-                            InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
-                        });
+                            var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+
+                            model.InterviewEvents.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+                            });
+                        }
+                        else
+                        {
+                            model.InterviewEvents.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                                InterviewerName = "Not Assigned"
+                            });
+                        }
                     }
                 }
             }

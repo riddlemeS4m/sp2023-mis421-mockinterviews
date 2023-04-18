@@ -279,16 +279,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var selectedInterviewersNames = new List<SelectListItem>();
             if (selectedInterviewers.Count == 0)
             {
-                try
+                if(interviewEvent.SignupInterviewerTimeslot != null)
                 {
-
                     selectedInterviewersNames.Add(new SelectListItem
                     {
                         Value = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId,
                         Text = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.LastName
                     });
                 }
-                catch
+                else
                 {
                     selectedInterviewersNames.Add(new SelectListItem
                     {
