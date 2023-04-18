@@ -18,119 +18,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             _userManager = userManager;
         }
-        [Authorize(Roles =RolesConstants.AdminRole)]
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
             var users = await _userManager.Users.ToListAsync();
             return View();
         }
-
-        //public async Task<IActionResult> Details(string id)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null)
-        //    {
-        //        ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-        //        return View("NotFound");
-        //    }
-        //    var model = new UserDetailsViewModel
-        //    {
-        //        Id = user.Id,
-        //        Email = user.Email,
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        ProfilePicture = user.ProfilePicture,
-        //        Resume = user.Resume
-        //    };
-        //    return View(model);
-        //}
-
-        //public async Task<IActionResult> Edit(string id)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null)
-        //    {
-        //        ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-        //        return View("NotFound");
-        //    }
-        //    var model = new EditUserViewModel
-        //    {
-        //        Id = user.Id,
-        //        Email = user.Email,
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        ProfilePicture = user.ProfilePicture,
-        //        Resume = user.Resume
-        //    };
-        //    return View(model);
-        //}
-
-        //[HttpPost]
-        //public async Task<IActionResult> Edit(EditUserViewModel model)
-        //{
-        //    var user = await _userManager.FindByIdAsync(model.Id);
-        //    if (user == null)
-        //    {
-        //        ViewBag.ErrorMessage = $"User with Id = {model.Id} cannot be found";
-        //        return View("NotFound");
-        //    }
-        //    else
-        //    {
-        //        user.FirstName = model.FirstName;
-        //        user.LastName = model.LastName;
-        //        user.Email = model.Email;
-        //        user.ProfilePicture = model.ProfilePicture;
-        //        user.Resume = model.Resume;
-        //        var result = await _userManager.UpdateAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            return RedirectToAction("Index");
-        //        }
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError("", error.Description);
-        //        }
-        //        return View(model);
-        //    }
-        //}   
-
-        //public async Task<IActionResult> Delete(string id)
-        //{
-        //    var user = await _userManager.FindByIdAsync(id);
-        //    if (user == null)
-        //    {
-        //        ViewBag.ErrorMessage = $"User with Id = {id} cannot be found";
-        //        return View("NotFound");
-        //    }
-        //    else
-        //    {
-        //        var result = await _userManager.DeleteAsync(user);
-        //        if (result.Succeeded)
-        //        {
-        //            return RedirectToAction("Index");
-        //        }
-        //        foreach (var error in result.Errors)
-        //        {
-        //            ModelState.AddModelError("", error.Description);
-        //        }
-        //        return View("Index");
-        //    }
-        //}   
-
-        //public IActionResult AccessDenied()
-        //{
-        //    return View();
-        //}
-
-        //public IActionResult NotFound()
-        //{
-        //    return View();
-        //}
-
-        //public IActionResult Error()
-        //{
-        //    return View();
-        //}
 
         //[HttpGet]
         public async Task<IActionResult> ExternalUserProfileView(string userId)
