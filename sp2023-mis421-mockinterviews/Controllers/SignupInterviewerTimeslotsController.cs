@@ -107,13 +107,44 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
+            var timeslots = await _context.Timeslot
+                .Where(x => x.IsInterviewer == true)
+                .Include(y => y.EventDate)
+                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
+                .ToListAsync();
+
+            SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new SignupInterviewerTimeslotsViewModel
+            {
+                Timeslots = timeslots,
+                SignupInterviewer = new SignupInterviewer
+                {
+                    InterviewerId = userId,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName,
+                    IsBehavioral = false,
+                    IsTechnical = false,
+                    IsVirtual = false,
+                    InPerson = false
+                }
+            };
+
+            if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral)
+            {
+                ModelState.AddModelError("SignupInterviewer.IsTechnical", "Please select at least one checkbox");
+                
+                return View(volunteerEventsViewModel);
+            }
+
+            // Check whether at least one timeslot is selected
+            if (SelectedEventIds == null || SelectedEventIds.Length == 0)
+            {
+                ModelState.AddModelError("SelectedEventIds", "Please select at least one timeslot");
+                return View(volunteerEventsViewModel);
+            }
+
             var existingSignupInterviewer = await _context.SignupInterviewer.FirstOrDefaultAsync(si =>
-                    si.FirstName == user.FirstName &&
-                    si.LastName == user.LastName &&
                     si.IsVirtual == signupInterviewer.IsVirtual &&
                     si.InPerson == signupInterviewer.InPerson &&
-                    si.IsTechnical == signupInterviewer.IsTechnical &&
-                    si.IsBehavioral == signupInterviewer.IsBehavioral &&
                     si.InterviewerId == userId);
 
             SignupInterviewer post;
@@ -134,54 +165,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     IsTechnical = signupInterviewer.IsTechnical
                 };
 
+                var interviewerPreference = "";
+                if(signupInterviewer.InPerson)
+                {
+                    interviewerPreference = InterviewLocationConstants.InPerson;
+                }
+                else
+                {
+                    interviewerPreference = InterviewLocationConstants.Virtual;
+                }
+
                 if (ModelState.IsValid)
                 {
                     _context.Add(post);
                     await _context.SaveChangesAsync();
+
+                    _context.Add(new LocationInterviewer
+                    {
+                        LocationId = null,
+                        InterviewerId = userId,
+                        InterviewerPreference = interviewerPreference
+                    });
+                    await _context.SaveChangesAsync();
                 }
             }
 
-            int signupInterviewerId = post.Id;
-            var emailTimes = new List<SignupInterviewerTimeslot>();
 
             foreach (int id in SelectedEventIds)
             {
-                var timeslot = new SignupInterviewerTimeslot { TimeslotId = id, SignupInterviewerId = signupInterviewerId };
-                
+                var timeslot = new SignupInterviewerTimeslot 
+                { 
+                    TimeslotId = id, 
+                    SignupInterviewerId = post.Id 
+                };
+
                 if (ModelState.IsValid)
                 {
                     _context.Add(timeslot);
                     await _context.SaveChangesAsync();
-                    var newEvent = await _context.SignupInterviewerTimeslot
-                        .Include(v => v.Timeslot)
-                        .ThenInclude(y => y.EventDate).Where(v => v.Id == timeslot.Id).FirstOrDefaultAsync();
-                    emailTimes.Add(newEvent);
                 }
-                
             }
-            var client = new SendGridClient("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");
-            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-            var subject = "Interviewer Sign-Up Confirmation";
-            var to = new EmailAddress(user.Email);
-            var plainTextContent = "";
-            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for signing up, " + user.FirstName + "!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be an interviewer for MIS Mock Interviews for the following times:<br>";
-            foreach (SignupInterviewerTimeslot interview in emailTimes)
-            {
-                htmlContent += interview.ToString();
-            }
-            htmlContent += "This email serves as a confirmation that your interviewer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = client.SendEmailAsync(msg);
-            System.Console.WriteLine(response);
-            var client2 = new SendGridClient("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");
-            var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-            var subject2 = "Mock Interviews Interviewer Sign-Up Confirmation";
-            var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
-            var plainTextContent2 = "";
-            var htmlContent2 = $"<h1>{user.FirstName} {user.LastName} has signed up to interview at Mock Interviews</h1>";
-            var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
-            var response2 = client.SendEmailAsync(msg2);
-            System.Console.WriteLine(response2);
+
+            ComposeEmail(user, SelectedEventIds, post.Id);
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -297,6 +323,44 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private bool SignupInterviewerTimeslotExists(int id)
         {
           return (_context.SignupInterviewerTimeslot?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private async void ComposeEmail(ApplicationUser user, int[] SelectedEventIds, int signupInterviewerId)
+        {
+            var emailTimes = new List<SignupInterviewerTimeslot>();
+
+            foreach (int id in SelectedEventIds)
+            {
+                var timeslot = new SignupInterviewerTimeslot { TimeslotId = id, SignupInterviewerId = signupInterviewerId };
+                var newEvent = await _context.SignupInterviewerTimeslot
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(y => y.EventDate).Where(v => v.Id == timeslot.Id).FirstOrDefaultAsync();
+                emailTimes.Add(newEvent);
+            }
+
+            var client = new SendGridClient("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");
+            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject = "Interviewer Sign-Up Confirmation";
+            var to = new EmailAddress(user.Email);
+            var plainTextContent = "";
+            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for signing up, " + user.FirstName + "!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be an interviewer for MIS Mock Interviews for the following times:<br>";
+            foreach (SignupInterviewerTimeslot interview in emailTimes)
+            {
+                htmlContent += interview.ToString();
+            }
+            htmlContent += "This email serves as a confirmation that your interviewer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
+            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+            var response = client.SendEmailAsync(msg);
+            System.Console.WriteLine(response);
+            var client2 = new SendGridClient("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");
+            var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+            var subject2 = "Mock Interviews Interviewer Sign-Up Confirmation";
+            var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
+            var plainTextContent2 = "";
+            var htmlContent2 = $"<h1>{user.FirstName} {user.LastName} has signed up to interview at Mock Interviews</h1>";
+            var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
+            var response2 = client.SendEmailAsync(msg2);
+            System.Console.WriteLine(response2);
         }
     }
 }

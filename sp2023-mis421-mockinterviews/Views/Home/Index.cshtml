@@ -28,12 +28,12 @@ else
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 {
     @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
-    @await Html.PartialAsync("_InterviewEventsPartial", Model.InterviewEvents)
+    @await Html.PartialAsync("_InterviewEventsPartial", Model.StudentScheduledInterviews)
 }
 
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.InterviewerRole))
 {
-    @await Html.PartialAsync("_SignupInterviewerTimeslotsPartial", Model.SignupInterviewerTimeslots)
+    @await Html.PartialAsync("_SignupInterviewerTimeslotsPartial", Model)
 }
 
 

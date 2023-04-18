@@ -8,9 +8,10 @@
             <tr>
                 <th>Date</th>
                 <th>Time</th>
+                <th>Checked In</th>
                 <th>Location</th>
                 <th>Interviewer</th>
-                <th>InterviewType</th>
+                <th>Interview Type</th>
                 <th></th>
             </tr>
         </thead>
@@ -20,6 +21,7 @@
                 <tr>
                     <td>@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
                     <td>@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Status</td>
                     @if (interviewEventViewModel.InterviewEvent.Location == null)
                     {
                         <td>Not Assigned</td>

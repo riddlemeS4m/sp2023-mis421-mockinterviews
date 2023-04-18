@@ -3,17 +3,19 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sp2023_mis421_mockinterviews.Data;
 
 #nullable disable
 
-namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
+namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
 {
     [DbContext(typeof(MockInterviewDataDbContext))]
-    partial class MockInterviewDataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230418023638_NullableLocation")]
+    partial class NullableLocation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -140,10 +142,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("InterviewerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("InterviewerPreference")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

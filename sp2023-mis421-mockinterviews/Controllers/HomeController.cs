@@ -55,8 +55,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 
             }
 
-            model.SignupInterviewerTimeslots = new List<SignupInterviewerTimeslot>();
+            model.InterviewerScheduledInterviews = new List<InterviewEventViewModel>();
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
+            {
+                var interviewEvents = await _context.InterviewEvent
+                    .Include(v => v.SignupInterviewerTimeslot)
+                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.Location)
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
+                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId)
+                    .ToListAsync();
+
+                if (interviewEvents != null)
+                {
+                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    {
+
+                        if (interviewEvent.SignupInterviewerTimeslot != null)
+                        {
+                            var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+
+                            model.InterviewerScheduledInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{student.FirstName} {student.LastName}",
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
+                            });
+                        }
+                        else
+                        {
+                            model.InterviewerScheduledInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = "Not Assigned",
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
+                            });
+                        }
+                    }
+                }
+            }
+
+            model.SignupInterviewerTimeslots = new List<SignupInterviewerTimeslot>();
+            if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
                 var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
                     .Include(v => v.Timeslot)
@@ -74,7 +115,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            model.InterviewEvents = new List<InterviewEventViewModel>();
+            model.StudentScheduledInterviews = new List<InterviewEventViewModel>();
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
                 var interviewEvents = await _context.InterviewEvent
@@ -83,7 +124,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
-                    .Where(v => v.StudentId == userId)
+                    .Where(v =>  v.StudentId == userId)
                     .ToListAsync();
 
                 if (interviewEvents != null)
@@ -94,7 +135,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         {
                             var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
 
-                            model.InterviewEvents.Add(new InterviewEventViewModel()
+                            model.StudentScheduledInterviews.Add(new InterviewEventViewModel()
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{userFull.FirstName} {userFull.LastName}",
@@ -103,7 +144,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         }
                         else
                         {
-                            model.InterviewEvents.Add(new InterviewEventViewModel()
+                            model.StudentScheduledInterviews.Add(new InterviewEventViewModel()
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{userFull.FirstName} {userFull.LastName}",

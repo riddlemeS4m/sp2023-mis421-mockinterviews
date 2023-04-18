@@ -6,14 +6,17 @@
 
 <h1>Interviewer/Location Pairings</h1>
 
-<p>
+@*<p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+*@<table class="table">
     <thead>
         <tr>
             <th>
                 Interviewer
+            </th>
+            <th>
+                In Person/Virtual
             </th>
             <th>
                 Room Location
@@ -22,18 +25,26 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model.LocationInterviewers) {
+@foreach (var item in Model.LocationInterviewerWithNames) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.InterviewerName)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.LocationInterviewer.Location.Room)
+                @Html.DisplayFor(modelItem => item.InterviewerPreference)
             </td>
+            @if(item.LocationInterviewer.Location == null)
+            {
+                <td>Not Assigned</td>
+            }
+            else
+            {
+                <td>@Html.DisplayFor(modelItem => item.LocationInterviewer.Location.Room)</td>
+            }
             <td>
-                <a asp-action="Edit" asp-route-id="@item.LocationInterviewer.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.LocationInterviewer.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.LocationInterviewer.Id">Delete</a>
+                <a asp-action="Edit" asp-route-id="@item.LocationInterviewer.Id">Edit</a> | 
+@*                <a asp-action="Details" asp-route-id="@item.LocationInterviewer.Id">Details</a> |
+*@                <a asp-action="Delete" asp-route-id="@item.LocationInterviewer.Id">Delete</a>
             </td>
         </tr>
 }

@@ -32,9 +32,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var locationInterviewers = await _context.LocationInterviewer
                 .Include(v => v.Location)
                 .ToListAsync();
-            var interviewerIds = locationInterviewers.Select(v => v.InterviewerId).Distinct().ToList();
 
-            var interviewers = await _userManager.Users.Where(u => interviewerIds.Contains(u.Id)).ToListAsync();
+            var interviewerIds = locationInterviewers
+                .Select(v => v.InterviewerId)
+                .Distinct()
+                .ToList();
+
+            var interviewers = await _userManager.Users
+                .Where(u => interviewerIds.Contains(u.Id))
+                .ToListAsync();            
 
             var query = from locationInterviewer in locationInterviewers
                         join interviewer in interviewers on locationInterviewer.InterviewerId equals interviewer.Id
@@ -42,16 +48,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         {
                             LocationInterviewer = locationInterviewer,
                             InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
+                            InterviewerPreference = locationInterviewer.InterviewerPreference
                         };
 
             var locationInterviewersWithNames = query.ToList();
             var locations = await _context.Location.ToListAsync();
 
-
             var viewModel = new LocationInterviewerViewModel
             {
                 Locations = locations,
-                LocationInterviewers = locationInterviewersWithNames
+                LocationInterviewerWithNames = locationInterviewersWithNames
             };
             return View(viewModel);
         }
@@ -84,27 +90,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         // GET: LocationInterviewers/Create
         public IActionResult Create()
-        {
-            //var usersTask = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole);
-            //usersTask.GetAwaiter().GetResult();
-            //var users = usersTask.Result.ToList();
-
-            //var interviewerSelectList = users.Select(i => new SelectListItem
-            //{
-            //    Value = i.Id,
-            //    Text = i.FirstName + " " + i.LastName
-            //}).ToList();
-
-
-
-            //var viewModel = new LocationInterviewerCreateViewModel
-            //{
-            //    LocationInterviewer = new LocationInterviewer(),
-            //    InterviewerNames = interviewerSelectList,
-            //    Locations = new SelectList(_context.Location, "Id", "Room")
-            //};
-
-            
+        {            
             // Get a list of all Interviewers
             var interviewers = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole)
                                             .GetAwaiter()
@@ -154,7 +140,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var viewModel = new LocationInterviewerCreateViewModel
             {
                 LocationInterviewer = new LocationInterviewer(),
-                InterviewerNames = availableInterviewers,
+                //InterviewerNames = availableInterviewers,
                 Locations = availableLocations
             };
 
@@ -224,7 +210,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var viewModel = new LocationInterviewerCreateViewModel
             {
                 LocationInterviewer = new LocationInterviewer(),
-                InterviewerNames = availableInterviewers,
+                //InterviewerNames = availableInterviewers,
                 Locations = availableLocations
             };
 
@@ -246,25 +232,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            // Get a list of all Interviewers
-            var interviewers = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole)
-                                            .GetAwaiter()
-                                            .GetResult()
-                                            .ToList();
+            //// Get a list of all Interviewers
+            //var interviewers = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole)
+            //                                .GetAwaiter()
+            //                                .GetResult()
+            //                                .ToList();
 
-            // Get a list of InterviewerIds already assigned to LocationInterviewers
-            var assignedInterviewerIds = _context.LocationInterviewer.Select(li => li.InterviewerId)
-                                                                        .Distinct()
-                                                                        .ToList();
+            //// Get a list of InterviewerIds already assigned to LocationInterviewers
+            //var assignedInterviewerIds = _context.LocationInterviewer.Select(li => li.InterviewerId)
+            //                                                            .Distinct()
+            //                                                            .ToList();
 
-            // Filter out assigned Interviewers from the list of all Interviewers
-            var availableInterviewers = interviewers.Where(i => !assignedInterviewerIds.Contains(i.Id) || i.Id == locationInterviewer.InterviewerId)
-                                                        .Select(i => new SelectListItem
-                                                        {
-                                                            Value = i.Id,
-                                                            Text = $"{i.FirstName} {i.LastName}"
-                                                        })
-                                                        .ToList();
+            //// Filter out assigned Interviewers from the list of all Interviewers
+            //var availableInterviewers = interviewers.Where(i => !assignedInterviewerIds.Contains(i.Id) || i.Id == locationInterviewer.InterviewerId)
+            //        .Select(i => new SelectListItem
+            //        {
+            //            Value = i.Id,
+            //            Text = $"{i.FirstName} {i.LastName}"
+            //        })
+            //        .ToList();
 
             // Get a list of LocationIds already assigned to LocationInterviewers
             var assignedLocationIds = _context.LocationInterviewer.Select(li => li.LocationId)
@@ -272,30 +258,42 @@ namespace sp2023_mis421_mockinterviews.Controllers
                                                                     .ToList();
 
             // Get a list of all Locations except those already assigned to LocationInterviewers
-            var availableLocations = _context.Location.Where(l => !assignedLocationIds.Contains(l.Id) || l.Id == locationInterviewer.LocationId)
-                                                        .Select(i => new SelectListItem
-                                                        {
-                                                            Value = i.Id.ToString(),
-                                                            Text = $"{i.Room}"
-                                                        })
-                                                        .ToList();
-
-            // Add message to dropdown list if no InterviewerIds or LocationIds are available
-            if (availableInterviewers.Count == 0)
+            var inPerson = true;
+            var isVirtual = false;
+            if (locationInterviewer.InterviewerPreference == InterviewLocationConstants.Virtual)
             {
-                availableInterviewers.Add(new SelectListItem { Text = "No Interviewers available", Value = "" });
+                inPerson = false;
+                isVirtual = true;
             }
+           
+
+            var availableLocations = _context.Location
+                .Where(l => (!assignedLocationIds.Contains(l.Id) || l.Id == locationInterviewer.LocationId) && (l.InPerson == inPerson && l.IsVirtual == isVirtual))
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.Room}"
+                })
+                .ToList();
+
+            //// Add message to dropdown list if no InterviewerIds or LocationIds are available
+            //if (availableInterviewers.Count == 0)
+            //{
+            //    availableInterviewers.Add(new SelectListItem { Text = "No Interviewers available", Value = "" });
+            //}
 
             if (availableLocations.Count == 0)
             {
                 availableLocations.Add(new SelectListItem { Text = "No Locations available", Value = "" });
             }
 
+            var interviewer = await _userManager.FindByIdAsync(locationInterviewer.InterviewerId);
+
             // Create the view model
             var viewModel = new LocationInterviewerCreateViewModel
             {
                 LocationInterviewer = locationInterviewer,
-                InterviewerNames = availableInterviewers,
+                InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
                 Locations = availableLocations
             };
 

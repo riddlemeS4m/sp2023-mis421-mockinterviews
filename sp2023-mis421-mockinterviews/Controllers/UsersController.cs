@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
@@ -132,25 +133,23 @@ namespace sp2023_mis421_mockinterviews.Controllers
         //}
 
         //[HttpGet]
-        //public async Task<IActionResult> ProfileView()
-        //{
-        //    // Retrieve the current user's information from the database
-        //    var user = await _userManager.GetUserAsync(User);
+        public async Task<IActionResult> ExternalUserProfileView(string userId)
+        {
+            // Retrieve the current user's information from the database
+            var user = await _userManager.FindByIdAsync(userId);
 
-        //    // Create a view model with the user's data
-        //    var viewModel = new UserProfileViewModel
-        //    {
-        //        Id = user.Id,
-        //        FirstName = user.FirstName,
-        //        LastName = user.LastName,
-        //        PhoneNumber = user.PhoneNumber,
-        //        ProfilePicture = user.ProfilePicture,
-        //        Resume = user.Resume
-        //    };
+            // Create a view model with the user's data
+            var viewModel = new ExternalUserProfileViewModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Class = user.Class
+            };
 
-        //    // Return the ProfileView with the view model
-        //    return View("ProfileView", viewModel);
-        //}
+            // Return the ProfileView with the view model
+            return View(viewModel);
+        }
 
         //[HttpGet]
         //[Route("Users/DownloadResume/{userId}")]

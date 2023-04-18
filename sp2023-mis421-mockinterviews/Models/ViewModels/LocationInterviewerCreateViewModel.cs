@@ -6,7 +6,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
     public class LocationInterviewerCreateViewModel
     {
         public LocationInterviewer LocationInterviewer { get; set; }
-        public List<SelectListItem> InterviewerNames { get; set; }
+        public string InterviewerName { get; set; }
         public List<SelectListItem> Locations { get; set; }
     }
 }

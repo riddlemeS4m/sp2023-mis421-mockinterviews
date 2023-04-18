@@ -12,8 +12,9 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int Id { get; set; }
         public string InterviewerId { get; set; }
         [ForeignKey("Location")]
-        public int LocationId { get; set; }
+        public int? LocationId { get; set; }
         [ValidateNever]
-        public Location Location { get; set; }
+        public Location? Location { get; set; }
+        public string InterviewerPreference { get; set; }
     }
 }

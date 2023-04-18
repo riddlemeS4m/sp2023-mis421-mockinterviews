@@ -1,7 +1,7 @@
-﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot>
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.IndexViewModel
 
 <h3>Upcoming Interviewer Bookings</h3>
-@if (Model.Count() > 0)
+@if (Model.SignupInterviewerTimeslots.Count() > 0)
 {
     <table class="table">
         <thead>
@@ -13,7 +13,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var signupInterviewerTimeslot in Model)
+            @foreach (var signupInterviewerTimeslot in Model.SignupInterviewerTimeslots)
             {
                 <tr>
                     <td>@signupInterviewerTimeslot.Timeslot.EventDate.Date</td>
@@ -35,6 +35,55 @@
                             )
 
                     </td>   
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming events</p>
+}
+<h3>Scheduled Interviews</h3>
+@if (Model.InterviewerScheduledInterviews.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Location</th>
+                <th>Student</th>
+                <th>Interview Type</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var interviewEventViewModel in Model.InterviewerScheduledInterviews)
+            {
+                <tr>
+                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
+                    @if (interviewEventViewModel.InterviewEvent.Location == null)
+                    {
+                        <td>Not Assigned</td>
+                    }
+                    else
+                    {
+                        <td>@interviewEventViewModel.InterviewEvent.Location.Room</td>
+                    }
+                    @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
+                    {
+                        <td>Not Assigned</td>
+                    }
+                    else
+                    {
+                        <td>@interviewEventViewModel.StudentName</td>
+                    }
+                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td>
+                        <a asp-controller="Users" asp-action="ExternalUserProfileView" asp-route-userId="@interviewEventViewModel.InterviewEvent.StudentId">View Student Profile</a>
+                    </td>
                 </tr>
             }
         </tbody>
