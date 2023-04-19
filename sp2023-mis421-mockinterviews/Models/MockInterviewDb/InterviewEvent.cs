@@ -26,6 +26,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string? ProcessFeedback { get; set; }
         [ForeignKey("SignupInterviewerTimeslot")]
         public int? SignupInterviewerTimeslotId { get; set; }
+        [ValidateNever]
         public SignupInterviewerTimeslot? SignupInterviewerTimeslot { get; set; }
     }
 }

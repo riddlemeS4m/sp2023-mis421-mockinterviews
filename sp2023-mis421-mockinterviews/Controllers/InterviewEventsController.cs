@@ -77,6 +77,127 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        public async Task<IActionResult> FeedbackIndex()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userFull = await _userManager.FindByIdAsync(userId);
+
+            var model = new IndexViewModel();
+            model.StudentScheduledInterviews = new List<InterviewEventViewModel>();
+            if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
+            {
+                var interviewEvents = await _context.InterviewEvent
+                    .Include(v => v.SignupInterviewerTimeslot)
+                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.Location)
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
+                    .Where(v => v.StudentId == userId && v.Status == StatusConstants.Completed)
+                    .ToListAsync();
+
+                if (interviewEvents != null)
+                {
+                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    {
+                        if (interviewEvent.SignupInterviewerTimeslot != null)
+                        {
+                            var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+
+                            model.StudentScheduledInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+                            });
+                        }
+                        else
+                        {
+                            model.StudentScheduledInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                                InterviewerName = "Not Assigned"
+                            });
+                        }
+                    }
+                }
+            }
+
+            return View("FeedbackIndex", model);
+        }
+
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        public async Task<IActionResult> ProvideFeedback(int id)
+        {
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x=>x.SignupInterviewerTimeslot)
+                .ThenInclude(x=>x.SignupInterviewer)
+                .Include(x => x.Location)
+                .Include(x=>x.Timeslot)
+                .ThenInclude(x=>x.EventDate)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+            var model = new InterviewEventViewModel()
+            {
+                InterviewEvent = interviewEvent,
+                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+            };
+
+            return View("ProvideFeedback", model);
+        }
+
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        [HttpPost]
+        public async Task<IActionResult> ProvideFeedback(int id, [Bind("Id,StudentId,TimeslotId,LocationId,Status,InterviewType,SignupInterviewerTimeslotId,InterviewerRating,InterviewerFeedback,ProcessFeedback")] InterviewEvent interviewEvent)
+        {
+            if (id != interviewEvent.Id)
+            {
+                return NotFound();
+            }
+
+
+            if (ModelState.IsValid)
+            {
+
+                try
+                {
+                    _context.Update(interviewEvent);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!InterviewEventExists(interviewEvent.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction("FeedbackIndex","InterviewEvents");
+            }
+
+
+            var interviewEventActual = await _context.InterviewEvent
+                .Include(x => x.SignupInterviewerTimeslot)
+                .ThenInclude(x => x.SignupInterviewer)
+                .Include(x => x.Location)
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            var interviewer = await _userManager.FindByIdAsync(interviewEventActual.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+            var model = new InterviewEventViewModel()
+            {
+                InterviewEvent = interviewEventActual,
+                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+            };
+
+            return View("ProvideFeedback", model);
+        }
+
+
         // GET: InterviewEvents/Details/5
         public async Task<IActionResult> Details(int? id)
         {

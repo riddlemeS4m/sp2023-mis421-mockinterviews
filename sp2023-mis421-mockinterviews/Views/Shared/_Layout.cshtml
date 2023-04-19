@@ -25,13 +25,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if(User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.AdminRole))
+                        @if(User.IsInRole(RolesConstants.StudentRole))
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Create">Interview Signup</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Create">Volunteer Signup</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="FeedbackIndex">Feedback Portal</a>
                             </li>
                         }
                         @if(User.IsInRole(RolesConstants.InterviewerRole))
@@ -55,8 +58,8 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Manage Locations</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Feedback Responses</a>
-                            </li>
+@*                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Feedback Responses</a>
+*@                            </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Manage Interviewers Signups</a>
                             </li>
