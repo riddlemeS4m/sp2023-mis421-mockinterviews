@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
-    [Authorize(Roles=RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -24,6 +23,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewers
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Index()
         {
             var mockInterviewDataDbContext = _context.SignupInterviewer;
@@ -31,6 +31,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewers/Details/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.SignupInterviewer == null)
@@ -49,6 +50,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewers/Create
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
         public IActionResult Create()
         {
             //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
@@ -67,6 +69,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: SignupInterviewers/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] SignupInterviewer signupInterviewer)
@@ -82,6 +85,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewers/Edit/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.SignupInterviewer == null)
@@ -101,6 +105,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: SignupInterviewers/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] SignupInterviewer signupInterviewer)
@@ -135,6 +140,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewers/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.SignupInterviewer == null)
@@ -153,6 +159,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // POST: SignupInterviewers/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

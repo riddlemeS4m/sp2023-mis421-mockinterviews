@@ -11,6 +11,7 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    [Authorize(Roles = RolesConstants.AdminRole)]
     public class TimeslotsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;

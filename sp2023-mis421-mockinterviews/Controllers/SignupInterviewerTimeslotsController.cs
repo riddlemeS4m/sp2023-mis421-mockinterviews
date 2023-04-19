@@ -17,7 +17,6 @@ using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
-    [Authorize (Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
     public class SignupInterviewerTimeslotsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -30,6 +29,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Index()
         {
             var signupInterviewerTimeslots = await _context.SignupInterviewerTimeslot
@@ -43,6 +43,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots/Details/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.SignupInterviewerTimeslot == null)
@@ -64,6 +65,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots/Create
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
         public IActionResult Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -100,6 +102,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: SignupInterviewerTimeslots/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int[] SelectedEventIds, [Bind("IsTechnical,IsBehavioral,IsVirtual,InPerson")] SignupInterviewer signupInterviewer )
@@ -212,6 +215,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots/Edit/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.SignupInterviewerTimeslot == null)
@@ -247,6 +251,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //currently not used -sam
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,SignupInterviewerId,TimeslotId")] SignupInterviewerTimeslot signupInterviewerTimeslot)
@@ -282,6 +287,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.SignupInterviewerTimeslot == null)
@@ -302,6 +308,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // POST: SignupInterviewerTimeslots/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

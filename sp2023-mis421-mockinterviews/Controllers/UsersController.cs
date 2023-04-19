@@ -27,6 +27,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         //[HttpGet]
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
         public async Task<IActionResult> ExternalUserProfileView(string userId)
         {
             // Retrieve the current user's information from the database
@@ -47,6 +48,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         //[HttpGet]
         //[Route("Users/DownloadResume/{userId}")]
+        [Authorize(Roles = RolesConstants.InterviewerRole + "," + RolesConstants.AdminRole + "," + RolesConstants.StudentRole)]
         public async Task<IActionResult> DownloadResume(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);

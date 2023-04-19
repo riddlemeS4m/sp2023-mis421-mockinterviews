@@ -17,7 +17,6 @@ using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
-    [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]
     public class VolunteerEventsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -30,6 +29,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: VolunteerEvents
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
             var volunteerEvents = await _context.VolunteerEvent
@@ -54,36 +54,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(viewModel);
         }
 
-        //[Route("VolunteerEvents/IndexSpecific")]
-        //public async Task<IActionResult> IndexSpecific()
-        //{
-        //    string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-        //    var volunteerEvents = await _context.VolunteerEvent
-        //        .Include(v => v.Timeslot)
-        //        .ThenInclude(y => y.EventDate)
-        //        .Where(v => v.StudentId == userId)
-        //        .ToListAsync();
-
-        //    var studentIds = volunteerEvents.Select(v => v.StudentId).Distinct().ToList();
-
-        //    var students = await _userManager.Users.Where(u => studentIds.Contains(u.Id)).ToListAsync();
-
-        //    var query = from volunteerEvent in volunteerEvents
-        //                join student in students on volunteerEvent.StudentId equals student.Id
-        //                select new VolunteerEventViewModel
-        //                {
-        //                    VolunteerEvent = volunteerEvent,
-        //                    StudentName = student.FirstName + " " + student.LastName,
-        //                };
-
-        //    var viewModel = query.ToList();
-
-        //    return Json(viewModel);
-        //}
-
-
         // GET: VolunteerEvents/Details/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.VolunteerEvent == null)
@@ -107,6 +79,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: VolunteerEvents/Create
+        [Authorize(Roles = RolesConstants.StudentRole)]
         public IActionResult Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -128,6 +101,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: VolunteerEvents/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = RolesConstants.StudentRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int[] SelectedEventIds)
@@ -202,6 +176,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: VolunteerEvents/Edit/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.VolunteerEvent == null)
@@ -221,6 +196,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: VolunteerEvents/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,StudentId,TimeslotId")] VolunteerEvent volunteerEvent)
@@ -256,6 +232,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: VolunteerEvents/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.VolunteerEvent == null)
@@ -275,6 +252,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // POST: VolunteerEvents/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
