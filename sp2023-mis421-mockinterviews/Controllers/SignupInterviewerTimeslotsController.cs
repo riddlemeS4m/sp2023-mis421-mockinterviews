@@ -369,5 +369,53 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var response2 = client.SendEmailAsync(msg2);
             System.Console.WriteLine(response2);
         }
+
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
+        public async Task<IActionResult> UserDelete(int? id)
+        {
+            if (id == null || _context.SignupInterviewerTimeslot == null)
+            {
+                return NotFound();
+            }
+
+            var signupInterviewerTimeslot = await _context.SignupInterviewerTimeslot
+                .Include(s => s.SignupInterviewer)
+                .Include(s => s.Timeslot).ThenInclude(y => y.EventDate)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            if (signupInterviewerTimeslot == null)
+            {
+                return NotFound();
+            }
+
+            if (signupInterviewerTimeslot.SignupInterviewer.InterviewerId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return NotFound();
+            }
+
+            return View(signupInterviewerTimeslot);
+        }
+
+        // POST: SignupInterviewerTimeslots/Delete/5
+        [Authorize(Roles = RolesConstants.InterviewerRole)]
+        public async Task<IActionResult> UserDeleteConfirmed(int id)
+        {
+            if (_context.SignupInterviewerTimeslot == null)
+            {
+                return Problem("Entity set 'MockInterviewDataDbContext.SignupInterviewerTimeslot'  is null.");
+            }
+            var signupInterviewerTimeslot = await _context.SignupInterviewerTimeslot
+                .Include(s => s.SignupInterviewer)
+                .Include(s => s.Timeslot)
+                .ThenInclude(y => y.EventDate)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            ;
+            if (signupInterviewerTimeslot != null && signupInterviewerTimeslot.SignupInterviewer.InterviewerId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                _context.SignupInterviewerTimeslot.Remove(signupInterviewerTimeslot);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

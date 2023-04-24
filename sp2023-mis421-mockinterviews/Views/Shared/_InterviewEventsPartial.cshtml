@@ -41,7 +41,7 @@
                     <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
                     <td>
                         @Html.ActionLink("Cancel",
-                "Delete",   // <-- ActionMethod
+                "UserDelete",   // <-- ActionMethod
                 "InterviewEvents",  // <-- Controller Name.
                 new { interviewEventViewModel.InterviewEvent.Id }, // <-- Route arguments.
                 null

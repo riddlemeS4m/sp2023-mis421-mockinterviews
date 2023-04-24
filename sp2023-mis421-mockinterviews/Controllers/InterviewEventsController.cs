@@ -580,5 +580,48 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return selectedInterviewers;
         }
+
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        public async Task<IActionResult> UserDelete(int? id)
+        {
+            if (id == null || _context.InterviewEvent == null)
+            {
+                return NotFound();
+            }
+
+            var interviewEvent = await _context.InterviewEvent.Include(i => i.Location).Include(i => i.SignupInterviewerTimeslot)
+                .Include(i => i.Timeslot)
+                .FirstOrDefaultAsync(m => m.Id == id);
+            
+            if (interviewEvent == null)
+            {
+                return NotFound();
+            }
+
+            if (interviewEvent.StudentId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return NotFound();
+            }
+
+            return View(interviewEvent);
+        }
+
+        // POST: InterviewEvents/Delete/5
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        public async Task<IActionResult> UserDeleteConfirmed(int id)
+        {
+            if (_context.InterviewEvent == null)
+            {
+                return Problem("Entity set 'MockInterviewDataDbContext.InterviewEvent'  is null.");
+            }
+            var interviewEvent = await _context.InterviewEvent.FindAsync(id);
+            if (interviewEvent != null && interviewEvent.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                _context.InterviewEvent.Remove(interviewEvent);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
