@@ -3,8 +3,7 @@
 @model IndexViewModel
 
 @{
-    ViewBag.Title = "Welcome to UA MIS Mock Interviews " + Model.Name;
-    Layout = "~/Views/Shared/_LayoutHome.cshtml";
+    ViewBag.Title = "Welcome to UA MIS Mock Interviews!";
 }
 
 <div style="text-align:center">
@@ -13,22 +12,24 @@
 @if (User.Identity.IsAuthenticated)
 {
     <p style="font-size:20px; text-align:center">
-    Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. 
+        Our mission is to help students prepare for their upcoming job interviews by <br /> providing a realistic simulation of the interview experience.
     </p>
     <p style="font-size:20px; text-align:center; border-bottom: 2px solid black">
-        You have sucessfully signed in! Important information and your current bookings will be shown below
+        You have successfully signed in. Important information and your current bookings will be shown below.
     </p>
+    <br />
 }
 else
 {
     <p style="font-size:20px; text-align:center">
-    Thank you for choosing UA MIS Mock Interviews! Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
-</p>
+        Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
+    </p>
 }
 
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 {
     @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
+    <br />
     @await Html.PartialAsync("_InterviewEventsPartial", Model.StudentScheduledInterviews)
 }
 

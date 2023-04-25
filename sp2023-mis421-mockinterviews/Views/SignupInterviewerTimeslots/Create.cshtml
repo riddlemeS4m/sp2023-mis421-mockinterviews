@@ -4,10 +4,11 @@
     ViewData["Title"] = "Create";
 }
 
-<h1>Sign up to Interview</h1>
+<h1>Sign Up to Interview</h1>
 <hr />
 <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-3"></div>
+    <div class="col-md-6">
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label asp-for="SignupInterviewer.InPerson" class="control-label">How would you like to interview?</label><br />
@@ -20,19 +21,26 @@
                 <label class="form-check-label" for="InPersonFalse">Virtual</label>
             </div>
             <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
+            <br />
             <div class="form-group">
                 <label class="control-label">Are you a technical interviewer, behavioral interviewer, or both?</label>
             </div>
+           
             <div class="form-group">
-                <label asp-for="SignupInterviewer.IsTechnical" class="control-label">Technical Interviews</label>
-                <input type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
+                <div class="col-md-2">
+                    <input type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
+                </div>
+                <div class="col-md-10">
+                    <label asp-for="SignupInterviewer.IsTechnical" class="control-label">Technical Interviews</label>
+                </div>
             </div>
             <div class="form-group">
-                <label asp-for="SignupInterviewer.IsBehavioral" class="control-label">Behavioral Interviews</label>
                 <input type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one">
+                <label asp-for="SignupInterviewer.IsBehavioral" class="control-label">Behavioral Interviews</label>
             </div>
             <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
             <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
+            <br />
             <div class="row">
                 <div class="col-md-6">
                     <h3>Day @Model.Timeslots[0].EventDateId</h3>
@@ -71,6 +79,7 @@
             </div>
         </form>
     </div>
+    <div class="col-md-3"></div>
 </div>
 
 @section Scripts {
