@@ -1,0 +1,71 @@
+﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Interviewer Cancellation</h1>
+
+<h3>Are you sure you want to cancel this?</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            Name
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.SignupInterviewer.FirstName) @Html.DisplayFor(model => model.SignupInterviewer.LastName)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Timeslot.Time)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Timeslot.Time)
+        </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
+        </dd>
+        <dt>
+            Behavioral and/or Technical:
+        </dt>
+
+        @if (Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Behavioral, Technical</dd>
+        }
+        else if (Model.SignupInterviewer.IsBehavioral && !Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Behavioral</dd>
+        }
+        else if (!Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
+        {
+            <dd>Technical</dd>
+        }
+        <dt>
+            In-Person or Virtual:
+        </dt>
+
+        @if (Model.SignupInterviewer.IsVirtual)
+        {
+            <dd>Virtual</dd>
+        }
+        else if (Model.SignupInterviewer.InPerson)
+        {
+            <dd>In Person</dd>
+        }
+    </dl>
+
+    <form asp-action="UserDeleteConfirmed">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Cancel" class="btn btn-danger" /> |
+        @Html.ActionLink("Return to Home",
+        "Index",   // <-- ActionMethod
+        "Home",  // <-- Controller Name.
+        null, // <-- Route arguments.
+        null
+        )
+    </form>
+</div>
