@@ -1,30 +1,55 @@
 ﻿@using sp2023_mis421_mockinterviews.Data;
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - UA MIS Mock Interviews</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/sp2023_mis421_mockinterviews.styles.css" asp-append-version="true" />
-    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" integrity="sha384-AffZlgbG7cpfFC8c+2YXeerKP7qKEeiLt9gnzEj9V6OSxGFRkjur9nroezRkdhLk" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css" integrity="sha384-nlqJt7hgTYzEtpwtccFUVNZPXLN4pJoZ/QIfCtAIK9txm0dVyw/lz/47SslwYLPj" crossorigin="anonymous">
+<html lang="en-us">
 
+<head>
+    <meta charset="utf-8">
+    <title>@ViewData["Title"] - UA MIS Mock Interviews</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
+    <meta name="description" content="This is meta description">
+    <meta name="author" content="Themefisher">
+@*    <link rel="shortcut icon" href="images/UAMISLogo.png" type="image/x-icon">
+    <link rel="icon" href="images/UAMISLogo.png" type="image/x-icon">
+*@
+    <!-- Data Tables -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css" integrity="sha384-nlqJt7hgTYzEtpwtccFUVNZPXLN4pJoZ/QIfCtAIK9txm0dVyw/lz/47SslwYLPj" crossorigin="anonymous">
+    
+    <!-- theme meta -->
+    <meta name="theme-name" content="wallet" />
+
+    <!-- # Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- # CSS Plugins -->
+    <link rel="stylesheet" href="plugins/slick/slick.css">
+    <link rel="stylesheet" href="plugins/font-awesome/fontawesome.min.css">
+    <link rel="stylesheet" href="plugins/font-awesome/brands.css">
+    <link rel="stylesheet" href="plugins/font-awesome/solid.css">
+
+    <!-- # Main Style Sheet -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+    <!-- navigation -->
+    <header class="navigation bg-tertiary">
+        <nav class="navbar navbar-expand-xl navbar-light text-center py-3">
+            <div class="container">
+                <a class="navbar-brand" href="index.html">
+                    <img loading="prelaod" decoding="async" class="img-fluid" width="160" src="images/UAMISLogo.png" alt="Wallet">
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action ="Index">Home</a>
                         </li>
+
                         @if (User.IsInRole(RolesConstants.StudentRole))
                         {
                             <li class="nav-item">
@@ -58,8 +83,7 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Manage Locations</a>
                             </li>
                             <li class="nav-item">
-                                @*                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Feedback Responses</a>
-                            *@
+                                @*<a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Feedback Responses</a>*@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Manage Interviewers Signups</a>
@@ -75,16 +99,22 @@
                             </li>
 
                         }
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="FAQs" asp-action="Resources">Resources</a>
-                        </li>
 
+
+
+
+
+
+                        <li class="nav-item ">
+                            <a class="nav-link" asp-area="" asp-controller="FAQs" asp-action="Resources">Resources</a>
+                        </li>
                     </ul>
-                    <partial name="_LoginPartial" />
+                    <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>
     </header>
+    <!-- /navigation -->
 
     <div class="container">
         <main role="main" class="pb-3">
@@ -92,14 +122,40 @@
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
+
+    <footer class="section-sm bg-tertiary">
         <div class="container">
-            &copy; 2023 - UA MIS Mock Interviews
-            <a href="@Url.Action("Privacy", "Home")">Privacy</a>
+            <div class="row align-items-center mt-5 text-center text-md-start">
+                <div class="col-lg-4">
+                    <a href="index.html">
+                        <img loading="prelaod" decoding="async" class="img-fluid" width="160" src="images/UAMISLogo.png" alt="Wallet">
+                    </a>
+                </div>
+                <div class="col-lg-4 col-md-6 mt-4 mt-lg-0">
+                    <ul class="list-unstyled list-inline mb-0 text-lg-center">
+                        <li class="list-inline-item me-8">
+                            <a class="text-black" href="@Url.Action("Privacy", "Home")">Privacy Policy</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-lg-4 col-md-6 text-md-end mt-4 mt-md-0">
+                    <p>© 2023 - UA MIS Mock Interviews</p>
+                </div>
+            </div>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+
+    <!-- # JS Plugins -->
+    <script src="plugins/jquery/jquery.min.js"></script>
+    <script src="plugins/bootstrap/bootstrap.min.js"></script>
+    <script src="plugins/slick/slick.min.js"></script>
+    <script src="plugins/scrollmenu/scrollmenu.min.js"></script>
+
+    <!-- Main Script -->
+    <script src="js/script.js"></script>
+
+    <!-- Data Tables -->
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js" integrity="sha384-apERv/vfl/R6zmx+HUeBeGTjYRpHuiF1JRYCuBd9KhRME4NTtll1FkO+CelUWYgp" crossorigin="anonymous"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script type="text/javascript">
@@ -109,5 +165,6 @@
     </script>
 
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 </html>
