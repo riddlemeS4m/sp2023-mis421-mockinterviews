@@ -51,11 +51,16 @@
                         </li>
                         @if (User.IsInRole(RolesConstants.StudentRole))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Create">Interview Sign-Up</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="VolunteerEvents" asp-action="Create">Volunteer Sign-Up</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sign-Up</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="Create">Interview</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="VolunteerEvents" asp-action="Create">Volunteer</a>
+                                    </li>
+                                </ul>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="FeedbackIndex">Feedback Portal</a>
@@ -69,12 +74,6 @@
                         }
                         @if (User.IsInRole(RolesConstants.AdminRole))
                         {
-                            <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sign Ups</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-
-                                </ul>
-                            </li>
-
                             <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                      <li>
