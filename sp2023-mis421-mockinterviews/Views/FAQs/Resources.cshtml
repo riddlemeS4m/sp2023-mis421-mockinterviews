@@ -1,4 +1,5 @@
 ﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
+@using sp2023_mis421_mockinterviews.Data;
 @model IEnumerable<FAQs>
 
 <!DOCTYPE html>
@@ -62,6 +63,14 @@
 		</div>
 	}
 
+	@if (User.IsInRole(RolesConstants.InterviewerRole))
+	{
+		@using (Html.BeginForm("Download", "FAQs"))
+		{
+<input class="btn btn-primary ms-2 ms-lg-3" type="submit" value="Download Word Document" />
+
+		}
+	}
 
 
 

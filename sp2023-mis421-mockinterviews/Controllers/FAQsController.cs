@@ -52,9 +52,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return View(fAQs);
         }
+		public ActionResult Download()
+		{
+			string fileName = "Mock_Interview_Manual.docx"; // replace with your file name
+			string filePath = "wwwroot\\lib\\" + fileName; // replace with your file path
 
-        // GET: FAQs/Create
-        public IActionResult Create()
+			byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+			return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
+		}
+
+
+		// GET: FAQs/Create
+		public IActionResult Create()
         {
             return View();
         }
