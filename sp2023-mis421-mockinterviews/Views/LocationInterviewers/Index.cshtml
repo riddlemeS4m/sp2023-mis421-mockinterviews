@@ -16,6 +16,9 @@
                 Interviewer
             </th>
             <th>
+                For Date
+            </th>
+            <th>
                 In Person/Virtual
             </th>
             <th>
@@ -29,6 +32,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.InterviewerName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LocationInterviewer.EventDate.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.InterviewerPreference)

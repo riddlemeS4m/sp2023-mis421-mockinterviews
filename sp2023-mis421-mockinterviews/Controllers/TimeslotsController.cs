@@ -92,7 +92,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent")] Timeslot timeslot)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent,MaxSignUps")] Timeslot timeslot)
         {
             if (id != timeslot.Id)
             {
@@ -161,6 +161,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        public async Task<IActionResult> UpdateMaxTimeslots()
+        {
+            return View();
+        }
+
+        public async Task<IActionResult> UpdateMaxSignupsConfirmed(int maxsignups)
+        {
+            var timeslots = await _context.Timeslot.ToListAsync();
+            foreach (var timeslot in timeslots)
+            {
+                timeslot.MaxSignUps = maxsignups;
+            }
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Index));
+        }
+
 
         private bool TimeslotExists(int id)
         {

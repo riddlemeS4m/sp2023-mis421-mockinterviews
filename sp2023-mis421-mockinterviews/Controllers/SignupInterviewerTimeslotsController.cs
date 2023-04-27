@@ -29,7 +29,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots
-        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
             var signupInterviewerTimeslots = await _context.SignupInterviewerTimeslot
@@ -116,6 +116,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
                 .ToListAsync();
 
+            var dates = timeslots
+                .Select(t => t.EventDate.Id)
+                .Distinct()
+                .ToList();
+
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new SignupInterviewerTimeslotsViewModel
             {
                 Timeslots = timeslots,
@@ -178,18 +183,27 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewerPreference = InterviewLocationConstants.Virtual;
                 }
 
+                //foreach(int id in SelectedEventIds)
+                //{
+                //    var timeslot = await _context.Timeslot.FirstOrDefaultAsync(t => t.Id == id);
+                //}
+
                 if (ModelState.IsValid)
                 {
                     _context.Add(post);
                     await _context.SaveChangesAsync();
 
-                    _context.Add(new LocationInterviewer
+                    foreach(int date in dates)
                     {
-                        LocationId = null,
-                        InterviewerId = userId,
-                        InterviewerPreference = interviewerPreference
-                    });
-                    await _context.SaveChangesAsync();
+                        _context.Add(new LocationInterviewer
+                        {
+                            LocationId = null,
+                            InterviewerId = userId,
+                            InterviewerPreference = interviewerPreference,
+                            EventDateId = date
+                        });
+                        await _context.SaveChangesAsync();
+                    }
                 }
             }
 

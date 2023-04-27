@@ -31,6 +31,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             var locationInterviewers = await _context.LocationInterviewer
                 .Include(v => v.Location)
+                .Include(v => v.EventDate)
                 .ToListAsync();
 
             var interviewerIds = locationInterviewers
@@ -72,6 +73,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var locationInterviewer = await _context.LocationInterviewer
                 .Include(l => l.Location)
+                .Include(l => l.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
             {
@@ -232,25 +234,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            //// Get a list of all Interviewers
-            //var interviewers = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole)
-            //                                .GetAwaiter()
-            //                                .GetResult()
-            //                                .ToList();
-
-            //// Get a list of InterviewerIds already assigned to LocationInterviewers
-            //var assignedInterviewerIds = _context.LocationInterviewer.Select(li => li.InterviewerId)
-            //                                                            .Distinct()
-            //                                                            .ToList();
-
-            //// Filter out assigned Interviewers from the list of all Interviewers
-            //var availableInterviewers = interviewers.Where(i => !assignedInterviewerIds.Contains(i.Id) || i.Id == locationInterviewer.InterviewerId)
-            //        .Select(i => new SelectListItem
-            //        {
-            //            Value = i.Id,
-            //            Text = $"{i.FirstName} {i.LastName}"
-            //        })
-            //        .ToList();
 
             // Get a list of LocationIds already assigned to LocationInterviewers
             var assignedLocationIds = _context.LocationInterviewer.Select(li => li.LocationId)
@@ -305,7 +288,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId")] LocationInterviewer locationInterviewer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId,EventDateId,InterviewerPreference")] LocationInterviewer locationInterviewer)
         {
             if (id != locationInterviewer.Id)
             {
@@ -332,9 +315,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", locationInterviewer.InterviewerId);
-            //ViewData["LocationId"] = new SelectList(_context.Location, "Id", "Id", locationInterviewer.LocationId);
-            return View(locationInterviewer);
+
+
+            // Create the view model
+            var viewModel = new LocationInterviewerCreateViewModel
+            {
+                LocationInterviewer = locationInterviewer
+            };
+
+            return View(viewModel);
         }
 
         // GET: LocationInterviewers/Delete/5
@@ -347,6 +336,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var locationInterviewer = await _context.LocationInterviewer
                 .Include(l => l.Location)
+                .Include(e => e.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
             {
