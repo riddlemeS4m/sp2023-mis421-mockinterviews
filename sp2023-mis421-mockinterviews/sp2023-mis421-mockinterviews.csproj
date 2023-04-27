@@ -27,4 +27,8 @@
     <Folder Include="Services\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\lib\Mock_Interview_Manual.docx" />
+  </ItemGroup>
+
 </Project>
