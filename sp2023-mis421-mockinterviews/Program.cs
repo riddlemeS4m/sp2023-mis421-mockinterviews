@@ -85,32 +85,32 @@ namespace sp2023_mis421_mockinterviews
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            //seed three default roles if they don't exist, seed super user if doesn't exist
-            using (var scope = app.Services.CreateScope())
-            {
-                var newservices = scope.ServiceProvider;
-                var loggerFactory = newservices.GetRequiredService<ILoggerFactory>();
+            ////seed three default roles if they don't exist, seed super user if doesn't exist
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var newservices = scope.ServiceProvider;
+            //    var loggerFactory = newservices.GetRequiredService<ILoggerFactory>();
 
-                try
-                {
-                    var context = newservices.GetRequiredService<UserDataDbContext>();
-                    var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
-                    var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
+            //    try
+            //    {
+            //        var context = newservices.GetRequiredService<UserDataDbContext>();
+            //        var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
+            //        var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
+            //        var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
 
-                    UserDbContextSeed.SeedRolesAsync(userManager, roleManager).Wait();
-                    UserDbContextSeed.SeedSuperAdminAsync(userManager, roleManager).Wait();
-                    MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
-                }
-                catch (Exception ex)
-                {
-                    var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
-                }
-            }
+            //        UserDbContextSeed.SeedRolesAsync(userManager, roleManager).Wait();
+            //        UserDbContextSeed.SeedSuperAdminAsync(userManager, roleManager).Wait();
+            //        MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        var logger = loggerFactory.CreateLogger<Program>();
+            //        logger.LogError(ex, "An error occurred seeding the DB.");
+            //    }
+            //}
 
             app.Run();
-            Task.WaitAll(app.RunAsync());
+            //Task.WaitAll(app.RunAsync());
         }
     }
 }

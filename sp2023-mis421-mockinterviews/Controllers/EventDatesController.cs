@@ -58,24 +58,38 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date")] EventDate eventDate)
+        public async Task<IActionResult> Create([Bind("Id,Date,EventName")] EventDate eventDate)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(eventDate);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+
+                var dates = new List<EventDate>
+                {
+                    eventDate
+                };
+                var timeslots = TimeslotSeed.SeedTimeslots(dates);
+
+                foreach (Timeslot timeslot in timeslots)
+                {
+                    _context.Add(timeslot);
+                    await _context.SaveChangesAsync();
+                }
+           
+                return RedirectToAction("Index","Timeslots");
             }
+
             return View(eventDate);
         }
 
         // GET: EventDates/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.EventDate == null)
-            {
-                return NotFound();
-            }
+            //if (id == null || _context.EventDate == null)
+            //{
+            //    return NotFound();
+            //}
 
             var eventDate = await _context.EventDate.FindAsync(id);
             if (eventDate == null)
@@ -90,7 +104,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date")] EventDate eventDate)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,EventName")] EventDate eventDate)
         {
             if (id != eventDate.Id)
             {
@@ -115,7 +129,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("Index","Timeslots");
             }
             return View(eventDate);
         }
@@ -123,10 +137,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: EventDates/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            if (id == null || _context.EventDate == null)
-            {
-                return NotFound();
-            }
+            //if (id == null || _context.EventDate == null)
+            //{
+            //    return NotFound();
+            //}
 
             var eventDate = await _context.EventDate
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -141,7 +155,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: EventDates/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.EventDate == null)
             {
@@ -154,7 +168,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             
             await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction("Index", "Timeslots");
         }
 
         private bool EventDateExists(int id)

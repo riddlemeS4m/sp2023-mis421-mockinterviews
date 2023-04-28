@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -24,9 +25,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots
         public async Task<IActionResult> Index()
         {
-            return _context.Timeslot != null ?
-                        View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
-                          Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
+            var timeslots = await _context.Timeslot.Include(t => t.EventDate).ToListAsync();
+            var eventdates = await _context.EventDate.ToListAsync();
+
+            var viewModel = new TimeslotViewModel()
+            {
+                Timeslots = timeslots,
+                EventDates = eventdates
+            };
+
+            return View(viewModel);
+
+            //return _context.Timeslot != null ?
+            //            View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
+            //              Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
         }
 
         // GET: Timeslots/Details/5
