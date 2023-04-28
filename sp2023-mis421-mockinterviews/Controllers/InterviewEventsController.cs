@@ -12,10 +12,13 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
+using NuGet.Versioning;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -303,8 +306,43 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     InterviewType= interviewTypeTwo
                 }
 };
+			var emailTimes = new List<InterviewEvent>();
 
-            if (ModelState.IsValid)
+			var newEvent = await _context.InterviewEvent
+	.Include(v => v.Timeslot)
+	.ThenInclude(y => y.EventDate)
+	.Where(v => v.Id == SelectedEventIds)
+	.FirstOrDefaultAsync();
+            emailTimes.Add(newEvent);
+			newEvent = await _context.InterviewEvent
+	.Include(v => v.Timeslot)
+	.ThenInclude(y => y.EventDate)
+	.Where(v => v.Id == SelectedEventIds+1)
+	.FirstOrDefaultAsync();
+			emailTimes.Add(newEvent);
+
+
+
+
+			var client = new SendGridClient("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");
+			var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+			var subject = "Interviewer Sign-Up Confirmation";
+			var to = new EmailAddress(user.Email);
+			var plainTextContent = "";
+			var htmlContent = " <head>\r\n    <title>Interviewee Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for signing up, " + user.FirstName + "!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be an interviewer for MIS Mock Interviews for the following times:<br>";
+			foreach (InterviewEvent interview in emailTimes)
+			{
+                
+				htmlContent += interview.Timeslot.EventDate.Date;
+                htmlContent += " at ";
+                htmlContent += interview.Timeslot.Time;
+			}
+			htmlContent += "This email serves as a confirmation that your interviewer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
+			var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+			var response = client.SendEmailAsync(msg);
+
+
+			if (ModelState.IsValid)
             {
                 _context.AddRange(interviewEvents);
                 await _context.SaveChangesAsync();
