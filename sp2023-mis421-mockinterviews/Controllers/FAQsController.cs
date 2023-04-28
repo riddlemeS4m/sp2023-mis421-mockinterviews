@@ -186,22 +186,28 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 using (var client = new HttpClient())
                 {
-                    Console.WriteLine("\nAuthenticating...");
-                    client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", " 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");
+                    Console.WriteLine("Made it");
+					var api = new OpenAI_API.OpenAIAPI("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");
+                    var chat = api.Chat.CreateConversation();
+                    chat.AppendUserInput(prompt);
+                    string textResponse = await chat.GetResponseFromChatbotAsync();
+                    Console.WriteLine(textResponse);
+					/*                    Console.WriteLine("\nAuthenticating...");
+										client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", " 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");
 
-                    var content = new StringContent("{\"prompt\": \"" + prompt + "\",\"max_tokens\": 300,\"temperature\": 0.4,\"top_p\": 1,\"n\": 1}", Encoding.UTF8, "application/json");
+										var content = new StringContent("{\"prompt\": \"" + prompt + "\",\"max_tokens\": 300,\"temperature\": 0.4,\"top_p\": 1,\"n\": 1}", Encoding.UTF8, "application/json");
 
-                    var response = await client.PostAsync(endpointUrl, content);
+										var response = await client.PostAsync(endpointUrl, content);
 
-                    var responseContent = await response.Content.ReadAsStringAsync();
-                    Console.WriteLine(responseContent);
+										var responseContent = await response.Content.ReadAsStringAsync();
+										Console.WriteLine(responseContent);
 
-                    var jsonObject = JObject.Parse(responseContent);
+										var jsonObject = JObject.Parse(responseContent);
 
-                    string textResponse = jsonObject["choices"][0]["text"].ToString();
+										string textResponse = jsonObject["choices"][0]["text"].ToString();*/
 
-                    //return PartialView("_ChatResponse", textResponse);
-                    return Json(new { success = true, response = textResponse });
+					//return PartialView("_ChatResponse", textResponse);
+					return Json(new { success = true, response = textResponse });
                 }
             }
             catch (Exception ex)
