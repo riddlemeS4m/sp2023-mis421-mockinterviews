@@ -28,5 +28,9 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int? SignupInterviewerTimeslotId { get; set; }
         [ValidateNever]
         public SignupInterviewerTimeslot? SignupInterviewerTimeslot { get; set; }
-    }
+		public override string ToString()
+		{
+			return $"{this.Timeslot.Time} on {this.Timeslot.EventDate.Date} <br>";
+		}
+	}
 }
