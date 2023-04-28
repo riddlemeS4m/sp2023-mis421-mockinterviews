@@ -173,11 +173,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> EmailStudents()
         {
-            var uniqueUsers = _context.InterviewEvent.GroupBy(s => s.StudentId).Select(g => new { StudentId = g.Key });
+            var uniqueUsers = await _context.InterviewEvent
+                .Select(x => x.StudentId)
+                .Distinct()
+                .ToListAsync();
+
             foreach (var user in uniqueUsers)
             {
-                var userFull = await _userManager.FindByIdAsync(user.StudentId);
-                var interviews = await _context.InterviewEvent.Include(x => x.Timeslot).ThenInclude(x => x.EventDate).Where(x => x.StudentId == user.StudentId).ToListAsync();
+                var userFull = await _userManager.FindByIdAsync(user);
+                var interviews = await _context.InterviewEvent.Include(x => x.Timeslot).ThenInclude(x => x.EventDate).Where(x => x.StudentId == user).ToListAsync();
                 var client = new SendGridClient("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");
                 var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
                 var subject = "Mock Interviews Reminder";
@@ -186,10 +190,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var htmlContent = " <head>\r\n    <title>MIS Mock Interviews Reminder</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Hey, " + userFull.FirstName + "! Mock Interviews are coming up!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be interviewed during the following times:<br>";
                 foreach (var interview in interviews)
                 {
-                    htmlContent += interview.Timeslot.Time;
-                    htmlContent += " on ";
-                    htmlContent += interview.Timeslot.EventDate.Date;
+                    htmlContent += interview.ToString();
                 }
+
                 htmlContent += "<br>This email serves as your final reminder that you have signed-up for Mock Interviews. Please be sure to arrive <u>15 minutes early</u> to your first interview time!\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
                 var response = client.SendEmailAsync(msg);
