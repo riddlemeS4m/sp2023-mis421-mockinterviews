@@ -314,25 +314,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 _context.AddRange(interviewEvents);
                 await _context.SaveChangesAsync();
 
-				var emailTimes = new List<InterviewEvent>();
+                var emailTimes = new List<InterviewEvent>();
 
-				var newEvent = await _context.InterviewEvent
-		.Include(v => v.Timeslot)
-		.ThenInclude(y => y.EventDate)
-		.Where(v => v.Id == SelectedEventIds)
-		.FirstOrDefaultAsync();
-				emailTimes.Add(newEvent);
-				newEvent = await _context.InterviewEvent
-		.Include(v => v.Timeslot)
-		.ThenInclude(y => y.EventDate)
-		.Where(v => v.Id == SelectedEventIds + 1)
-		.FirstOrDefaultAsync();
-				emailTimes.Add(newEvent);
-
-
+                var newEvent = await _context.InterviewEvent
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(y => y.EventDate)
+                    .Where(v => v.TimeslotId == SelectedEventIds)
+                    .FirstOrDefaultAsync();
+                emailTimes.Add(newEvent);
+                newEvent = await _context.InterviewEvent
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(y => y.EventDate)
+                    .Where(v => v.TimeslotId == SelectedEventIds + 1)
+                    .FirstOrDefaultAsync();
+                emailTimes.Add(newEvent);
 
 
-				var client = new SendGridClient("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");
+
+
+                var client = new SendGridClient("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");
 				var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
 				var subject = "Interviewer Sign-Up Confirmation";
 				var to = new EmailAddress(user.Email);
