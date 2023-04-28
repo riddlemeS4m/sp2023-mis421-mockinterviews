@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -14,16 +16,19 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class FAQsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly string endpointUrl = "https://api.openai.com/v1/engines/davinci/completions";
-        public FAQsController(MockInterviewDataDbContext context)
+        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: FAQs
@@ -180,12 +185,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Chat(string prompt)
         {
-            try
-            {
+			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+			var userFull = await _userManager.FindByIdAsync(userId);
+            var userFirst = userFull.FirstName;
+
+			try
+			{
                 Console.WriteLine("Made it");
 			    var api = new OpenAI_API.OpenAIAPI("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");
                 var chat = api.Chat.CreateConversation();
-                chat.AppendUserInput(prompt);
+                chat.AppendUserInputWithName(userFirst, prompt);
                 string textResponse = await chat.GetResponseFromChatbotAsync();
                 Console.WriteLine(textResponse);
 			    return Json(new { success = true, response = textResponse });
