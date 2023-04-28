@@ -257,7 +257,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var interviewEvents = interviewEventsTask.Result;
 
             bool signedUp = false;
-            if (interviewEvents.Count > 0)
+            if (interviewEvents.Count > 1)
             {
                 signedUp = true;
             }
