@@ -89,6 +89,10 @@
 			console.log(prompt);
 			const data = new URLSearchParams();
 			data.append('prompt', prompt);
+
+			const outputDiv = document.getElementById(id);
+			outputDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...'; // add loading icon
+
 			axios.post("/FAQs/Chat", data)
 				.then(response => {
 					console.log(response)

@@ -83,7 +83,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Question,Answer")] FAQs fAQs)
+        public async Task<IActionResult> Create([Bind("Id,Question,Answer,IsForChat")] FAQs fAQs)
         {
             if (ModelState.IsValid)
             {
@@ -116,7 +116,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Question,Answer")] FAQs fAQs)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Question,Answer,IsForChat")] FAQs fAQs)
         {
             if (id != fAQs.Id)
             {
@@ -190,14 +190,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			var userFull = await _userManager.FindByIdAsync(userId);
             var userFirst = userFull.FirstName;
 
+            var fullprompt = $"I'm trying to prepare for some questions that I may be asked in a job interview. If an interviewer asks me a question like, \"{prompt}\", what are some ways I can answer this question? Then, can you give me an example?";
+
 			try
 			{
                 Console.WriteLine("Made it");
+
 			    var api = new OpenAI_API.OpenAIAPI("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");
                 var chat = api.Chat.CreateConversation();
-                chat.AppendUserInputWithName(userFirst, prompt);
+                chat.AppendUserInputWithName(userFirst, fullprompt);
                 string textResponse = await chat.GetResponseFromChatbotAsync();
+
                 Console.WriteLine(textResponse);
+
 			    return Json(new { success = true, response = textResponse });
             }
             catch (Exception ex)
