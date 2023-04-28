@@ -26,6 +26,11 @@ else
     </p>
 }
 
+@if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
+{
+    <a asp-area="" asp-controller="Home" asp-action="EmailStudents">Email Reminder for Students</a>
+}
+
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 {
     @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
