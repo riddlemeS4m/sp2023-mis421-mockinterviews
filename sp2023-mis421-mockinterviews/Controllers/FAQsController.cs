@@ -87,6 +87,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (ModelState.IsValid)
             {
+                fAQs.IsForChat = false;
                 _context.Add(fAQs);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
