@@ -182,20 +182,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             try
             {
-                using (var client = new HttpClient())
-                {
-                    Console.WriteLine("Made it");
-					var api = new OpenAI_API.OpenAIAPI("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");
-                    var chat = api.Chat.CreateConversation();
-                    chat.AppendUserInput(prompt);
-                    string textResponse = await chat.GetResponseFromChatbotAsync();
-                    Console.WriteLine(textResponse);
-					return Json(new { success = true, response = textResponse });
-                }
+                Console.WriteLine("Made it");
+			    var api = new OpenAI_API.OpenAIAPI("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");
+                var chat = api.Chat.CreateConversation();
+                chat.AppendUserInput(prompt);
+                string textResponse = await chat.GetResponseFromChatbotAsync();
+                Console.WriteLine(textResponse);
+			    return Json(new { success = true, response = textResponse });
             }
             catch (Exception ex)
             {
-                //return BadRequest(ex.Message);
                 return Json(new { success = false, error = ex.Message });
             }
         }
