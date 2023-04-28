@@ -50,15 +50,6 @@
 		</div>
 	}
 
-	@*@using (Html.BeginForm("Chat", "FAQs", FormMethod.Post))
-	{
-		<div class="form-group">
-			<label for="prompt">Prompt:</label>
-			<input type="text" name="prompt" class="form-control" placeholder="Enter a prompt: " />
-		</div>
-		<button type="submit" class="btn btn-primary">Submit</button>
-	}*@
-
 	@if(User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 	{
 		<div>
@@ -76,14 +67,6 @@
 		</div>
 	}
 	
-	
-
-
-	@*<div id="response">
-		@Html.Partial("_ChatResponse")
-	</div>*@
-	
-
 	<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js" integrity="sha384-I4Qw/vWb/sK/7VwepTtkaq636YLYClbEgEwKp3ueUCvjiLFrcoKUFAY5mOl40Fj3" crossorigin="anonymous"></script>
 	<script>
 		function generateText() {
@@ -108,30 +91,6 @@
 					document.getElementById("output").innerText = "Error: " + error.message;
 				});
 		}
-	</script>
-	@*<script>
-		function generateText() {
-			const prompt = document.getElementById("prompt").value;
-
-			axios.post("https://api.openai.com/v1/engines/davinci/completions", {
-				prompt: prompt,
-				temperature: 0.5,
-				max_tokens: 50
-			}, {
-				headers: {
-					"Authorization": "Bearer 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"
-				}
-			})
-				.then(response => {
-					const text = response.data.choices[0].text;
-					document.getElementById("output").innerText = text;
-				})
-				.catch(error => {
-					console.error(error);
-					document.getElementById("output").innerText = "Error: " + error.message;
-				});
-		}
-	</script>*@
-	
+	</script>	
 </body>
 </html>

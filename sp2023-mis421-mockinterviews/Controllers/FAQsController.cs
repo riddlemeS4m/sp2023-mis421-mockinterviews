@@ -180,8 +180,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Chat(string prompt)
         {
-            //Console.WriteLine("Received prompt: ", prompt);
-            //prompt = HttpUtility.UrlDecode(prompt);
             try
             {
                 using (var client = new HttpClient())
@@ -192,21 +190,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     chat.AppendUserInput(prompt);
                     string textResponse = await chat.GetResponseFromChatbotAsync();
                     Console.WriteLine(textResponse);
-					/*                    Console.WriteLine("\nAuthenticating...");
-										client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", " 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");
-
-										var content = new StringContent("{\"prompt\": \"" + prompt + "\",\"max_tokens\": 300,\"temperature\": 0.4,\"top_p\": 1,\"n\": 1}", Encoding.UTF8, "application/json");
-
-										var response = await client.PostAsync(endpointUrl, content);
-
-										var responseContent = await response.Content.ReadAsStringAsync();
-										Console.WriteLine(responseContent);
-
-										var jsonObject = JObject.Parse(responseContent);
-
-										string textResponse = jsonObject["choices"][0]["text"].ToString();*/
-
-					//return PartialView("_ChatResponse", textResponse);
 					return Json(new { success = true, response = textResponse });
                 }
             }
