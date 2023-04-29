@@ -19,6 +19,7 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using NuGet.Versioning;
+using Microsoft.AspNetCore.Razor.Language;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -335,18 +336,23 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
 
 
-
-				var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
+				var from = new EmailAddress(SuperUser.Email, "UA MIS " + SuperUser.FirstName + " " + SuperUser.LastName);
 				var subject = "Interviewer Sign-Up Confirmation";
 				var to = new EmailAddress(user.Email);
 				var plainTextContent = "";
-				var htmlContent = " <head>\r\n    <title>Interviewee Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for signing up, " + user.FirstName + "!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up for MIS Mock Interviews for the following times:<br>";
-				foreach (InterviewEvent interview in emailTimes)
-				{
-					htmlContent += interview.ToString();
-				}
-				htmlContent += "This email serves as a confirmation that your information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
-				var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
+
+                var htmlContent = await System.IO.File.ReadAllTextAsync("./Content/student-signup-email.html");
+                htmlContent = htmlContent.Replace("{firstName}", user.FirstName);
+
+                string interviewDetails = "";
+                foreach (var interview in emailTimes)
+                {
+                    interviewDetails += interview.ToString();
+                }
+
+                htmlContent = htmlContent.Replace("{interviews}", interviewDetails);
+
+                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
 				var response = _sendGridClient.SendEmailAsync(msg);
 
 				return RedirectToAction("Index", "Home");

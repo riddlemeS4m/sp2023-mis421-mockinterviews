@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Interviewee Confirmation Email</title>
+    <style>
+        /* Define styles for the header */
+        header {
+            background-color: crimson;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Define styles for the subheading */
+        .subheading {
+            color: black;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Define styles for the closing */
+        .closing {
+            font-style: italic;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Thank you for signing up, {firstName}!</h1>
+    </header>
+    <div class="content">
+        <p class="subheading">
+            You have signed up for MIS Mock Interviews for the following times:<br>
+            {interviewList}
+        </p>
+        <p>
+            This email serves as a confirmation that your information has been submitted to Program Support.
+        </p>
+        <p>
+            If you have any questions or concerns, please don't hesitate to contact us.
+        </p>
+        <p class="closing">
+            Thank you, Program Support
+        </p>
+    </div>
+</body>
+</html>

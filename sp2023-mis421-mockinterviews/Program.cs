@@ -1,6 +1,7 @@
 using EllipticCurve;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
 using OpenAI_API;
@@ -49,7 +50,7 @@ namespace sp2023_mis421_mockinterviews
 			var openAIApiKey = configuration["OpenAI:ApiKey"];
 			services.AddSingleton<OpenAIAPI>(_ => new OpenAIAPI(openAIApiKey));
 
-			services.AddDatabaseDeveloperPageExceptionFilter();
+            services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<UserDataDbContext>()
