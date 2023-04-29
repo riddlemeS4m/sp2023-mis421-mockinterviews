@@ -350,7 +350,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewDetails += interview.ToString();
                 }
 
-                htmlContent = htmlContent.Replace("{interviews}", interviewDetails);
+                htmlContent = htmlContent.Replace("{interviewList}", interviewDetails);
 
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
 				var response = _sendGridClient.SendEmailAsync(msg);
