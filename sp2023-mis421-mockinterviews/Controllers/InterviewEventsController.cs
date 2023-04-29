@@ -26,11 +26,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
     {
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISendGridClient _sendGridClient;
 
-        public InterviewEventsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
+        public InterviewEventsController(MockInterviewDataDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            ISendGridClient sendGridClient)
         {
             _context = context;
             _userManager = userManager;
+            _sendGridClient = sendGridClient;
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]
@@ -332,7 +336,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
 
 
-                var client = new SendGridClient("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");
 				var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
 				var subject = "Interviewer Sign-Up Confirmation";
 				var to = new EmailAddress(user.Email);
@@ -344,7 +347,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 				}
 				htmlContent += "This email serves as a confirmation that your information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
 				var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-				var response = client.SendEmailAsync(msg);
+				var response = _sendGridClient.SendEmailAsync(msg);
 
 				return RedirectToAction("Index", "Home");
             }

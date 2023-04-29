@@ -17,12 +17,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
 /*        private readonly ILogger<HomeController> _logger;*/
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ISendGridClient _sendGridClient;
 
-        public HomeController(/*ILogger<HomeController> logger,*/ MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
+        public HomeController(/*ILogger<HomeController> logger,*/ 
+            MockInterviewDataDbContext context, 
+            UserManager<ApplicationUser> userManager,
+            ISendGridClient sendGridClient)
         {
 /*            _logger = logger;*/
             _context = context;
             _userManager = userManager;
+            _sendGridClient = sendGridClient;
         }
 
         public async Task<IActionResult> Index()
@@ -182,7 +187,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 var userFull = await _userManager.FindByIdAsync(user);
                 var interviews = await _context.InterviewEvent.Include(x => x.Timeslot).ThenInclude(x => x.EventDate).Where(x => x.StudentId == user).ToListAsync();
-                var client = new SendGridClient("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");
                 var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
                 var subject = "Mock Interviews Reminder";
                 var to = new EmailAddress(userFull.Email);
@@ -195,7 +199,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 htmlContent += "<br>This email serves as your final reminder that you have signed-up for Mock Interviews. Please be sure to arrive <u>15 minutes early</u> to your first interview time!\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
                 var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-                var response = client.SendEmailAsync(msg);
+                var response = _sendGridClient.SendEmailAsync(msg);
             }
             return RedirectToAction("Index", "Home");
         }

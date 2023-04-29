@@ -24,11 +24,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
     {
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly OpenAI_API.OpenAIAPI _openAIAPI;
         private readonly string endpointUrl = "https://api.openai.com/v1/engines/davinci/completions";
-        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
+        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager, OpenAI_API.OpenAIAPI openAIAPI)
         {
             _context = context;
             _userManager = userManager;
+            _openAIAPI = openAIAPI;
         }
 
         // GET: FAQs
@@ -196,8 +198,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			{
                 Console.WriteLine("Made it");
 
-			    var api = new OpenAI_API.OpenAIAPI("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");
-                var chat = api.Chat.CreateConversation();
+                var chat = _openAIAPI.Chat.CreateConversation();
                 chat.AppendUserInputWithName(userFirst, fullprompt);
                 string textResponse = await chat.GetResponseFromChatbotAsync();
 

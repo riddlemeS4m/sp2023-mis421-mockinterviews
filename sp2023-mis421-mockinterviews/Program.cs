@@ -1,9 +1,13 @@
 using EllipticCurve;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
+using OpenAI_API;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using System.Configuration;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -15,16 +19,20 @@ namespace sp2023_mis421_mockinterviews
             var services = builder.Services;
             var configuration = builder.Configuration;
 
-            var connectionString = configuration.GetConnectionString("UserDataConnection") ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+			configuration.AddUserSecrets<Program>();
+
+            var connectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+			//var connectionString = configuration.GetConnectionString("UserDataConnection") ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-            //when updating the userdb, first...
-            //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
-            //second...
-            //update-database -context userdatadbcontext
+			//when updating the userdb, first...
+			//add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
+			//second...
+			//update-database -context userdatadbcontext
 
-            var interviewDataConnectionString = configuration.GetConnectionString("MockInterviewDataConnection") ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
+			var interviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+			//var interviewDataConnectionString = configuration.GetConnectionString("MockInterviewDataConnection") ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
             services.AddDbContext<MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(interviewDataConnectionString));
 
@@ -33,7 +41,15 @@ namespace sp2023_mis421_mockinterviews
             //second...
             //update-database -context mockinterviewdatadbcontext
 
-            services.AddDatabaseDeveloperPageExceptionFilter();
+           
+
+			var sendGridApiKey = configuration["SendGrid:ApiKey"];
+			services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
+
+			var openAIApiKey = configuration["OpenAI:ApiKey"];
+			services.AddSingleton<OpenAIAPI>(_ => new OpenAIAPI(openAIApiKey));
+
+			services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<UserDataDbContext>()
@@ -48,16 +64,15 @@ namespace sp2023_mis421_mockinterviews
             services.AddControllersWithViews();
             services.AddRazorPages();
 
-            
 
-            //services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
-            //{
-            //    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-            //    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-            //});
+			//services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+			//{
+			//    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+			//    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+			//});
 
 
-            var app = builder.Build();
+			var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
             {

@@ -16,10 +16,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly ISendGridClient _sendGridClient;
 
-        public SignupInterviewersController(MockInterviewDataDbContext context)
+        public SignupInterviewersController(MockInterviewDataDbContext context,
+            ISendGridClient sendGridClient)
         {
             _context = context;
+            _sendGridClient = sendGridClient;
         }
 
         // GET: SignupInterviewers
@@ -54,14 +57,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public IActionResult Create()
         {
             //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
-            var client = new SendGridClient("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");
             var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
             var subject = "Sending with SendGrid is Fun";
             var to = new EmailAddress("lmthompson6@crimson.ua.edu", "Logan Thompson");
             var plainTextContent = "and easy to do anywhere, even with C#";
             var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
             var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response =  client.SendEmailAsync(msg);
+            var response =  _sendGridClient.SendEmailAsync(msg);
             System.Console.WriteLine(response);
             return View();
         }
