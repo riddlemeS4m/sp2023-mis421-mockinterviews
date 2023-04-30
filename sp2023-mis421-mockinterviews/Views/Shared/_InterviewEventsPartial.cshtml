@@ -19,8 +19,8 @@
             @foreach (var interviewEventViewModel in Model)
             {
                 <tr>
-                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
-                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
+                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
                     <td>@interviewEventViewModel.InterviewEvent.Status</td>
                     @if (interviewEventViewModel.InterviewEvent.Location == null)
                     {

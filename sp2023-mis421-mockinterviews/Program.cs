@@ -23,7 +23,6 @@ namespace sp2023_mis421_mockinterviews
 			configuration.AddUserSecrets<Program>();
 
             var connectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
-			//var connectionString = configuration.GetConnectionString("UserDataConnection") ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
@@ -33,7 +32,6 @@ namespace sp2023_mis421_mockinterviews
 			//update-database -context userdatadbcontext
 
 			var interviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
-			//var interviewDataConnectionString = configuration.GetConnectionString("MockInterviewDataConnection") ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
             services.AddDbContext<MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(interviewDataConnectionString));
 
@@ -60,8 +58,6 @@ namespace sp2023_mis421_mockinterviews
             services.AddScoped<RoleManager<IdentityRole>>();
             services.AddScoped<UserManager<ApplicationUser>>();
 
-            //services.AddDefaultIdentity<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            //    .AddEntityFrameworkStores<UserDataDbContext>();
             services.AddControllersWithViews();
             services.AddRazorPages();
 
@@ -92,10 +88,6 @@ namespace sp2023_mis421_mockinterviews
 
             app.UseAuthentication();
             app.UseAuthorization();
-            //app.MapControllerRoute(
-            //    name: "downloadResume",
-            //    pattern: "Users/DownloadResume",
-            //    defaults: new { controller = "Users", action = "DownloadResume" });
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

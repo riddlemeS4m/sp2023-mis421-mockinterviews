@@ -288,5 +288,73 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupNotification + fullName, CurrentAdmin.Email, fullName, times);
         }
 
+        [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]
+        public async Task<IActionResult> UserDeleteRange(int[] timeslots)
+        {
+            // Check if the timeslotIds array is empty or null
+            if (timeslots == null || timeslots.Length == 0)
+            {
+                return NotFound();
+            }
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.VolunteerEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            // Check if any of the timeslots to delete are null
+            if (timeslotsToDelete == null || timeslotsToDelete.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var date = timeslotsToDelete.First().Timeslot.EventDate.Date;
+            if (timeslotsToDelete.Any(t => t.Timeslot.EventDate.Date != date))
+            {
+                return NotFound();
+            }
+
+            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
+                return NotFound();
+            }
+
+            var timeslotslist = timeslots.ToList();
+
+            var viewModel = new TimeRangeViewModel
+            {
+                Date = date,
+                StartTime = timeslotsToDelete.First().Timeslot.Time.ToString(@"h\:mm tt"),
+                EndTime = timeslotsToDelete.Last().Timeslot.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                TimeslotIds = timeslotslist
+            };
+
+
+            return View(viewModel);
+        }
+
+        [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]
+        public async Task<IActionResult> UserDeleteRangeConfirmed(int[] timeslots)
+        {
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.VolunteerEvent
+                
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            {
+                return NotFound();
+            }
+
+            // Delete the timeslots
+            _context.VolunteerEvent.RemoveRange(timeslotsToDelete);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

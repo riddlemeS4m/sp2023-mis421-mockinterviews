@@ -164,6 +164,23 @@
             $('.table').DataTable();
         });
     </script>
+    <script>
+        // Format date column
+        const dateElements = document.querySelectorAll('.date-column');
+        dateElements.forEach(element => {
+            const date = new Date(element.textContent);
+            const formattedDate = date.toLocaleDateString();
+            element.textContent = formattedDate;
+        });
+
+        // Format time column
+        const timeElements = document.querySelectorAll('.time-column');
+        timeElements.forEach(element => {
+            const date = new Date(element.textContent);
+            const formattedTime = date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+            element.textContent = formattedTime;
+        });
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

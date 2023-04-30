@@ -27,7 +27,7 @@ namespace sp2023_mis421_mockinterviews.Interfaces
             Times = times;
             ToEmail = new EmailAddress(emailto);
             StringBuilder stringBuilder = new(FilePath);
-            stringBuilder.Insert(0, "./Content/");
+            stringBuilder.Insert(0, "./Content/Emails/");
             FilePath = stringBuilder.ToString();
             HTMLContent = await File.ReadAllTextAsync(FilePath);
 

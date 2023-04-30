@@ -33,7 +33,7 @@ else
 
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
 {
-    @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.VolunteerEventViewModels)
+    @await Html.PartialAsync("_VolunteerEventsHomePartial", Model.TimeRangeViewModels)
     <br />
     @await Html.PartialAsync("_InterviewEventsPartial", Model.StudentScheduledInterviews)
 }

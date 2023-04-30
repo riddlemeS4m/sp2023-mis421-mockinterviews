@@ -1,4 +1,5 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using System.Globalization;
 
 namespace sp2023_mis421_mockinterviews.Data.Constants
 {
@@ -37,7 +38,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 for (int i = 0; i < Times.Length; i++)
                 {
                     Timeslot timeslot = new Timeslot();
-                    timeslot.Time = Times[i];
+                    timeslot.Time = DateTime.ParseExact(Times[i], "h:mm tt", CultureInfo.InvariantCulture);
                     timeslot.EventDate = date;
                     timeslot.EventDateId = date.Id;
                     timeslot.IsVolunteer = true;
