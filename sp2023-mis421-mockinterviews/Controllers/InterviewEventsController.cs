@@ -23,6 +23,7 @@ using Microsoft.AspNetCore.Razor.Language;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
+using sp2023_mis421_mockinterviews.Data.Access.Emails;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -344,10 +345,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewDetails += interview.ToString();
                 }
 
-                var subject = "UA MIS Mock Interview Sign-Up Confirmation";
-
                 ASendAnEmail emailer = new StudentSignupEmail();
-                await emailer.SendEmailAsync(_sendGridClient,subject, user.Email, user.FirstName, interviewDetails);
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails);
 
 				return RedirectToAction("Index", "Home");
             }

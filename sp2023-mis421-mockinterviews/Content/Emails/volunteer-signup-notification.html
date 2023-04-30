@@ -1,0 +1,40 @@
+﻿<head>
+    <title>Volunteer Confirmation Email</title>
+    <style>
+        /* Define styles for the header */
+        header {
+            background-color: crimson;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* Define styles for the subheading */
+        .subheading {
+            color: black;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Define styles for the closing */
+        .closing {
+            font-style: italic;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Hi {adminName},</h1>
+    </header>
+    <div class="content">
+        <p class="subheading">
+            {name} has signed up to be a volunteer for MIS Mock Interviews for the following times:<br><br />
+            {times}
+        </p>
+        <p class="closing">
+            Thank you, Program Support
+        </p>
+    </div>
+</body>

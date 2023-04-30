@@ -15,6 +15,10 @@ using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using sp2023_mis421_mockinterviews.Data.Access;
+using sp2023_mis421_mockinterviews.Interfaces;
+using Microsoft.Extensions.Hosting;
+using sp2023_mis421_mockinterviews.Data.Access.Emails;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -112,9 +116,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Create(int[] SelectedEventIds)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            string email = User.FindFirstValue(ClaimTypes.Email);
-            string username = User.FindFirstValue(ClaimTypes.Name);
-            var student = await _userManager.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            var user = await _userManager.FindByIdAsync(userId);
+
             List<VolunteerEvent> volEvents = new List<VolunteerEvent>();
 
             var allVolunteerEvents = await _context.VolunteerEvent
@@ -136,45 +139,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     
                     _context.Add(volunteerEvent);
                     await _context.SaveChangesAsync();
+
                     var newEvent = await _context.VolunteerEvent
                         .Include(v => v.Timeslot)
                         .ThenInclude(y => y.EventDate)
                         .Where(v => v.Id == volunteerEvent.Id)
                         .FirstOrDefaultAsync();
+
                     volEvents.Add(newEvent);
-                    //return RedirectToAction(nameof(Index));
                 }
             }
-            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-            var subject = "Mock Interviews Volunteer Sign-Up Confirmation";
-            var to = new EmailAddress(email);
-            var plainTextContent = "";
-            var htmlContent = " <head>\r\n    <title>Volunteer Confirmation Email</title>\r\n    <style>\r\n      /* Define styles for the header */\r\n      header {\r\n        background-color: crimson;\r\n        color: white;\r\n        text-align: center;\r\n        padding: 20px;\r\n      }\r\n      \r\n      /* Define styles for the subheading */\r\n      .subheading {\r\n        color: black;\r\n        font-weight: bold;\r\n        margin: 20px 0;\r\n      }\r\n      \r\n      /* Define styles for the closing */\r\n      .closing {\r\n        font-style: italic;\r\n        margin-top: 20px;\r\n        text-align: center;\r\n      }\r\n    </style>\r\n  </head>\r\n  <body>\r\n    <header>\r\n      <h1>Thank you for Volunteering, "+student.FirstName+"!</h1>\r\n    </header>\r\n    <div class=\"content\">\r\n      <p class=\"subheading\">\r\n        You have signed up to be a volunteer for MIS Mock Interviews for the following times:<br>";
-            foreach(VolunteerEvent vol in volEvents)
-            {
-                htmlContent += vol.ToString();
-            }
-            htmlContent += "This email serves as a confirmation that your volunteer information has been submitted to Program Support.\r\n      </p>\r\n      <p>\r\n        If you have any questions or concerns, please don't hesitate to contact us.\r\n      </p>\r\n      <p class=\"closing\">\r\n        Thank you, Program Support\r\n      </p>\r\n    </div>\r\n  </body>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response = _sendGridClient.SendEmailAsync(msg);
-            System.Console.WriteLine(response);
-            var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-            var subject2 = "Mock Interviews Volunteer Sign-Up Confirmation";
-            var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
-            var plainTextContent2 = "";
-            var htmlContent2 = $"<h1>{student.FirstName} {student.LastName} has signed up to volunteer at Mock Interviews</h1>";
-            var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
-            var response2 = _sendGridClient.SendEmailAsync(msg2);
-            System.Console.WriteLine(response2);
-            //var timeslots = await _context.Timeslot
-            //    .Where(x => x.IsVolunteer == true)
-            //    .Include(y => y.EventDate)
-            //    .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
-            //    .ToListAsync();
-            //VolunteerEventsViewModel volunteerEventsViewModel = new VolunteerEventsViewModel
-            //{
-            //    Timeslots = timeslots
-            //};
+
+            ComposeEmail(user, volEvents);
+
             return RedirectToAction("Index", "Home");
         }
 
@@ -229,7 +206,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Id", volunteerEvent.StudentId);
+
             ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);
         }
@@ -261,35 +238,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			string email = User.FindFirstValue(ClaimTypes.Email);
-			string username = User.FindFirstValue(ClaimTypes.Name);
-			var student = await _userManager.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            var user = await _userManager.FindByIdAsync(userId);
 
 			if (_context.VolunteerEvent == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.VolunteerEvent'  is null.");
             }
+
             var volunteerEvent = await _context.VolunteerEvent.FindAsync(id);
             if (volunteerEvent != null)
             {
-				var volunteerEventLocal = await _context.VolunteerEvent
-	            .Include(v => v.Timeslot)
-	            .FirstOrDefaultAsync(m => m.Id == id);
-				var specificTimeslot = await _context.Timeslot
-					.Include(v => v.EventDate)
-					.FirstOrDefaultAsync(m => m.Id == volunteerEvent.Timeslot.Id);
-                volunteerEventLocal.Timeslot = specificTimeslot;
-				var from2 = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-				var subject2 = "Mock Interviews Volunteer Canellation";
-				var to2 = new EmailAddress("lmthompson6@crimson.ua.edu");
-				var plainTextContent2 = "";
-				var htmlContent2 = $"<h1>{student.FirstName} {student.LastName} has cancelled their volunteering for Mock Interviews for {volunteerEventLocal.Timeslot.Time} on {volunteerEventLocal.Timeslot.EventDate.Date}</h1>";
-				var msg2 = MailHelper.CreateSingleEmail(from2, to2, subject2, plainTextContent2, htmlContent2);
-				var response2 = _sendGridClient.SendEmailAsync(msg2);
+                string fullName = user.FirstName + " " + user.LastName;
 
-				_context.VolunteerEvent.Remove(volunteerEvent);
+                ASendAnEmail emailNotification = new VolunteerCancellationNotification();
+                await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerCancellationNotification + fullName, CurrentAdmin.Email, fullName, volunteerEvent.ToString());
+
+                _context.VolunteerEvent.Remove(volunteerEvent);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
         }
@@ -304,5 +270,23 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var user = await _userManager.GetUserAsync(User);
             return Content(user.Id);
         }
+
+        private async void ComposeEmail(ApplicationUser user, List<VolunteerEvent> emailTimes)
+        {
+            var times = "";
+            foreach (VolunteerEvent interview in emailTimes)
+            {
+                times += interview.ToString();
+            }
+
+            ASendAnEmail emailer = new VolunteerSignupConfirmation();
+            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupConfirmation, user.Email, user.FirstName, times);
+
+            string fullName = user.FirstName + " " + user.LastName;
+
+            ASendAnEmail emailNotification = new VolunteerSignupNotification();
+            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupNotification + fullName, CurrentAdmin.Email, fullName, times);
+        }
+
     }
 }

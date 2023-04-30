@@ -15,6 +15,7 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 
@@ -25,7 +26,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly OpenAI_API.OpenAIAPI _openAIAPI;
-        private readonly string endpointUrl = "https://api.openai.com/v1/engines/davinci/completions";
         public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager, OpenAI_API.OpenAIAPI openAIAPI)
         {
             _context = context;
@@ -190,19 +190,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 			var userFull = await _userManager.FindByIdAsync(userId);
-            var userFirst = userFull.FirstName;
-
-            var fullprompt = $"I'm trying to prepare for some questions that I may be asked in a job interview. If an interviewer asks me a question like, \"{prompt}\", what are some ways I can answer this question? Then, can you give me an example?";
 
 			try
 			{
-                Console.WriteLine("Made it");
-
                 var chat = _openAIAPI.Chat.CreateConversation();
-                chat.AppendUserInputWithName(userFirst, fullprompt);
+                chat.AppendUserInputWithName(userFull.FirstName, new ChatGPTPrompt(prompt).Prompt);
                 string textResponse = await chat.GetResponseFromChatbotAsync();
-
-                Console.WriteLine(textResponse);
 
 			    return Json(new { success = true, response = textResponse });
             }

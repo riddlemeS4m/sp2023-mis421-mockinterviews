@@ -57,15 +57,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole)]
         public IActionResult Create()
         {
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id");
-            var from = new EmailAddress("mismockinterviews@gmail.com", "UA MIS Program Support");
-            var subject = "Sending with SendGrid is Fun";
-            var to = new EmailAddress("lmthompson6@crimson.ua.edu", "Logan Thompson");
-            var plainTextContent = "and easy to do anywhere, even with C#";
-            var htmlContent = "<strong>and easy to do anywhere, even with C#</strong>";
-            var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-            var response =  _sendGridClient.SendEmailAsync(msg);
-            System.Console.WriteLine(response);
             return View();
         }
 
@@ -83,7 +74,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+
             return View(signupInterviewer);
         }
 
@@ -101,7 +92,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return NotFound();
             }
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+
             return View(signupInterviewer);
         }
 
@@ -138,7 +129,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            //ViewData["InterviewerId"] = new SelectList(_context.Interviewer, "Id", "Id", signupInterviewer.InterviewerId);
+
             return View(signupInterviewer);
         }
 

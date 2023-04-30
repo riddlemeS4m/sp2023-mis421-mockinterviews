@@ -1,19 +1,20 @@
 ﻿using SendGrid.Helpers.Mail;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using System.Text;
 
 namespace sp2023_mis421_mockinterviews.Interfaces
 {
     public abstract class ASendAnEmail
     {
-        public EmailAddress FromEmail;
-        public string Subject;
-        public string PlainTextContent;
-        public EmailAddress ToEmail;
-        public string HTMLContent;
-        public string ToName;
-        public string Times;
-        public string FilePath;
+        public EmailAddress FromEmail { get; set; }
+        public string Subject { get; set; }
+        public string PlainTextContent { get; set; }
+        public EmailAddress ToEmail { get; set; }
+        public string HTMLContent { get; set; }
+        public string ToName { get; set; }
+        public string Times { get; set; }
+        public string FilePath { get; set; }
 
         public abstract void InjectHTMLContent();
 
@@ -25,6 +26,9 @@ namespace sp2023_mis421_mockinterviews.Interfaces
             ToName = emailname;
             Times = times;
             ToEmail = new EmailAddress(emailto);
+            StringBuilder stringBuilder = new(FilePath);
+            stringBuilder.Insert(0, "./Content/");
+            FilePath = stringBuilder.ToString();
             HTMLContent = await File.ReadAllTextAsync(FilePath);
 
             InjectHTMLContent();

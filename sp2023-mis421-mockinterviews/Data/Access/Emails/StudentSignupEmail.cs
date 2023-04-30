@@ -1,13 +1,13 @@
 ﻿using sp2023_mis421_mockinterviews.Interfaces;
 
-namespace sp2023_mis421_mockinterviews.Data.Access
+namespace sp2023_mis421_mockinterviews.Data.Access.Emails
 {
     public class StudentSignupEmail : ASendAnEmail
     {
 
         public StudentSignupEmail()
         {
-            FilePath = "./Content/student-signup-email.html";
+            FilePath += "student-signup-email.html";
         }
 
         public override void InjectHTMLContent()
