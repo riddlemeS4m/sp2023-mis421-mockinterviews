@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.Rendering;
 
-namespace sp2023_mis421_mockinterviews.Data
+namespace sp2023_mis421_mockinterviews.Data.Constants
 {
     public class StatusConstants
     {
@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data
         public const string Completed = "Completed";
         public const string NoShow = "No Show";
 
-        public static List<SelectListItem> GetStatusOptions()
+        public static List<SelectListItem> GetCompleteStatusOptions()
         {
             return new List<SelectListItem>
             {
@@ -20,6 +20,17 @@ namespace sp2023_mis421_mockinterviews.Data
                 new SelectListItem { Text = Completed, Value = Completed },
                 new SelectListItem { Text = NoShow, Value = NoShow },
             };
+        }
+
+        public static List<SelectListItem> GetUnassignedStatusOptions()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = Default, Value = Default },
+                new SelectListItem { Text = CheckedIn, Value = CheckedIn },
+                new SelectListItem { Text = NoShow, Value = NoShow },
+            };
+
         }
     }
 }

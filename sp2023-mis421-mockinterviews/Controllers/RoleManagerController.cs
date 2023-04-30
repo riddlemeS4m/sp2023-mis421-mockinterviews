@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Data.Constants;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

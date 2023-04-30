@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using System;
 
-namespace sp2023_mis421_mockinterviews.Data
+namespace sp2023_mis421_mockinterviews.Data.Access
 {
     public static class UserDbContextSeed
     {

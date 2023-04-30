@@ -20,6 +20,9 @@ using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using NuGet.Versioning;
 using Microsoft.AspNetCore.Razor.Language;
+using sp2023_mis421_mockinterviews.Data.Constants;
+using sp2023_mis421_mockinterviews.Interfaces;
+using sp2023_mis421_mockinterviews.Data.Access;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -164,10 +167,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-
             if (ModelState.IsValid)
             {
-
                 try
                 {
                     _context.Update(interviewEvent);
@@ -184,6 +185,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         throw;
                     }
                 }
+
                 return RedirectToAction("FeedbackIndex","InterviewEvents");
             }
 
@@ -236,7 +238,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
                 StudentName = student.FirstName + " " + student.LastName
             };
-
 
             return View(viewModel);
         }
@@ -297,20 +298,23 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 interviewTypeTwo = InterviewTypesConstants.Behavioral;
             }
 
-            var interviewEvents = new List<InterviewEvent>{
-                new InterviewEvent {
+            var interviewEvents = new List<InterviewEvent>
+            {
+                new InterviewEvent 
+                {
                     TimeslotId = SelectedEventIds,
                     StudentId = userId,
                     Status = StatusConstants.Default,
                     InterviewType = InterviewTypesConstants.Behavioral
                 },
-                new InterviewEvent {
+                new InterviewEvent 
+                {
                     TimeslotId = SelectedEventIds + 1,
                     StudentId = userId,
                     Status = StatusConstants.Default,
                     InterviewType= interviewTypeTwo
                 }
-};
+            };
 
 
 
@@ -334,29 +338,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .FirstOrDefaultAsync();
                 emailTimes.Add(newEvent);
 
-
-
-				var from = new EmailAddress(SuperUser.Email, "UA MIS " + SuperUser.FirstName + " " + SuperUser.LastName);
-				var subject = "Interviewer Sign-Up Confirmation";
-				var to = new EmailAddress(user.Email);
-				var plainTextContent = "";
-
-                var htmlContent = await System.IO.File.ReadAllTextAsync("./Content/student-signup-email.html");
-                htmlContent = htmlContent.Replace("{firstName}", user.FirstName);
-
                 string interviewDetails = "";
                 foreach (var interview in emailTimes)
                 {
                     interviewDetails += interview.ToString();
                 }
 
-                htmlContent = htmlContent.Replace("{interviewList}", interviewDetails);
+                var subject = "UA MIS Mock Interview Sign-Up Confirmation";
 
-                var msg = MailHelper.CreateSingleEmail(from, to, subject, plainTextContent, htmlContent);
-				var response = _sendGridClient.SendEmailAsync(msg);
+                ASendAnEmail emailer = new StudentSignupEmail();
+                await emailer.SendEmailAsync(_sendGridClient,subject, user.Email, user.FirstName, interviewDetails);
 
 				return RedirectToAction("Index", "Home");
             }
+
             return View();
         }
 

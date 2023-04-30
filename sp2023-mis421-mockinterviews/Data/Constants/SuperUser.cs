@@ -1,4 +1,4 @@
-﻿namespace sp2023_mis421_mockinterviews.Data
+﻿namespace sp2023_mis421_mockinterviews.Data.Constants
 {
     public class SuperUser
     {
