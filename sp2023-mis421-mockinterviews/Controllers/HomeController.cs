@@ -333,5 +333,36 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> EmailInterviewers()
+        {
+            var uniqueUsers = await _context.SignupInterviewer
+                .Select(x => x.InterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            foreach (var user in uniqueUsers)
+            {
+                var userFull = await _userManager.FindByIdAsync(user);
+                var interviews = await _context.SignupInterviewerTimeslot
+                    .Include(x => x.Timeslot)
+                    .ThenInclude(x => x.EventDate)
+                    .Include(x => x.SignupInterviewer)
+                    .ThenInclude(x => x.InterviewerId)
+                    .Where(x => x.SignupInterviewer.InterviewerId == user)
+                    .ToListAsync();
+
+                var times = "";
+                foreach (var interview in interviews)
+                {
+                    times += interview.ToString();
+                }
+
+                ASendAnEmail emailer = new InterviewerReminderEmail();
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerReminderEmail, userFull.Email, userFull.FirstName, times);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }
