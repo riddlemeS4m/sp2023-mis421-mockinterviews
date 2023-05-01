@@ -9,6 +9,8 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
         public string? Location { get; set; }
+        public string? Name { get; set; }
+        public string? InterviewType { get; set; }
         public List<int> TimeslotIds { get; set; }
 
     }

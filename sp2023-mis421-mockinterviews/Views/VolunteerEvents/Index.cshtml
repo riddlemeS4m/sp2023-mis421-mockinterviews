@@ -1,4 +1,4 @@
-﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.ViewModels.VolunteerEventViewModel>
+﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.ViewModels.TimeRangeViewModel>
 
 @{
     ViewData["Title"] = "Volunteers";
@@ -13,13 +13,13 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.VolunteerEvent.Timeslot)
+                Student Name
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.VolunteerEvent.Timeslot.EventDate.Date)
+                @Html.DisplayNameFor(model => model.Date)
             </th>
-             <th>
-                Student Name
+            <th>
+                @Html.DisplayNameFor(model => model.StartTime)
             </th>
             <th></th>
         </tr>
@@ -28,18 +28,22 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.VolunteerEvent.Timeslot.Time)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.VolunteerEvent.Timeslot.EventDate.Date)
-                </td>
-                <td>
-                    @Html.DisplayFor(modelItem => item.StudentName)
-                </td>
             <td>
-
-                <a asp-action="Details" asp-route-id="@item.VolunteerEvent.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.VolunteerEvent.Id">Cancel</a>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime) - @Html.DisplayFor(modelItem => item.EndTime)
+            </td>
+            <td>
+@*                <a asp-action="Details" asp-route-id="@item.VolunteerEvent.Id">Details</a> |
+*@                @Html.ActionLink("Delete",
+                "DeleteRange",   // <-- ActionMethod
+                "VolunteerEvents",  // <-- Controller Name.
+                new { timeslots = item.TimeslotIds.ToArray() }, // <-- Route arguments.
+                null
+                )
             </td>
         </tr>
 }

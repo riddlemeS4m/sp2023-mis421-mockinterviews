@@ -1,4 +1,4 @@
-﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot>
+﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.ViewModels.TimeRangeViewModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -22,10 +22,10 @@
                 In-Person/Virtual
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+                @Html.DisplayNameFor(model => model.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslot.Time)
+                @Html.DisplayNameFor(model => model.StartTime)
             </th>
             <th></th>
         </tr>
@@ -34,9 +34,9 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                    @Html.DisplayFor(modelItem => item.SignupInterviewer.FirstName) @Html.DisplayFor(modelItem => item.SignupInterviewer.LastName)
+                @Html.DisplayFor(modelItem => item.Name)
             </td>
-                @if(item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
+                @*@if(item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
                 {
                     <td>Behavioral, Technical</td>       
                 } 
@@ -55,17 +55,29 @@
                 else if(item.SignupInterviewer.InPerson)
                 {
                     <td>In Person</td>
-                }
+                }*@
             <td>
-                @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
+                @Html.DisplayFor(modelItem => item.InterviewType)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Timeslot.Time)
+                @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.StartTime)-@Html.DisplayFor(modelItem => item.EndTime)
             </td>
             <td>
 @*                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-*@                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="DetailsRange" asp-route-id="@item.TimeslotIds">Details</a> |
+*@                    @Html.ActionLink("Delete",
+                        "DeleteRange",   // <-- ActionMethod
+                        "SignupInterviewerTimeslots",  // <-- Controller Name.
+                        new { timeslots = item.TimeslotIds.ToArray() }, // <-- Route arguments.
+                        null
+                    )
+                @*<a asp-action="UserDeleteRange" asp-route-id="@item.TimeslotIds">Delete</a>*@
             </td>
         </tr>
 }

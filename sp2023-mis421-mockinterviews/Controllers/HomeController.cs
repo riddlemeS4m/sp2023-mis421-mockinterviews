@@ -39,7 +39,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userFull = await _userManager.FindByIdAsync(userId);
 
-            IndexViewModel model = new IndexViewModel();
+            IndexViewModel model = new();
             if(User.Identity.IsAuthenticated)
             {
                 model.Name = $"{userFull.FirstName} {userFull.LastName}";
@@ -70,7 +70,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 var groupedEvents = new List<TimeRangeViewModel>();
               
-                if(volunteerEvents != null)
+                if(volunteerEvents != null && volunteerEvents.Count != 0)
                 {
                     var ints = new List<int>();
                     var currentStart = volunteerEvents.First().Timeslot;
@@ -81,7 +81,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     {
                         var nextEvent = volunteerEvents[i].Timeslot;
 
-                        if (currentEnd.Id + 1 == nextEvent.Id && currentEnd.EventDate.Date == nextEvent.EventDate.Date)
+                        if (currentEnd.Id + 1 == nextEvent.Id 
+                            && currentEnd.EventDate.Date == nextEvent.EventDate.Date)
                         {
                             currentEnd = nextEvent;
                             ints.Add(volunteerEvents[i].Id);
@@ -98,8 +99,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                             currentStart = nextEvent;
                             currentEnd = nextEvent;
-                            ints = new List<int>();
-                            ints.Add(volunteerEvents[i].Id);
+                            ints = new List<int>
+                            {
+                                volunteerEvents[i].Id
+                            };
                         }
                     }
 
@@ -127,7 +130,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId)
                     .ToListAsync();
 
-                if (interviewEvents != null)
+                if (interviewEvents != null && interviewEvents.Count != 0)
                 {
                     foreach (InterviewEvent interviewEvent in interviewEvents)
                     {
@@ -180,7 +183,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var groupedEvents = new List<TimeRangeViewModel>();
                 var location = "";
 
-                if (signupInterviewTimeslots != null)
+                if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
                 {
                     var ints = new List<int>();
                     var currentStart = signupInterviewTimeslots.First().Timeslot;
@@ -263,7 +266,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(v =>  v.StudentId == userId)
                     .ToListAsync();
 
-                if (interviewEvents != null)
+                if (interviewEvents != null && interviewEvents.Count != 0)
                 {
                     foreach (InterviewEvent interviewEvent in interviewEvents)
                     {
@@ -348,7 +351,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.EventDate)
                     .Include(x => x.SignupInterviewer)
-                    .ThenInclude(x => x.InterviewerId)
                     .Where(x => x.SignupInterviewer.InterviewerId == user)
                     .ToListAsync();
 

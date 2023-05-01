@@ -30,7 +30,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public SignupInterviewerTimeslot? SignupInterviewerTimeslot { get; set; }
 		public override string ToString()
 		{
-			return $"{Timeslot.Time} on {Timeslot.EventDate.Date} <br>";
+			return $"{Timeslot.Time:h\\:mm tt} on {Timeslot.EventDate.Date:M/dd/yyyy} <br>";
 		}
 	}
 }

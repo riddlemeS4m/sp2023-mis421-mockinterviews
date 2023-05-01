@@ -15,7 +15,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public Timeslot Timeslot { get; set; }
         public override string ToString()
         {
-            return $"{this.Timeslot.Time} on {this.Timeslot.EventDate.Date} <br>";
+            return $"{Timeslot.Time:h\\:mm tt} on {Timeslot.EventDate.Date:M/dd/yyyy} <br>";
         }
     }
 }

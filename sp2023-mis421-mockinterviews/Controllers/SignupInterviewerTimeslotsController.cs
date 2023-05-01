@@ -40,14 +40,124 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
-            var signupInterviewerTimeslots = await _context.SignupInterviewerTimeslot
+            var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
                 .Include(s => s.SignupInterviewer)
                 .Include(s => s.Timeslot)
                 .ThenInclude(s => s.EventDate)
+                .OrderBy(ve => ve.SignupInterviewer.InterviewerId)
+                .ThenBy(ve => ve.Timeslot.EventDate.Date)
+                .ThenBy(ve => ve.Timeslot.Time)
                 .Where(s => s.Timeslot.IsInterviewer)
                 .ToListAsync();
 
-            return View(signupInterviewerTimeslots);
+            var groupedEvents = new List<TimeRangeViewModel>();
+            var location = "";
+
+            if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
+            {
+                var ints = new List<int>();
+                var currentStart = signupInterviewTimeslots.First().Timeslot;
+                var currentEnd = signupInterviewTimeslots.First().Timeslot;
+                var inperson = signupInterviewTimeslots.First().SignupInterviewer.InPerson;
+                var interviewerId = signupInterviewTimeslots.First().SignupInterviewer.InterviewerId;
+                var interviewtype = (signupInterviewTimeslots.First().SignupInterviewer.IsBehavioral, signupInterviewTimeslots.First().SignupInterviewer.IsTechnical);
+                ints.Add(signupInterviewTimeslots.First().Id);
+
+                for (int i = 1; i < signupInterviewTimeslots.Count; i++)
+                {
+                    var nextEvent = signupInterviewTimeslots[i].Timeslot;
+
+                    if (currentEnd.Id + 1 == nextEvent.Id
+                        && currentEnd.EventDate.Date == nextEvent.EventDate.Date
+                        && signupInterviewTimeslots[i].SignupInterviewer.InPerson == inperson
+                        && signupInterviewTimeslots[i].SignupInterviewer.InterviewerId == interviewerId
+                        && (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical) == interviewtype)
+                    {
+                        currentEnd = nextEvent;
+                        ints.Add(signupInterviewTimeslots[i].Id);
+                    }
+                    else
+                    {
+                        if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson)
+                        {
+                            location = InterviewLocationConstants.InPerson;
+                        }
+                        else
+                        {
+                            location = InterviewLocationConstants.Virtual;
+                        }
+                        var type = "";
+                        if (signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && !signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
+                        {
+                            type = InterviewTypesConstants.Behavioral;
+                        }
+                        else if(!signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
+                        {
+                            type = InterviewTypesConstants.Technical;
+                        }
+                        else
+                        {
+                            type = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
+                        }
+                        var name = await _userManager.FindByIdAsync(signupInterviewTimeslots[i - 1].SignupInterviewer.InterviewerId);
+                        groupedEvents.Add(new TimeRangeViewModel
+                        {
+                            Date = currentStart.EventDate.Date,
+                            EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                            StartTime = currentStart.Time.ToString(@"h\:mm tt"),
+                            Location = location,
+                            Name = name.FirstName + " " + name.LastName,
+                            InterviewType = type,
+                            TimeslotIds = ints
+                        });
+
+                        currentStart = nextEvent;
+                        currentEnd = nextEvent;
+                        ints = new List<int>
+                            {
+                                signupInterviewTimeslots[i].Id
+                            };
+                        inperson = signupInterviewTimeslots[i].SignupInterviewer.InPerson;
+                        interviewerId = signupInterviewTimeslots[i].SignupInterviewer.InterviewerId;
+                        interviewtype = (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical);
+                    }
+                }
+
+                if (inperson)
+                {
+                    location = InterviewLocationConstants.InPerson;
+                }
+                else
+                {
+                    location = InterviewLocationConstants.Virtual;
+                }
+                var lasttype = "";
+                if (interviewtype.IsBehavioral && !interviewtype.IsTechnical)
+                {
+                    lasttype = InterviewTypesConstants.Behavioral;
+                }
+                else if (!interviewtype.IsBehavioral && interviewtype.IsTechnical)
+                {
+                    lasttype = InterviewTypesConstants.Technical;
+                }
+                else
+                {
+                    lasttype = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
+                }
+                var user = await _userManager.FindByIdAsync(interviewerId);
+                groupedEvents.Add(new TimeRangeViewModel
+                {
+                    Date = currentStart.EventDate.Date,
+                    EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                    StartTime = currentStart.Time.ToString(@"h\:mm tt"),
+                    Location = location,
+                    Name = user.FirstName + " " + user.LastName,
+                    InterviewType = lasttype,
+                    TimeslotIds = ints
+                });
+            }
+
+            return View(groupedEvents);
         }
 
         // GET: SignupInterviewerTimeslots/Details/5
@@ -491,6 +601,66 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteRange(int[] timeslots)
+        {
+            // Check if the timeslotIds array is empty or null
+            if (timeslots == null || timeslots.Length == 0)
+            {
+                return NotFound();
+            }
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.SignupInterviewerTimeslot
+                .Include(x => x.SignupInterviewer)
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            // Check if any of the timeslots to delete are null
+            if (timeslotsToDelete == null || timeslotsToDelete.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var date = timeslotsToDelete.First().Timeslot.EventDate.Date;
+            if (timeslotsToDelete.Any(t => t.Timeslot.EventDate.Date != date))
+            {
+                return NotFound();
+            }
+
+            var timeslotslist = timeslots.ToList();
+
+            var viewModel = new TimeRangeViewModel
+            {
+                Date = date,
+                StartTime = timeslotsToDelete.First().Timeslot.Time.ToString(@"h\:mm tt"),
+                EndTime = timeslotsToDelete.Last().Timeslot.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                TimeslotIds = timeslotslist
+            };
+
+
+            return View("UserDeleteRange", viewModel);
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteRangeConfirmed(int[] timeslots)
+        {
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.SignupInterviewerTimeslot
+                .Include(x => x.SignupInterviewer)
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            // Delete the timeslots
+            _context.SignupInterviewerTimeslot.RemoveRange(timeslotsToDelete);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "SignupInterviewerTimeslots");
         }
     }
 }

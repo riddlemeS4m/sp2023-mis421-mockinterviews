@@ -44,23 +44,80 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var volunteerEvents = await _context.VolunteerEvent
                 .Include(v => v.Timeslot)
                 .ThenInclude(y => y.EventDate)
+                .OrderBy(ve => ve.StudentId)
+                .ThenBy(ve => ve.Timeslot.EventDate.Date)
+                .ThenBy(ve => ve.Timeslot.Time)
                 .ToListAsync();
 
-            var studentIds = volunteerEvents.Select(v => v.StudentId).Distinct().ToList();
+            //var studentIds = volunteerEvents.Select(v => v.StudentId).Distinct().ToList();
 
-            var students = await _userManager.Users.Where(u => studentIds.Contains(u.Id)).ToListAsync();
+            //var students = await _userManager.Users.Where(u => studentIds.Contains(u.Id)).ToListAsync();
 
-            var query = from volunteerEvent in volunteerEvents
-                        join student in students on volunteerEvent.StudentId equals student.Id
-                        select new VolunteerEventViewModel
+            //var query = from volunteerEvent in volunteerEvents
+            //            join student in students on volunteerEvent.StudentId equals student.Id
+            //            select new VolunteerEventViewModel
+            //            {
+            //                VolunteerEvent = volunteerEvent,
+            //                StudentName = student.FirstName + " " + student.LastName,
+            //            };
+
+            //var viewModel = query.ToList();
+
+            var groupedEvents = new List<TimeRangeViewModel>();
+
+            if (volunteerEvents != null && volunteerEvents.Count != 0)
+            {
+                var ints = new List<int>();
+                var currentStart = volunteerEvents.First().Timeslot;
+                var currentEnd = volunteerEvents.First().Timeslot;
+                var studentid = volunteerEvents.First().StudentId;
+                ints.Add(volunteerEvents.First().Id);
+
+                for (int i = 1; i < volunteerEvents.Count; i++)
+                {
+                    var nextEvent = volunteerEvents[i].Timeslot;
+
+                    if (currentEnd.Id + 1 == nextEvent.Id 
+                        && currentEnd.EventDate.Date == nextEvent.EventDate.Date
+                        && volunteerEvents[i].StudentId == studentid)
+                    {
+                        currentEnd = nextEvent;
+                        ints.Add(volunteerEvents[i].Id);
+                    }
+                    else
+                    {
+                        var name = await _userManager.FindByIdAsync(volunteerEvents[i - 1].StudentId);
+                        groupedEvents.Add(new TimeRangeViewModel
                         {
-                            VolunteerEvent = volunteerEvent,
-                            StudentName = student.FirstName + " " + student.LastName,
+                            Date = currentStart.EventDate.Date,
+                            EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                            StartTime = currentStart.Time.ToString(@"h\:mm tt"),
+                            Name = name.FirstName + " " + name.LastName,
+                            TimeslotIds = ints
+                        });
+
+                        currentStart = nextEvent;
+                        currentEnd = nextEvent;
+                        ints = new List<int>
+                        {
+                            volunteerEvents[i].Id
                         };
+                        studentid = volunteerEvents[i].StudentId;
+                    }
+                }
 
-            var viewModel = query.ToList();
+                var user = await _userManager.FindByIdAsync(studentid);
+                groupedEvents.Add(new TimeRangeViewModel
+                {
+                    Date = currentStart.EventDate.Date,
+                    EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                    StartTime = currentStart.Time.ToString(@"h\:mm tt"),
+                    Name = user.FirstName + " " + user.LastName,
+                    TimeslotIds = ints
+                });
+            }
 
-            return View(viewModel);
+            return View(groupedEvents);
         }
 
         // GET: VolunteerEvents/Details/5
@@ -355,6 +412,65 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteRange(int[] timeslots)
+        {
+            // Check if the timeslotIds array is empty or null
+            if (timeslots == null || timeslots.Length == 0)
+            {
+                return NotFound();
+            }
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.VolunteerEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            // Check if any of the timeslots to delete are null
+            if (timeslotsToDelete == null || timeslotsToDelete.Count == 0)
+            {
+                return NotFound();
+            }
+
+            var date = timeslotsToDelete.First().Timeslot.EventDate.Date;
+            if (timeslotsToDelete.Any(t => t.Timeslot.EventDate.Date != date))
+            {
+                return NotFound();
+            }
+
+            var timeslotslist = timeslots.ToList();
+
+            var viewModel = new TimeRangeViewModel
+            {
+                Date = date,
+                StartTime = timeslotsToDelete.First().Timeslot.Time.ToString(@"h\:mm tt"),
+                EndTime = timeslotsToDelete.Last().Timeslot.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                TimeslotIds = timeslotslist
+            };
+
+
+            return View(viewModel);
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteRangeConfirmed(int[] timeslots)
+        {
+
+            // Get the timeslots to delete
+            var timeslotsToDelete = await _context.VolunteerEvent
+
+                .Where(t => timeslots.Contains(t.Id))
+                .ToListAsync();
+
+            // Delete the timeslots
+            _context.VolunteerEvent.RemoveRange(timeslotsToDelete);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "VolunteerEvents");
         }
     }
 }
