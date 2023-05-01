@@ -7,7 +7,7 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
-COPY ["sp2023-mis421-mockinterviews/sp2023-mis421-mockinterviews.csproj", "sp2023-mis421-mockinterviews/"]
+COPY ["sp2023-mis421-mockinterviews.csproj", "sp2023-mis421-mockinterviews/"]
 RUN dotnet restore "sp2023-mis421-mockinterviews/sp2023-mis421-mockinterviews.csproj"
 COPY . .
 WORKDIR "/src/sp2023-mis421-mockinterviews"
