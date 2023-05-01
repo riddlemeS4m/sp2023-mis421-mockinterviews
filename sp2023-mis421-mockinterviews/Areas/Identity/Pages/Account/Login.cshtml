@@ -1,19 +1,17 @@
 ﻿@page
 @model LoginModel
 
-<div class="container" id="titleText">
     @{
         ViewData["Title"] = "Log In";
     }
-</div>
 
-<h1>@ViewData["Title"]</h1>
+<h1 style="margin-top: 20px;">@ViewData["Title"]</h1>
 <div class="row">
 @*    <div class="col-md-4">*@
         <section>
             <div class="row d-flex justify-content-center col-12">
-                <div class="col-4 border border-primary rounded m-20">
-                    <form id="account" method="post" class="py-5">
+                <div class="col-4 border border-primary rounded m-20" style="margin-bottom: 20px">
+                    <form id="account" method="post" class="py-5" style="margin-bottom: -20px;">
                         <div class="d-flex justify-content-center">
                             <i class="icon-map-marker icon-4x text-success"></i>
                         </div>
@@ -30,13 +28,19 @@
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
                         <br />
-                    <div class="form-group" style="display: flex; justify-content: center; margin-bottom: -20px;">
-                            <div class="checkbox">
-                                <label asp-for="Input.RememberMe">
-                                    <input asp-for="Input.RememberMe" />
-                                    @Html.DisplayNameFor(m => m.Input.RememberMe)
-                                </label>
+                        <div class="row">
+                            <div class="col-md-3"></div>
+                            <div class="col-md-6" style="margin-left: 15px;">
+                            <div class="form-group d-flex justify-content-center">
+                                    <div class="checkbox">
+                                        <label asp-for="Input.RememberMe">
+                                            <input asp-for="Input.RememberMe" />
+                                            @Html.DisplayNameFor(m => m.Input.RememberMe)
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
+                            <div class="col-md-3"></div>
                         </div>
                         <br />
                     <div class="form-group" style="display: flex; justify-content: center;">
@@ -44,7 +48,6 @@
                         </div>
                     </form>
                 <div class="col-12" mx-auto;">
-                    <br />
                     <p class="col-12" style="display: flex; justify-content: center;">
                         <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
                     </p>
