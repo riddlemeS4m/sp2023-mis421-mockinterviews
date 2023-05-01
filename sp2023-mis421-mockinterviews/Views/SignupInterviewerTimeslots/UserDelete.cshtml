@@ -4,12 +4,15 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Interviewer Cancellation</h1>
+@*<h1>Interviewer Cancellation</h1>
+*@
+<div style="display: flex; justify-content: center;">
+    <h2>Are you sure you want to cancel your interview?</h2>
+</div>
 
-<h3>Are you sure you want to cancel this?</h3>
 <div>
-    <hr />
-    <dl class="row">
+@*    <hr />
+*@    <dl class="row">
         <dt class="col-sm-2">
             Name
         </dt>
@@ -58,14 +61,16 @@
         }
     </dl>
 
-    <form asp-action="UserDeleteConfirmed">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Cancel" class="btn btn-danger" /> |
-        @Html.ActionLink("Return to Home",
-        "Index",   // <-- ActionMethod
-        "Home",  // <-- Controller Name.
-        null, // <-- Route arguments.
-        null
-        )
-    </form>
+    <div style="display: flex; justify-content: center">
+        <form asp-action="UserDeleteConfirmed">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Yes, Cancel" class="btn btn-primary" style="margin-right: 15px"/> 
+            @Html.ActionLink("Return to Home",
+            "Index",   // <-- ActionMethod
+            "Home",  // <-- Controller Name.
+            null, // <-- Route arguments.
+            null
+            )
+        </form>
+    </div>
 </div>

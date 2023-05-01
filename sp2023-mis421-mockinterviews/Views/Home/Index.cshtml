@@ -11,7 +11,7 @@
 </div>
 @if (User.Identity.IsAuthenticated)
 {
-    <p style="font-size:20px; text-align:center">
+    <p style="font-size:20px; text-align:center; padding-top: 10px">
         Our mission is to help students prepare for their upcoming job interviews by <br /> providing a realistic simulation of the interview experience.
     </p>
     <p style="font-size:20px; text-align:center; border-bottom: 2px solid black">
@@ -21,9 +21,12 @@
 }
 else
 {
-    <p style="font-size:20px; text-align:center">
-        Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
+    <p style="font-size:20px; text-align:center; padding-top: 10px;" id="homePageText">
+            Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. To get started, please create an account or sign in if you already have one.
     </p>
+    <div>
+        <img src="~/images/HewsonHallCROPPED.png" alt="Hewson Hall" style="width: 200%">
+    </div>
 }
 
 @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
