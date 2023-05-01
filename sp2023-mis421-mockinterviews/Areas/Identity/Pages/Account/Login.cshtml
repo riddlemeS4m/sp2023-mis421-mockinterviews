@@ -19,9 +19,9 @@
                         </div>
                         <div class="d-flex justify-content-center">
                             <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-                            <div asp-validation-summary="All" class="text-danger"></div>
-                        </div>
-                        <div class="form-group ">
+@*                            <div asp-validation-summary="All" class="text-danger"></div>
+*@                        </div>
+                        <div class="form-group">
                             <input asp-for="Input.Email" class="form-control" placeholder="Email address" required autofocus />
                             <span asp-validation-for="Input.Email" class="text-danger"></span>
                         </div>
@@ -30,7 +30,7 @@
                             <span asp-validation-for="Input.Password" class="text-danger"></span>
                         </div>
                         <br />
-                    <div class="form-group" style="display: flex; justify-content: center;">
+                    <div class="form-group" style="display: flex; justify-content: center; margin-bottom: -20px;">
                             <div class="checkbox">
                                 <label asp-for="Input.RememberMe">
                                     <input asp-for="Input.RememberMe" />
@@ -40,12 +40,10 @@
                         </div>
                         <br />
                     <div class="form-group" style="display: flex; justify-content: center;">
-                            <button type="submit" class="btn btn-lg btn-primary btn-block">Sign In</button>
+                        <button type="submit" class="btn btn-lg btn-primary btn-block">Sign In</button>
                         </div>
                     </form>
-                </div>
-                <br />
-                <div class="row col-12">
+                <div class="col-12" mx-auto;">
                     <br />
                     <p class="col-12" style="display: flex; justify-content: center;">
                         <a id="forgot-password" asp-page="./ForgotPassword">Forgot your password?</a>
@@ -53,6 +51,7 @@
                     <p class="col-12" style="display: flex; justify-content: center;">
                         <a asp-page="./Register" asp-route-returnUrl="@Model.ReturnUrl">Register as a new user</a>
                     </p>
+                </div>
                 </div>
             </div>
         </section>
