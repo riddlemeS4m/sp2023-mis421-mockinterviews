@@ -49,73 +49,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenBy(ve => ve.Timeslot.Time)
                 .ToListAsync();
 
-            //var studentIds = volunteerEvents.Select(v => v.StudentId).Distinct().ToList();
-
-            //var students = await _userManager.Users.Where(u => studentIds.Contains(u.Id)).ToListAsync();
-
-            //var query = from volunteerEvent in volunteerEvents
-            //            join student in students on volunteerEvent.StudentId equals student.Id
-            //            select new VolunteerEventViewModel
-            //            {
-            //                VolunteerEvent = volunteerEvent,
-            //                StudentName = student.FirstName + " " + student.LastName,
-            //            };
-
-            //var viewModel = query.ToList();
-
-            var groupedEvents = new List<TimeRangeViewModel>();
-
-            if (volunteerEvents != null && volunteerEvents.Count != 0)
-            {
-                var ints = new List<int>();
-                var currentStart = volunteerEvents.First().Timeslot;
-                var currentEnd = volunteerEvents.First().Timeslot;
-                var studentid = volunteerEvents.First().StudentId;
-                ints.Add(volunteerEvents.First().Id);
-
-                for (int i = 1; i < volunteerEvents.Count; i++)
-                {
-                    var nextEvent = volunteerEvents[i].Timeslot;
-
-                    if (currentEnd.Id + 1 == nextEvent.Id 
-                        && currentEnd.EventDate.Date == nextEvent.EventDate.Date
-                        && volunteerEvents[i].StudentId == studentid)
-                    {
-                        currentEnd = nextEvent;
-                        ints.Add(volunteerEvents[i].Id);
-                    }
-                    else
-                    {
-                        var name = await _userManager.FindByIdAsync(volunteerEvents[i - 1].StudentId);
-                        groupedEvents.Add(new TimeRangeViewModel
-                        {
-                            Date = currentStart.EventDate.Date,
-                            EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                            StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                            Name = name.FirstName + " " + name.LastName,
-                            TimeslotIds = ints
-                        });
-
-                        currentStart = nextEvent;
-                        currentEnd = nextEvent;
-                        ints = new List<int>
-                        {
-                            volunteerEvents[i].Id
-                        };
-                        studentid = volunteerEvents[i].StudentId;
-                    }
-                }
-
-                var user = await _userManager.FindByIdAsync(studentid);
-                groupedEvents.Add(new TimeRangeViewModel
-                {
-                    Date = currentStart.EventDate.Date,
-                    EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                    StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                    Name = user.FirstName + " " + user.LastName,
-                    TimeslotIds = ints
-                });
-            }
+            var timeRanges = new ControlBreakVolunteer(_userManager);
+            var groupedEvents = await timeRanges.ToTimeRanges(volunteerEvents);
 
             return View(groupedEvents);
         }
@@ -207,7 +142,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            ComposeEmail(user, volEvents);
+            var sortedEvents = volEvents
+                .OrderBy(x => x.Timeslot.EventDate.Date)
+                .ThenBy(x => x.Timeslot.Time)
+                .ToList();
+
+            ComposeEmail(user, sortedEvents);
 
             return RedirectToAction("Index", "Home");
         }
@@ -330,10 +270,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async void ComposeEmail(ApplicationUser user, List<VolunteerEvent> emailTimes)
         {
+            var timeRanges = new ControlBreakVolunteer(_userManager);
+            var groupedEvents = await timeRanges.ToTimeRanges(emailTimes);
+
             var times = "";
-            foreach (VolunteerEvent interview in emailTimes)
+            foreach (TimeRangeViewModel interview in groupedEvents)
             {
-                times += interview.ToString();
+                times += interview.StartTime + " - " + interview.EndTime + " on " + interview.Date.ToString(@"M/dd/yyyy") + "<br>";
             }
 
             ASendAnEmail emailer = new VolunteerSignupConfirmation();

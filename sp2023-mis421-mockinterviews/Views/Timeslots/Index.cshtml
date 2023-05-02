@@ -15,12 +15,12 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslots[0].Time)
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EventDates[0].Date)
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.EventDate.Date)
             </th>
-            <th>
+            @*<th>
                 Active/Inactive
             </th>
             <th>
@@ -31,6 +31,15 @@
             </th>
             <th>
                 Visible to Students
+            </th>*@
+            <th>
+                Number of Students
+            </th>
+            <th>
+                Number of Interviewers
+            </th>
+            <th>
+                Number of Volunteers
             </th>
             <th></th>
         </tr>
@@ -39,12 +48,12 @@
 @foreach (var item in Model.Timeslots) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Time)
+                @Html.DisplayFor(modelItem => item.Timeslot.Time)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.EventDate.Date)
+                @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
             </td>
-            <td>
+            @*<td>
                 @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
@@ -55,10 +64,19 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IsStudent)
+            </td>*@
+            <td>
+                @Html.DisplayFor(modelItem => item.StudentCount)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> @*|
+                @Html.DisplayFor(modelItem => item.InterviewerCount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.VolunteerCount)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.Timeslot.Id">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.Timeslot.Id">Details</a> @*|
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
             </td>
         </tr>

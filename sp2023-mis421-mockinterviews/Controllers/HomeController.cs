@@ -57,63 +57,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(v => v.StudentId == userId)
                     .ToListAsync();
 
-                //if(volunteerEvents != null)
-                //{
-                //    foreach (VolunteerEvent volunteerEvent in volunteerEvents)
-                //    {
-                //        model.VolunteerEventViewModels.Add(new VolunteerEventViewModel()
-                //        {
-                //            VolunteerEvent = volunteerEvent
-                //        });
-                //    }
-                //}
-
-                var groupedEvents = new List<TimeRangeViewModel>();
-              
-                if(volunteerEvents != null && volunteerEvents.Count != 0)
-                {
-                    var ints = new List<int>();
-                    var currentStart = volunteerEvents.First().Timeslot;
-                    var currentEnd = volunteerEvents.First().Timeslot;
-                    ints.Add(volunteerEvents.First().Id);
-
-                    for(int i = 1;  i < volunteerEvents.Count; i++)
-                    {
-                        var nextEvent = volunteerEvents[i].Timeslot;
-
-                        if (currentEnd.Id + 1 == nextEvent.Id 
-                            && currentEnd.EventDate.Date == nextEvent.EventDate.Date)
-                        {
-                            currentEnd = nextEvent;
-                            ints.Add(volunteerEvents[i].Id);
-                        }
-                        else
-                        {
-                            groupedEvents.Add(new TimeRangeViewModel
-                            {
-                                Date = currentStart.EventDate.Date,
-                                EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                                StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                                TimeslotIds = ints
-                            });
-
-                            currentStart = nextEvent;
-                            currentEnd = nextEvent;
-                            ints = new List<int>
-                            {
-                                volunteerEvents[i].Id
-                            };
-                        }
-                    }
-
-                    groupedEvents.Add(new TimeRangeViewModel
-                    {
-                        Date = currentStart.EventDate.Date,
-                        EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                        StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                        TimeslotIds = ints
-                    });
-                }
+                var timeRanges = new ControlBreakVolunteer(_userManager);
+                var groupedEvents = await timeRanges.ToTimeRanges(volunteerEvents);
 
                 model.TimeRangeViewModels = groupedEvents;
             }
@@ -164,7 +109,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
                 var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
-                    .Include(v => v.Timeslot)
+    				.Include(s => s.SignupInterviewer)
+					.Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
                     .Include(v => v.SignupInterviewer)
                     .OrderBy(ve => ve.Timeslot.EventDate.Date)
@@ -172,84 +118,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(v => v.SignupInterviewer.InterviewerId == userId && v.Timeslot.IsInterviewer)
                     .ToListAsync();
 
-                //if (signupInterviewTimeslots != null)
-                //{
-                //    foreach (SignupInterviewerTimeslot signupInterviewerTimeslot in signupInterviewTimeslots)
-                //    {
-                //        model.SignupInterviewerTimeslots.Add(signupInterviewerTimeslot);
-                //    }
-                //}
-
-                var groupedEvents = new List<TimeRangeViewModel>();
-                var location = "";
-
-                if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
-                {
-                    var ints = new List<int>();
-                    var currentStart = signupInterviewTimeslots.First().Timeslot;
-                    var currentEnd = signupInterviewTimeslots.First().Timeslot;
-                    var inperson = signupInterviewTimeslots.First().SignupInterviewer.InPerson;
-                    ints.Add(signupInterviewTimeslots.First().Id);
-
-                    for (int i = 1; i < signupInterviewTimeslots.Count; i++)
-                    {
-                        var nextEvent = signupInterviewTimeslots[i].Timeslot;
-
-                        if (currentEnd.Id + 1 == nextEvent.Id 
-                            && currentEnd.EventDate.Date == nextEvent.EventDate.Date
-                            && signupInterviewTimeslots[i].SignupInterviewer.InPerson == inperson)
-                        {
-                            currentEnd = nextEvent;
-                            ints.Add(signupInterviewTimeslots[i].Id);
-                        }
-                        else
-                        {
-                            if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson) 
-                            { 
-                                location = InterviewLocationConstants.InPerson;
-                            }
-                            else
-                            {
-                                location = InterviewLocationConstants.Virtual;
-                            }
-
-                            groupedEvents.Add(new TimeRangeViewModel
-                            {
-                                Date = currentStart.EventDate.Date,
-                                EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                                StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                                Location = location,
-                                TimeslotIds = ints
-                            });
-
-                            currentStart = nextEvent;
-                            currentEnd = nextEvent;
-                            ints = new List<int>
-                            {
-                                signupInterviewTimeslots[i].Id
-                            };
-                            inperson = signupInterviewTimeslots[i].SignupInterviewer.InPerson;
-                        }
-                    }
-
-                    if (inperson)
-                    {
-                        location = InterviewLocationConstants.InPerson;
-                    }
-                    else
-                    {
-                        location = InterviewLocationConstants.Virtual;
-                    }
-
-                    groupedEvents.Add(new TimeRangeViewModel
-                    {
-                        Date = currentStart.EventDate.Date,
-                        EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                        StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                        Location = location,
-                        TimeslotIds = ints
-                    });
-                }
+                var timeRanges = new ControlBreakInterviewer(_userManager);
+                var groupedEvents = await timeRanges.ToTimeRanges(signupInterviewTimeslots);
 
                 model.InterviewerRangeViewModels = groupedEvents;
             }
@@ -351,16 +221,21 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.EventDate)
                     .Include(x => x.SignupInterviewer)
+                    .OrderBy(x => x.Timeslot.EventDate.Date)
+                    .ThenBy(x => x.Timeslot.Time)
                     .Where(x => x.SignupInterviewer.InterviewerId == user)
                     .ToListAsync();
 
-                var times = "";
-                foreach (var interview in interviews)
-                {
-                    times += interview.ToString();
-                }
+				var timeRanges = new ControlBreakInterviewer(_userManager);
+				var groupedEvents = await timeRanges.ToTimeRanges(interviews);
 
-                ASendAnEmail emailer = new InterviewerReminderEmail();
+				var times = "";
+				foreach (TimeRangeViewModel interview in groupedEvents)
+				{
+					times += interview.StartTime + " - " + interview.EndTime + " on " + interview.Date.ToString(@"M/dd/yyyy") + "<br>";
+				}
+
+				ASendAnEmail emailer = new InterviewerReminderEmail();
                 await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerReminderEmail, userFull.Email, userFull.FirstName, times);
             }
 

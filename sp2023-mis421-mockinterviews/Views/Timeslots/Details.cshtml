@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.TimeslotDetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -11,44 +11,90 @@
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Time)
+            @Html.DisplayNameFor(model => model.Timeslot.Time)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Time)
+            @Html.DisplayFor(model => model.Timeslot.Time)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
+            @Html.DisplayNameFor(model => model.Timeslot.IsActive)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
+            @Html.DisplayFor(model => model.Timeslot.IsActive)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsVolunteer)
+            @Html.DisplayNameFor(model => model.Timeslot.IsVolunteer)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsVolunteer)
+            @Html.DisplayFor(model => model.Timeslot.IsVolunteer)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsInterviewer)
+            @Html.DisplayNameFor(model => model.Timeslot.IsInterviewer)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsInterviewer)
+            @Html.DisplayFor(model => model.Timeslot.IsInterviewer)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsStudent)
+            @Html.DisplayNameFor(model => model.Timeslot.IsStudent)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsStudent)
+            @Html.DisplayFor(model => model.Timeslot.IsStudent)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.MaxSignUps)
+            @Html.DisplayNameFor(model => model.Timeslot.MaxSignUps)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.MaxSignUps)
+            @Html.DisplayFor(model => model.Timeslot.MaxSignUps)
         </dd>
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.VolunteerNames)
+        </dt>
+        @if(Model.VolunteerNames != null & Model.VolunteerNames.Count != 0)
+        {
+            <dd class="col-sm-10">
+                @string.Join(", ", Model.VolunteerNames)
+            </dd>
+        }
+        else
+        {
+            <dd class="col-sm-10">
+                (No volunteers signed up yet)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.InterviewerNames)
+        </dt>
+        @if(Model.InterviewerNames !=  null && Model.InterviewerNames.Count != 0)
+        {
+            <dd class="col-sm-10">
+                @string.Join(", ", Model.InterviewerNames)
+            </dd>
+        }
+        else
+        {
+            <dd class="col-sm-10">
+                (No interviewers signed up yet)
+            </dd>
+        }
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.StudentNames)
+        </dt>
+        @if(Model.StudentNames != null && Model.StudentNames.Count != 0)
+        {
+            <dd class="col-sm-10">
+                @string.Join(", ", Model.StudentNames)
+            </dd>
+        }
+        else
+        {
+            <dd class="col-sm-10">
+                (No students signed up yet)
+            </dd>
+        }
+
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Edit" asp-route-id="@Model?.Timeslot.Id">Edit</a> |
     <a asp-controller="Timeslots" asp-action="Index">Back to List</a>
 </div>

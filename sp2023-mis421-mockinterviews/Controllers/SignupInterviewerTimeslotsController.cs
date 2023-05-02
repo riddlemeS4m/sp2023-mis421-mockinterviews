@@ -50,112 +50,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(s => s.Timeslot.IsInterviewer)
                 .ToListAsync();
 
-            var groupedEvents = new List<TimeRangeViewModel>();
-            var location = "";
-
-            if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
-            {
-                var ints = new List<int>();
-                var currentStart = signupInterviewTimeslots.First().Timeslot;
-                var currentEnd = signupInterviewTimeslots.First().Timeslot;
-                var inperson = signupInterviewTimeslots.First().SignupInterviewer.InPerson;
-                var interviewerId = signupInterviewTimeslots.First().SignupInterviewer.InterviewerId;
-                var interviewtype = (signupInterviewTimeslots.First().SignupInterviewer.IsBehavioral, signupInterviewTimeslots.First().SignupInterviewer.IsTechnical);
-                ints.Add(signupInterviewTimeslots.First().Id);
-
-                for (int i = 1; i < signupInterviewTimeslots.Count; i++)
-                {
-                    var nextEvent = signupInterviewTimeslots[i].Timeslot;
-
-                    if (currentEnd.Id + 1 == nextEvent.Id
-                        && currentEnd.EventDate.Date == nextEvent.EventDate.Date
-                        && signupInterviewTimeslots[i].SignupInterviewer.InPerson == inperson
-                        && signupInterviewTimeslots[i].SignupInterviewer.InterviewerId == interviewerId
-                        && (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical) == interviewtype)
-                    {
-                        currentEnd = nextEvent;
-                        ints.Add(signupInterviewTimeslots[i].Id);
-                    }
-                    else
-                    {
-                        if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson)
-                        {
-                            location = InterviewLocationConstants.InPerson;
-                        }
-                        else
-                        {
-                            location = InterviewLocationConstants.Virtual;
-                        }
-                        var type = "";
-                        if (signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && !signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
-                        {
-                            type = InterviewTypesConstants.Behavioral;
-                        }
-                        else if(!signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
-                        {
-                            type = InterviewTypesConstants.Technical;
-                        }
-                        else
-                        {
-                            type = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
-                        }
-                        var name = await _userManager.FindByIdAsync(signupInterviewTimeslots[i - 1].SignupInterviewer.InterviewerId);
-                        groupedEvents.Add(new TimeRangeViewModel
-                        {
-                            Date = currentStart.EventDate.Date,
-                            EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                            StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                            Location = location,
-                            Name = name.FirstName + " " + name.LastName,
-                            InterviewType = type,
-                            TimeslotIds = ints
-                        });
-
-                        currentStart = nextEvent;
-                        currentEnd = nextEvent;
-                        ints = new List<int>
-                            {
-                                signupInterviewTimeslots[i].Id
-                            };
-                        inperson = signupInterviewTimeslots[i].SignupInterviewer.InPerson;
-                        interviewerId = signupInterviewTimeslots[i].SignupInterviewer.InterviewerId;
-                        interviewtype = (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical);
-                    }
-                }
-
-                if (inperson)
-                {
-                    location = InterviewLocationConstants.InPerson;
-                }
-                else
-                {
-                    location = InterviewLocationConstants.Virtual;
-                }
-                var lasttype = "";
-                if (interviewtype.IsBehavioral && !interviewtype.IsTechnical)
-                {
-                    lasttype = InterviewTypesConstants.Behavioral;
-                }
-                else if (!interviewtype.IsBehavioral && interviewtype.IsTechnical)
-                {
-                    lasttype = InterviewTypesConstants.Technical;
-                }
-                else
-                {
-                    lasttype = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
-                }
-                var user = await _userManager.FindByIdAsync(interviewerId);
-                groupedEvents.Add(new TimeRangeViewModel
-                {
-                    Date = currentStart.EventDate.Date,
-                    EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-                    StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-                    Location = location,
-                    Name = user.FirstName + " " + user.LastName,
-                    InterviewType = lasttype,
-                    TimeslotIds = ints
-                });
-            }
+            var timeRanges = new ControlBreakInterviewer(_userManager);
+            var groupedEvents = await timeRanges.ToTimeRanges(signupInterviewTimeslots);
 
             return View(groupedEvents);
         }
@@ -344,7 +240,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 emailTimes.Add(timeslot);
             }
 
-            ComposeEmail(user, emailTimes);
+            var sortedTimes = emailTimes
+                .OrderBy(x => x.Timeslot.EventDate.Date)
+                .ThenBy(x => x.Timeslot.Time)
+                .ToList();
+
+            ComposeEmail(user, sortedTimes);
 
             return RedirectToAction("Index", "Home");
         }
@@ -469,13 +370,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async void ComposeEmail(ApplicationUser user, List<SignupInterviewerTimeslot> emailTimes)
         {
-            var times = "";
-            foreach (SignupInterviewerTimeslot interview in emailTimes)
-            {
-                times += interview.ToString();
-            }
+			var timeRanges = new ControlBreakInterviewer(_userManager);
+			var groupedEvents = await timeRanges.ToTimeRanges(emailTimes);
 
-            ASendAnEmail emailer = new InterviewerSignupConfirmation();
+			var times = "";
+			foreach (TimeRangeViewModel interview in groupedEvents)
+			{
+				times += interview.StartTime + " - " + interview.EndTime + " on " + interview.Date.ToString(@"M/dd/yyyy") + "<br>";
+			}
+
+			ASendAnEmail emailer = new InterviewerSignupConfirmation();
             await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupConfirmation, user.Email, user.FirstName, times);
 
             string fullName = user.FirstName + " " + user.LastName;

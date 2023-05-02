@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
@@ -17,21 +19,41 @@ namespace sp2023_mis421_mockinterviews.Controllers
     public class TimeslotsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TimeslotsController(MockInterviewDataDbContext context)
+        public TimeslotsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
+            _userManager = userManager;
         }
 
         // GET: Timeslots
         public async Task<IActionResult> Index()
         {
-            var timeslots = await _context.Timeslot.Include(t => t.EventDate).ToListAsync();
-            var eventdates = await _context.EventDate.ToListAsync();
+            var timeslots = await _context.Timeslot
+                .Include(t => t.EventDate)
+                .ToListAsync();
+            var eventdates = await _context.EventDate
+                .ToListAsync();
+
+            var countlist = new List<ParticipantCountViewModel>();
+            foreach(Timeslot timeslot in timeslots)
+            {
+                var studentCount = await _context.InterviewEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.SignupInterviewerTimeslot.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                countlist.Add(new ParticipantCountViewModel
+                {
+                    Timeslot = timeslot,
+                    StudentCount = studentCount,
+                    InterviewerCount = interviewerCount,
+                    VolunteerCount = volunteerCount
+                });
+            }
 
             var viewModel = new TimeslotViewModel()
             {
-                Timeslots = timeslots,
+                Timeslots = countlist,
                 EventDates = eventdates
             };
 
@@ -57,7 +79,64 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            return View(timeslot);
+            var interviewerList = await _context.SignupInterviewerTimeslot
+                .Include(x => x.SignupInterviewer)
+                .Where(x => x.TimeslotId == timeslot.Id)
+                .ToListAsync();
+            var interviewerNamesList = new List<string>();
+            if (interviewerList != null && interviewerList.Count != 0)
+            {
+                var interviewerIds = interviewerList
+                .Select(x => x.SignupInterviewer.InterviewerId)
+                .ToList();
+                foreach (var interviewerid in interviewerIds)
+                {
+                    var interviewer = await _userManager.FindByIdAsync(interviewerid);
+                    interviewerNamesList.Add(interviewer.FirstName + " " + interviewer.LastName);
+                }
+            }
+
+            var studentList = await _context.InterviewEvent
+               .Where(x => x.TimeslotId == timeslot.Id)
+               .ToListAsync();
+            var studentNamesList = new List<string>();
+            if (studentList != null && studentList.Count != 0)
+            {
+                var studentIds = studentList
+                .Select(x => x.StudentId)
+                .ToList();
+                foreach (var interviewerid in studentIds)
+                {
+                    var student = await _userManager.FindByIdAsync(interviewerid);
+                    studentNamesList.Add(student.FirstName + " " + student.LastName);
+                }
+            }
+
+            var volunteerList = await _context.VolunteerEvent
+               .Where(x => x.TimeslotId == timeslot.Id)
+               .ToListAsync();
+            var volunteerNamesList = new List<string>();
+            if (volunteerList != null && volunteerList.Count != 0)
+            {
+                var volunteerIds = volunteerList
+                .Select(x => x.StudentId)
+                .ToList();
+                foreach (var interviewerid in volunteerIds)
+                {
+                    var volunteer = await _userManager.FindByIdAsync(interviewerid);
+                    volunteerNamesList.Add(volunteer.FirstName + " " + volunteer.LastName);
+                }
+            }
+
+            var viewModel = new TimeslotDetailsViewModel
+            {
+                Timeslot = timeslot,
+                InterviewerNames = interviewerNamesList,
+                StudentNames = studentNamesList,
+                VolunteerNames = volunteerNamesList
+            };
+
+            return View(viewModel);
         }
 
         // GET: Timeslots/Create
