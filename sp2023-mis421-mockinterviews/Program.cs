@@ -7,6 +7,7 @@ using Microsoft.Extensions.Hosting;
 using OpenAI_API;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using System.Configuration;
 
@@ -93,7 +94,8 @@ namespace sp2023_mis421_mockinterviews
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            ////seed three default roles if they don't exist, seed super user if doesn't exist
+            //uncomment if creating new databases
+            //seed three default roles if they don't exist, seed super user if doesn't exist
             //using (var scope = app.Services.CreateScope())
             //{
             //    var newservices = scope.ServiceProvider;

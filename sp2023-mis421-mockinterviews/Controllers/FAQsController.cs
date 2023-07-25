@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Web;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -185,6 +186,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         public async Task<ActionResult<string>> Chat(string prompt)
         {
