@@ -78,7 +78,7 @@ namespace sp2023_mis421_mockinterviews
             }
             else
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
                 app.UseHsts();
             }
 
