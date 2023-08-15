@@ -53,9 +53,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Property<string>("Answer")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsForChat")
-                        .HasColumnType("bit");
-
                     b.Property<string>("Question")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

@@ -35,13 +35,10 @@
 	<h1>FAQs</h1>
 	@foreach (var faq in Model)
 	{
-		if(faq.IsForChat == false)
-		{
-			<div class="faq">
-				<div class="question">@faq.Question</div>
-				<div class="answer">@faq.Answer</div>
-			</div>
-		}
+		<div class="faq">
+			<div class="question">@faq.Question</div>
+			<div class="answer">@faq.Answer</div>
+		</div>
 	}
 	<hr />
 	@if (User.IsInRole(RolesConstants.InterviewerRole))
@@ -59,59 +56,6 @@
 		</div>
 	}
 	<hr />
-	@if(User.IsInRole(RolesConstants.StudentRole))
-	{
-		<div>
-			<h1>
-				Test Your Interview Skills
-			</h1>
-		</div>
-		foreach(var faq in Model)
-		{
-			if(faq.IsForChat == true)
-			{
-				<div>
-					<form id="chat-form-@faq.Id" onsubmit="generateText('output-@faq.Id'); return false;">
-						<label for="prompt-@faq.Id"><b>Question: @faq.Question</b></label>
-						<input id="prompt-@faq.Id" type="hidden" name="prompt" value="@faq.Question">
-						<button type="submit">See a Response</button>
-					</form>
-				</div>
-				<div id="output-@faq.Id">
-				</div>
-			}
-		}
-	}
-
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js" integrity="sha512-uMtXmF28A2Ab/JJO2t/vYhlaa/3ahUOgj1Zf27M5rOo8/+fcTUVH0/E0ll68njmjrLqOBjXM3V9NiPFL5ywWPQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-	<script>
-		function generateText(id) {
-			const prompt = document.getElementById(`prompt-${id.slice(-1)}`).value;
-			console.log(prompt);
-			const data = new URLSearchParams();
-			data.append('prompt', prompt);
-
-			const outputDiv = document.getElementById(id);
-			outputDiv.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Loading...'; // add loading icon
-
-			axios.post("/FAQs/Chat", data)
-				.then(response => {
-					console.log(response)
-					if (response.data.success) {
-						const text = response.data.response;
-						document.getElementById(id).innerText = text;
-					} else {
-						const error = response.data.error;
-						console.error(error);
-						document.getElementById(id).innerText = "Error: " + error;
-					}
-				})
-				.catch(error => {
-					console.error(error);
-					document.getElementById(id).innerText = "Error: " + error.message;
-				});
-		}
-	</script>
 
 </body>
 </html>

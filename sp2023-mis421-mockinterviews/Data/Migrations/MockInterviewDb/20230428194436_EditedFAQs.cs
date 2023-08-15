@@ -15,19 +15,10 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsForChat",
-                table: "FAQs",
-                type: "bit",
-                nullable: true);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsForChat",
-                table: "FAQs");
 
             migrationBuilder.AlterColumn<string>(
                 name: "Answer",

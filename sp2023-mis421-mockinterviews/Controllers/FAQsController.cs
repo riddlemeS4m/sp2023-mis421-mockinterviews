@@ -26,12 +26,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
     {
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly OpenAI_API.OpenAIAPI _openAIAPI;
-        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager, OpenAI_API.OpenAIAPI openAIAPI)
+        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
-            _openAIAPI = openAIAPI;
         }
 
         // GET: FAQs
@@ -81,23 +79,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View();
         }
 
-        // POST: FAQs/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Question,Answer,IsForChat")] FAQs fAQs)
-        {
-            if (ModelState.IsValid)
-            {
-                fAQs.IsForChat = false;
-                _context.Add(fAQs);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(fAQs);
-        }
-
         // GET: FAQs/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
@@ -110,41 +91,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (fAQs == null)
             {
                 return NotFound();
-            }
-            return View(fAQs);
-        }
-
-        // POST: FAQs/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Question,Answer,IsForChat")] FAQs fAQs)
-        {
-            if (id != fAQs.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(fAQs);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!FAQsExists(fAQs.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
             }
             return View(fAQs);
         }
@@ -185,30 +131,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
-        [Authorize(Roles = RolesConstants.AdminRole)]
-        [HttpPost]
-        public async Task<ActionResult<string>> Chat(string prompt)
-        {
-			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-			var userFull = await _userManager.FindByIdAsync(userId);
-
-			try
-			{
-                var chat = _openAIAPI.Chat.CreateConversation();
-                chat.AppendUserInputWithName(userFull.FirstName, new ChatGPTPrompt(prompt).Prompt);
-                string textResponse = await chat.GetResponseFromChatbotAsync();
-
-			    return Json(new { success = true, response = textResponse });
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, error = ex.Message });
-            }
-        }
-
-
-
         private bool FAQsExists(int id)
         {
           return (_context.FAQs?.Any(e => e.Id == id)).GetValueOrDefault();

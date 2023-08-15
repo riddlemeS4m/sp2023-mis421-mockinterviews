@@ -10,6 +10,8 @@ using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using System.Configuration;
+using Microsoft.AspNetCore.HttpOverrides;
+using System.Net;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -18,21 +20,25 @@ namespace sp2023_mis421_mockinterviews
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             var services = builder.Services;
             var configuration = builder.Configuration;
-
-			configuration.AddUserSecrets<Program>();
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1:7281"));
+            });
+            configuration.AddUserSecrets<Program>();
 
             var connectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(connectionString));
 
-			//when updating the userdb, first...
-			//add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
-			//second...
-			//update-database -context userdatadbcontext
+            //when updating the userdb, first...
+            //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
+            //second...
+            //update-database -context userdatadbcontext
 
-			var interviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+            var interviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
             services.AddDbContext<MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(interviewDataConnectionString));
 
@@ -41,13 +47,13 @@ namespace sp2023_mis421_mockinterviews
             //second...
             //update-database -context mockinterviewdatadbcontext
 
-           
 
-			var sendGridApiKey = configuration["SendGrid:ApiKey"];
-			services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
 
-			var openAIApiKey = configuration["OpenAI:ApiKey"];
-			services.AddSingleton<OpenAIAPI>(_ => new OpenAIAPI(openAIApiKey));
+            var sendGridApiKey = configuration["SendGrid:ApiKey"];
+            services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
+
+            var openAIApiKey = configuration["OpenAI:ApiKey"];
+            services.AddSingleton<OpenAIAPI>(_ => new OpenAIAPI(openAIApiKey));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -63,14 +69,19 @@ namespace sp2023_mis421_mockinterviews
             services.AddRazorPages();
 
 
-			//services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
-			//{
-			//    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
-			//    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
-			//});
+            //services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
+            //{
+            //    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"];
+            //    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"];
+            //});
 
 
-			var app = builder.Build();
+            var app = builder.Build();
+
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             if (app.Environment.IsDevelopment())
             {
@@ -84,6 +95,7 @@ namespace sp2023_mis421_mockinterviews
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UsePathBase("/wwwroot/");
 
             app.UseRouting();
 
@@ -118,7 +130,7 @@ namespace sp2023_mis421_mockinterviews
             //        logger.LogError(ex, "An error occurred seeding the DB.");
             //    }
             //}
-
+            app.MapGet("/Home", () => "");
             app.Run();
             //Task.WaitAll(app.RunAsync());
         }
