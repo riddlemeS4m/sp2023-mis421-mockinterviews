@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Hosting;
-using OpenAI_API;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Access;
@@ -51,9 +50,6 @@ namespace sp2023_mis421_mockinterviews
 
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
-
-            var openAIApiKey = configuration["OpenAI:ApiKey"];
-            services.AddSingleton<OpenAIAPI>(_ => new OpenAIAPI(openAIApiKey));
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
