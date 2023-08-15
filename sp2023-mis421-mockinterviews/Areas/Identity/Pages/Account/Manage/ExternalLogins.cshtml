@@ -10,12 +10,17 @@
 {
     <h3>Registered Logins</h3>
     <table class="table">
+        <thead>
+            <tr>
+                <th>Provider</th>
+            </tr>
+        </thead>
         <tbody>
             @foreach (var login in Model.CurrentLogins)
             {
                 <tr>
                     <td id="@($"login-provider-{login.LoginProvider}")">@login.ProviderDisplayName</td>
-                    <td>
+                    @*<td>
                         @if (Model.ShowRemoveButton)
                         {
                             <form id="@($"remove-login-{login.LoginProvider}")" asp-page-handler="RemoveLogin" method="post">
@@ -30,7 +35,7 @@
                         {
                             @: &nbsp;
                         }
-                    </td>
+                    </td>*@
                 </tr>
             }
         </tbody>

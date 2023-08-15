@@ -65,8 +65,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 		public ActionResult Download()
 		{
-			string fileName = "Mock_Interview_Manual.docx"; // replace with your file name
-			string filePath = "wwwroot\\lib\\" + fileName; // replace with your file path
+			string fileName = "Mock_Interview_Manual.docx";
+			string filePath = "wwwroot\\lib\\" + fileName;
 
 			byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 			return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
@@ -77,6 +77,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
 		public IActionResult Create()
         {
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create([Bind("Id, Question, Answer")] FAQs faq)
+        {
+            if (ModelState.IsValid)
+            {
+                
+                _context.Add(faq);
+                await _context.SaveChangesAsync();
+                return RedirectToAction("Index", "FAQs");
+            }
+            return View(faq);
         }
 
         // GET: FAQs/Edit/5
@@ -93,6 +107,38 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
             return View(fAQs);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Question, Answer")] FAQs faq)
+        {
+            if (id != faq.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(faq);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!FAQsExists(faq.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(faq);
         }
 
         // GET: FAQs/Delete/5

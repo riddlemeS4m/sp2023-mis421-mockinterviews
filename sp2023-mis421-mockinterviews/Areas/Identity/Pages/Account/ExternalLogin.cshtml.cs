@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Data.Constants;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
 {
@@ -85,6 +86,12 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             [Required]
             [EmailAddress]
             public string Email { get; set; }
+            [Required]
+            [Display(Name = "First Name")]
+            public string FirstName { get; set; }
+            [Required]
+            [Display(Name = "Last Name")]
+            public string LastName { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -153,7 +160,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-
+                user.FirstName = Input.FirstName;
+                user.LastName = Input.LastName;
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
@@ -164,6 +172,15 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                     if (result.Succeeded)
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
+
+                        if (Input.Email[(Input.Email.IndexOf('@') + 1)..] == RolesConstants.DesignateStudent)
+                        {
+                            await _userManager.AddToRoleAsync(user, RolesConstants.StudentRole);
+                        }
+                        else
+                        {
+                            await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
+                        }
 
                         var userId = await _userManager.GetUserIdAsync(user);
                         var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

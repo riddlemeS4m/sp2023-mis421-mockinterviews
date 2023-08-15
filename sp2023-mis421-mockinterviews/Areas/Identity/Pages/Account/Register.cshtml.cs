@@ -23,6 +23,7 @@ using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
 {
+    [Authorize(Roles = RolesConstants.AdminRole)]
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;

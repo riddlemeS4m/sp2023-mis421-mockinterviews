@@ -7,15 +7,26 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 {
     public static class UserDbContextSeed
     {
-        public static async Task SeedRolesAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             //Seed Roles
-            await roleManager.CreateAsync(new IdentityRole(RolesConstants.AdminRole));
-            await roleManager.CreateAsync(new IdentityRole(RolesConstants.StudentRole));
-            await roleManager.CreateAsync(new IdentityRole(RolesConstants.InterviewerRole));
+           
+            await SeedRoleAsync(roleManager, RolesConstants.AdminRole);
+            await SeedRoleAsync(roleManager, RolesConstants.StudentRole);
+            await SeedRoleAsync(roleManager, RolesConstants.InterviewerRole);
         }
 
-        public static async Task SeedSuperAdminAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+        private static async Task SeedRoleAsync(RoleManager<IdentityRole> roleManager, string roleName)
+        {
+            // Check if the role already exists
+            if (!await roleManager.RoleExistsAsync(roleName))
+            {
+                // If the role doesn't exist, create it
+                await roleManager.CreateAsync(new IdentityRole(roleName));
+            }
+        }
+
+        public static async Task SeedSuperAdminAsync(UserManager<ApplicationUser> userManager)
         {
             //Seed Default User
             var defaultUser = new ApplicationUser
@@ -27,7 +38,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = true
             };
-            if (userManager.Users.All(u => u.Id != defaultUser.Id))
+            if (userManager.Users.All(u => u.Email != defaultUser.Email))
             {
                 var user = await userManager.FindByEmailAsync(defaultUser.Email);
                 if (user == null)
