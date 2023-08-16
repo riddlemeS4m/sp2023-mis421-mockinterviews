@@ -66,7 +66,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 		public ActionResult Download()
 		{
 			string fileName = "Mock_Interview_Manual.docx";
-			string filePath = "wwwroot\\lib\\" + fileName;
+			string filePath = "wwwroot/lib/" + fileName;
 
 			byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
 			return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
