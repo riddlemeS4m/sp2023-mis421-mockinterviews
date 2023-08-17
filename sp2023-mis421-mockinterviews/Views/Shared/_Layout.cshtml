@@ -40,7 +40,7 @@
         <nav class="navbar navbar-expand-xl navbar-light text-center py-3">
             <div class="container">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img loading="prelaod" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
+                    <img loading="preload" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -132,7 +132,7 @@
         <div class="container">
             <div class="row align-items-center mt-5 text-center text-md-start">
                 <div class="col-lg-4">
-                    <a href="index.html">
+                    <a asp-area="" asp-controller="Home" asp-action="Index">
                         <img loading="preload" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
                     </a>
                 </div>
@@ -140,6 +140,9 @@
                     <ul class="list-unstyled list-inline mb-0 text-lg-center">
                         <li class="list-inline-item me-8">
                             <a class="text-black" href="@Url.Action("Privacy", "Home")">Privacy Policy</a>
+                        </li>
+                        <li class="list-inline-item me-8">
+                            <a class="text-black" asp-area="Identity" asp-page="/Account/Login">Admin Login</a>
                         </li>
                     </ul>
                 </div>
@@ -185,6 +188,7 @@
             element.textContent = formattedTime;
         });
     </script>
+    
 
     @await RenderSectionAsync("Scripts", required: false)
 

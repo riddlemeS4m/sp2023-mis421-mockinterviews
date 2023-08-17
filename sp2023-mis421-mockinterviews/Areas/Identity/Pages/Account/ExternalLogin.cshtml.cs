@@ -96,6 +96,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         
         public IActionResult OnGet() => RedirectToPage("./Login");
 
+        //initial "sign in with microsoft" button click goes here
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
             // Request a redirect to the external login provider.
@@ -104,6 +105,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             return new ChallengeResult(provider, properties);
         }
 
+        //after microsoft login, this is called
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
