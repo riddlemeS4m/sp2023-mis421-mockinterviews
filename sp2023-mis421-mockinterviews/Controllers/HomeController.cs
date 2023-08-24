@@ -241,5 +241,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return RedirectToAction("Index", "Home");
         }
+
+        public async Task<IActionResult> AttemptLogin()
+        {
+            return View("LandingPage");
+        }
     }
 }

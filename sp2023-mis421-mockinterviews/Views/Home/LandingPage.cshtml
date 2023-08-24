@@ -1,0 +1,37 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div>
+    Please wait while we attempt to log you in...
+</div>
+
+<form id="external-login-form" name="external-login" asp-area="Identity" asp-page="/Account/ExternalLogin" asp-route-returnUrl="/" method="post" class="form-horizontal">
+    <div>
+        <p>
+            <div class="form-group" style="display: flex; justify-content: center;">
+                <input type="hidden" class="btn btn-primary" name="provider" value="Microsoft" title="Log in using your Microosft account">
+            </div>
+        </p>
+    </div>
+</form>
+
+<div onload="attemptLogin()">
+
+</div>
+
+@*<script>
+    function attemptLogin() {
+        console.log('made it')
+        var form = document.getElementById("external-login-form");
+        form.submit();
+    }
+</script>*@
+
+<script>
+    window.onload = function () {
+        document.forms['external-login'].submit()
+    }
+</script>
