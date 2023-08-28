@@ -22,11 +22,28 @@
                 <input asp-for="Date" class="form-control" />
                 <span asp-validation-for="Date" class="text-danger"></span>
             </div>
+            <br />
             <div class="form-group">
                 <label asp-for="EventName" class="control-label"></label>
                 <input asp-for="EventName" class="form-control" />
                 <span asp-validation-for="EventName" class="text-danger"></span>
             </div>
+
+            <br />
+                <label class="control-label">Is this event for MIS 221 students?</label>
+            <br />
+
+            <div class="form-check form-check-inline">
+                <input id="For221True" class="form-check-input" type="radio" name="For221" value="true" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="For221True">Yes</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input id="For221False" class="form-check-input" type="radio" name="For221" value="false" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="For221False">No</label>
+            </div>
+            <span asp-validation-for="For221" class="text-danger"></span>
+            <br />
+
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

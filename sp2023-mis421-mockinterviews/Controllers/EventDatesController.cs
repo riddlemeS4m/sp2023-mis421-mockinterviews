@@ -59,7 +59,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,EventName")] EventDate eventDate)
+        public async Task<IActionResult> Create([Bind("Id,Date,EventName,For221")] EventDate eventDate)
         {
             if (ModelState.IsValid)
             {
@@ -78,7 +78,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     await _context.SaveChangesAsync();
                 }
            
-                return RedirectToAction("Index","Timeslots");
+                return RedirectToAction("Index","EventDates");
             }
 
             return View(eventDate);
@@ -130,7 +130,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction("Index","Timeslots");
+                return RedirectToAction("Index","EventDates");
             }
             return View(eventDate);
         }

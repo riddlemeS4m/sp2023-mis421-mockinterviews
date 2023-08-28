@@ -9,5 +9,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public DateTime Date { get; set; }
         [Display(Name = "Event Name")]
         public string EventName { get; set; }
+        [Display(Name = "For MIS 221?")]
+        public bool For221 { get; set; }
     }
 }
