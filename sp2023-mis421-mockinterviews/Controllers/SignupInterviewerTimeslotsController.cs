@@ -18,6 +18,7 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
+using sp2023_mis421_mockinterviews.Data.Migrations.Data;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -120,8 +121,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int[] SelectedEventIds, [Bind("IsTechnical,IsBehavioral,IsVirtual,InPerson")] SignupInterviewer signupInterviewer )
+        public async Task<IActionResult> Create(int[] SelectedEventIds1, int[] SelectedEventIds2, [Bind("IsTechnical,IsBehavioral,IsVirtual,InPerson")] SignupInterviewer signupInterviewer )
         {
+            int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray();
+
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
@@ -174,6 +177,32 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (existingSignupInterviewer != null)
             {
                 post = existingSignupInterviewer;
+                foreach(int date in dates)
+                {
+                    if (!_context.LocationInterviewer.Any(x => x.InterviewerId == existingSignupInterviewer.InterviewerId && x.EventDateId == date))
+                    {
+                        var interviewerPreference = "";
+                        if (existingSignupInterviewer.InPerson)
+                        {
+                            interviewerPreference = InterviewLocationConstants.InPerson;
+                        }
+                        else
+                        {
+                            interviewerPreference = InterviewLocationConstants.Virtual;
+                        }
+
+                        _context.Add(new LocationInterviewer
+                        {
+                            LocationId = null,
+                            InterviewerId = userId,
+                            InterviewerPreference = interviewerPreference,
+                            EventDateId = date
+                        });
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                
             }
             else
             {
@@ -358,7 +387,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 _context.SignupInterviewerTimeslot.Remove(signupInterviewerTimeslot);
             }
-            
+
             await _context.SaveChangesAsync();
 			return RedirectToAction("Index", "Home");
         }
@@ -492,6 +521,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             // Get the timeslots to delete
             var timeslotsToDelete = await _context.SignupInterviewerTimeslot
                 .Include(x => x.SignupInterviewer)
+                .Include(x=>x.Timeslot)
                 .Where(t => timeslots.Contains(t.Id))
                 .ToListAsync();
 
@@ -502,7 +532,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             // Delete the timeslots
             _context.SignupInterviewerTimeslot.RemoveRange(timeslotsToDelete);
+                        
             await _context.SaveChangesAsync();
+
+            if (!_context.SignupInterviewerTimeslot.Any(x => x.SignupInterviewer.InterviewerId == timeslotsToDelete[0].SignupInterviewer.InterviewerId && x.Timeslot.EventDateId == timeslotsToDelete[0].Timeslot.EventDateId))
+            {
+                var locationInterviewersToDelete = _context.LocationInterviewer
+                    .Where(li => li.InterviewerId == timeslotsToDelete[0].SignupInterviewer.InterviewerId && li.EventDateId == timeslotsToDelete[0].Timeslot.EventDateId);
+
+                _context.LocationInterviewer.RemoveRange(locationInterviewersToDelete);
+                await _context.SaveChangesAsync();
+
+                if(!_context.SignupInterviewerTimeslot.Any(x => x.SignupInterviewer.InterviewerId == timeslotsToDelete[0].SignupInterviewer.InterviewerId))
+                {
+                    var signupInterviewersToDelete = _context.SignupInterviewer
+                    .Where(li => li.InterviewerId == timeslotsToDelete[0].SignupInterviewer.InterviewerId);
+
+                    _context.SignupInterviewer.RemoveRange(signupInterviewersToDelete);
+                    await _context.SaveChangesAsync();
+                }
+            }
 
             return RedirectToAction("Index", "Home");
         }

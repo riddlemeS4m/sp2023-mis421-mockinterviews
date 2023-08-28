@@ -237,7 +237,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
 
             // Get a list of LocationIds already assigned to LocationInterviewers
-            var assignedLocationIds = _context.LocationInterviewer.Select(li => li.LocationId)
+            var assignedLocationIds = _context.LocationInterviewer.Where(li => li.EventDateId == locationInterviewer.EventDateId)
+                                                                    .Select(li => li.LocationId)
                                                                     .Distinct()
                                                                     .ToList();
 
@@ -269,6 +270,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (availableLocations.Count == 0)
             {
                 availableLocations.Add(new SelectListItem { Text = "No Locations available", Value = "" });
+            }
+            else
+            {
+                availableLocations.Insert(0, new SelectListItem { Text = "Unassigned", Value = "" });
             }
 
             var interviewer = await _userManager.FindByIdAsync(locationInterviewer.InterviewerId);

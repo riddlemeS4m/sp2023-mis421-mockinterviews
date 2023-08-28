@@ -69,7 +69,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 _context.Add(location);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "LocationInterviewers");
+                return RedirectToAction("Index", "Locations");
             }
             return View(location);
         }

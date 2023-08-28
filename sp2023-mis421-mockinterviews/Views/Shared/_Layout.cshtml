@@ -73,7 +73,56 @@
                                 </ul>
                             </li>
                         }
-                        @if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
+                        
+
+                        
+                        
+                        @*@if (User.IsInRole(RolesConstants.InterviewerRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Create">Interviewer Sign-Up</a>
+                            </li>
+                        }*@
+
+                        @if(User.IsInRole(RolesConstants.AdminRole))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Assign Interviews</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Assign Rooms</a>
+                            </li>
+                        }
+
+                        
+
+                        @if (User.IsInRole(RolesConstants.AdminRole))
+                        {
+                            <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                     <li>
+                                         <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Interviewers</a>
+                                     </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteers</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="Locations" asp-action="Index">Add Rooms</a>
+                                    </li>
+                                     <li>
+                                         <a class="dropdown-item "asp-area="" asp-controller="Timeslots" asp-action="Index">Timeslots</a>
+                                     </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="Index">Dates</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="Index">User Roles</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
+
+                        @if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
                         {
                             @if (User.IsInRole(RolesConstants.AdminRole))
                             {
@@ -85,7 +134,7 @@
                                         </li>
                                         <li>
                                             <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="AssessFeedback">Assess Feedback</a>
-                                        </li>   
+                                        </li>
                                     </ul>
                                 </li>
                             }
@@ -96,58 +145,8 @@
                                 </li>
                             }
                         }
-                        
-                        @*@if (User.IsInRole(RolesConstants.InterviewerRole))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Create">Interviewer Sign-Up</a>
-                            </li>
-                        }*@
+
                         @if (User.IsInRole(RolesConstants.AdminRole))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Assign Interviews</a>
-                            </li>
-                            <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                     @*<li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="InterviewEvents" asp-action="Index">Interviews</a>
-                                     </li>*@
-                                     
-                                     <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Locations</a>
-                                     </li>
-                                     <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Interviewers</a>
-                                     </li>
-                                     @*<li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="FAQs" asp-action="Index">FAQs</a>
-                                     </li>*@
-                                     <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="Timeslots" asp-action="Index">Timeslots</a>
-                                     </li>
-                                    <li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="Index">Dates</a>
-                                    </li>
-                                     <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteers</a>
-                                     </li>
-                                    <li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="Index">User Roles</a>
-                                    </li>
-                                </ul>
-                            </li>
-
-
-                            @*<li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="RoleManager" asp-action="Index">Manage Roles</a>
-                              </li>
-                            <li class="nav-item">
-                                @*<a class="nav-link text-dark" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Feedback Responses</a>
-                            </li>*@
-                        }
-
-                        @if(User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
@@ -167,7 +166,7 @@
                                 <a class="nav-link" asp-area="" asp-controller="FAQs" asp-action="Resources">Resources</a>
                             </li>
                         }
-                        
+
                     </ul>
                     <partial name="_LoginPartial"/>
                 </div>

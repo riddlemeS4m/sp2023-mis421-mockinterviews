@@ -9,6 +9,7 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
+        
         <form asp-action="Create">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <label asp-for="SignupInterviewer.InPerson" class="control-label">How would you like to interview?</label>
@@ -46,38 +47,70 @@
                         if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
                         {
                             <div>
-                                <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
+                                <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds1" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
                                 <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
                                 <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
                             </div>
                         }
                     }
                 </div>
-                <div class="col-md-6">
-                    <h3>Day @Model.Timeslots[^1].EventDateId</h3>
-                    <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
-                    @foreach (var timeslot in Model.Timeslots)
-                    {
-                        if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                {
+                    <div class="col-md-6">
+                        <h3>Day @Model.Timeslots[^1].EventDateId</h3>
+                        <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
+                        @foreach (var timeslot in Model.Timeslots)
                         {
-                            <div>
-                                <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
-                                <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
-                                <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
-                            </div>
+                            if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                            {
+                                <div>
+                                    <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds2" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
+                                    <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
+                                    <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
+                                </div>
+                            }
                         }
-                    }
-                </div>
+                    </div>
+                }
             </div>
             <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
             <div class="form-group">
                 <input type="submit" value="Sign Up" class="btn btn-primary" />
             </div>
+            <br />
         </form>
+        <div class="row">
+            <div class="col-md-6">
+                <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
+            </div>
+            <br />
+            @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+            {
+                <div class="col-md-6">
+                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                </div>
+            }
+            <br />
+        </div>
     </div>
     <div class="col-md-3"></div>
 </div>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        // Attach a click event handler to the "Select All" buttons
+        var selectAllButtons = document.querySelectorAll('.selectAllButton');
+        selectAllButtons.forEach(function (button) {
+            button.addEventListener("click", function () {
+                var target = this.getAttribute("data-target"); // "list1" or "list2"
+
+                var checkboxes = document.querySelectorAll('input[name="' + target + '"]');
+
+                checkboxes.forEach(function (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                });
+            });
+        });
+    </script>
 }

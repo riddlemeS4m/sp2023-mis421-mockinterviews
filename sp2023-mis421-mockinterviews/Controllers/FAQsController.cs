@@ -15,8 +15,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 
@@ -26,10 +29,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
     {
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
+        private readonly ISendGridClient _sendGridClient;
+        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager, ISendGridClient sendGridClient)
         {
             _context = context;
             _userManager = userManager;
+            _sendGridClient = sendGridClient;
         }
 
         // GET: FAQs
@@ -88,6 +93,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Create([Bind("Id, Question, Answer")] FAQs faq)
         {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var user = await _userManager.FindByIdAsync(userId);
+
             if (ModelState.IsValid)
             {
                 
@@ -99,6 +107,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 else
                 {
+                    ASendAnEmail emailer = new NewFAQSubmitted();
+                    await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.NewFAQSubmitted, CurrentAdmin.Email, user.FirstName + " " + user.LastName, faq.Question);
+
                     return RedirectToAction("Resources", "FAQs");
                 }
                 

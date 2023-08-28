@@ -1,5 +1,7 @@
-﻿<head>
-    <title>Volunteer Confirmation Email</title>
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Answer Required: Student Submitted New FAQ</title>
     <style>
         /* Define styles for the header */
         header {
@@ -26,21 +28,19 @@
 </head>
 <body>
     <header>
-        <h1>Thank you for signing up, {name}!</h1>
+        <h1>Hi {adminName},</h1>
     </header>
     <div class="content">
         <p class="subheading">
-            You have signed up to be a volunteer for MIS Mock Interviews for the following times:<br><br />
-            {times}
+            {name} has asked the following question:<br><br />
+            {question}
         </p>
         <p>
-            This email serves as a confirmation that your volunteer information has been submitted to Program Support.
-        </p>
-        <p>
-            If you have any questions or concerns, please don't hesitate to contact us.
+            Please answer this question by going to the "Answer FAQs" page in the Admin Portal.
         </p>
         <p class="closing">
             Thank you, Program Support
         </p>
     </div>
 </body>
+</html>

@@ -132,7 +132,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            return View("AssessFeedback",model);
+            return View("Feedback",model);
         }
 
         [Authorize(Roles = RolesConstants.StudentRole)]
@@ -458,6 +458,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         Text = user.FirstName + " " + user.LastName
                     });
                 }
+                selectedInterviewersNames.Insert(0, new SelectListItem
+                {
+                    Value = "0",
+                    Text = "Unassigned"
+                });
                 
             }
 

@@ -10,5 +10,6 @@
         public const string VolunteerSignupConfirmation = "Volunteer Sign-Up Confirmation";
         public const string VolunteerSignupNotification = "Volunteer Sign-Up Notification: ";
         public const string InterviewerReminderEmail = "UA MIS Mock Interviews Reminder";
+        public const string NewFAQSubmitted = "Answer Required: Student Submitted New Question";
     }
 }

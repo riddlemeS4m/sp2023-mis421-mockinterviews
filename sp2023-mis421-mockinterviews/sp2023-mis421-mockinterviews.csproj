@@ -11,10 +11,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Views\InterviewEvents\AssessFeedback.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="microsoft.aspnetcore.authentication.microsoftaccount" Version="6.0.16" />
     <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.15" />
@@ -35,16 +31,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="Views\InterviewEvents\AssessFeedback.cshtml" />
+    <None Include="Views\InterviewEvents\Feedback.cshtml" />
     <None Include="wwwroot\lib\Mock_Interview_Manual.docx" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Views\InterviewEvents\AssessFeedback.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Views\InterviewEvents\AssessFeedback.cshtml" />
   </ItemGroup>
 
 </Project>

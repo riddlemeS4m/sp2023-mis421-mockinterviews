@@ -4,7 +4,7 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Interviewer/Location Pairings</h1>
+<h1>Assign Locations</h1>
 
 @*<p>
     <a asp-action="Create">Create New</a>
@@ -56,7 +56,8 @@
 }
     </tbody>
 </table>
-<div>
+
+@*<div>
     <h1>Room Locations</h1>
 
     <p>
@@ -91,14 +92,14 @@
                         @Html.DisplayFor(modelItem => item.InPerson)
                     </td>
                     <td>
-@*                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
                         <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-*@                        <a asp-controller="Locations" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                        <a asp-controller="Locations" asp-action="Delete" asp-route-id="@item.Id">Delete</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-</div>
+</div>*@
 

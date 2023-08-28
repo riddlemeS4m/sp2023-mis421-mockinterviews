@@ -89,6 +89,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => x.IsVolunteer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
@@ -105,8 +106,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.StudentRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int[] SelectedEventIds)
+        public async Task<IActionResult> Create(int[] SelectedEventIds1, int[] SelectedEventIds2)
         {
+            int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray(); 
+
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
