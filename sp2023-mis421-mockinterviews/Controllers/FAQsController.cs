@@ -33,6 +33,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: FAQs
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
               return _context.FAQs != null ? 
@@ -42,12 +43,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
 		public async Task<IActionResult> Resources()
 		{
 			return _context.FAQs != null ?
-						View(await _context.FAQs.ToListAsync()) :
+						View(await _context.FAQs.Where(x => x.Answer != null).ToListAsync()) :
 						Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
 		}
 
-		// GET: FAQs/Details/5
-		public async Task<IActionResult> Details(int? id)
+        // GET: FAQs/Details/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.FAQs == null)
             {
@@ -63,7 +65,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return View(fAQs);
         }
-		public ActionResult Download()
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
+        public ActionResult Download()
 		{
 			string fileName = "Mock_Interview_Manual.docx";
 			string filePath = "wwwroot/lib/" + fileName;
@@ -73,14 +76,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
 		}
 
 
-		// GET: FAQs/Create
-		public IActionResult Create()
+        // GET: FAQs/Create
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
+        public IActionResult Create()
         {
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Create([Bind("Id, Question, Answer")] FAQs faq)
         {
             if (ModelState.IsValid)
@@ -88,12 +93,21 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 
                 _context.Add(faq);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "FAQs");
+                if(User.IsInRole(RolesConstants.AdminRole))
+                {
+                    return RedirectToAction("Index", "FAQs");
+                }
+                else
+                {
+                    return RedirectToAction("Resources", "FAQs");
+                }
+                
             }
             return View(faq);
         }
 
         // GET: FAQs/Edit/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.FAQs == null)
@@ -111,6 +125,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int id, [Bind("Id, Question, Answer")] FAQs faq)
         {
             if (id != faq.Id)
@@ -142,6 +157,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: FAQs/Delete/5
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null || _context.FAQs == null)
@@ -162,6 +178,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: FAQs/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             if (_context.FAQs == null)

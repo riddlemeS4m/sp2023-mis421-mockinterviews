@@ -19,32 +19,15 @@
                 <span asp-validation-for="Room" class="text-danger"></span>
             </div>
             <p></p>
-            @*<div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsVirtual" /> Virtual Interviewer
-                </label>
+            <div class="form-check form-check-inline">
+                <input id="InPersonTrue" class="form-check-input" type="radio" name="InPerson" value="true" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="InPersonTrue">In Person</label>
             </div>
-            <p></p>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="InPerson" /> In-Person Interviewer
-                </label>
+            <div class="form-check form-check-inline">
+                <input id="InPersonFalse" class="form-check-input" type="radio" name="InPerson" value="false" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="InPersonFalse">Virtual</label>
             </div>
-            <p></p>
-            <label asp-for="InPerson" class="control-label">How would you like to interview?</label><br />*@
-            <div class="form-group">
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="InPerson" value="true">
-                    <label class="form-check-label" for="InPersonTrue">In Person Interviewer</label>
-                </div>
-                <p></p>
-                <div class="form-check form-check-inline">
-                    <input class="form-check-input" type="radio" name="InPerson" value="false">
-                    <label class="form-check-label" for="InPersonFalse">Virtual Interviewer</label>
-                </div>
-                <span asp-validation-for="InPerson" class="text-danger"></span>
-            </div>
-            <p></p>
+            <span asp-validation-for="InPerson" class="text-danger"></span>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>

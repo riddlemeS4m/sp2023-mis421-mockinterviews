@@ -89,6 +89,52 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(model);
         }
 
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> AssessFeedback()
+        {
+            var interviewEvents = await _context.InterviewEvent
+                .Include(i => i.Location)
+                .Include(i => i.SignupInterviewerTimeslot)
+                .ThenInclude(i => i.SignupInterviewer)
+                .Include(i => i.Timeslot)
+                .ThenInclude(j => j.EventDate)
+                .ToListAsync();
+
+            var model = new List<InterviewEventViewModel>();
+            var interviewEventViewModel = new InterviewEventViewModel();
+            foreach (InterviewEvent interviewEvent in interviewEvents)
+            {
+                var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+
+                if (interviewEvent.SignupInterviewerTimeslot != null)
+                {
+                    var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+
+                    interviewEventViewModel = new InterviewEventViewModel
+                    {
+                        InterviewEvent = interviewEvent,
+                        StudentName = student.FirstName + " " + student.LastName,
+                        InterviewerName = interviewer.FirstName + " " + interviewer.LastName
+                    };
+
+                    model.Add(interviewEventViewModel);
+                }
+                else
+                {
+                    interviewEventViewModel = new InterviewEventViewModel
+                    {
+                        InterviewEvent = interviewEvent,
+                        StudentName = student.FirstName + " " + student.LastName,
+                        InterviewerName = "Not Assigned"
+                    };
+
+                    model.Add(interviewEventViewModel);
+                }
+            }
+
+            return View(model);
+        }
+
         [Authorize(Roles = RolesConstants.StudentRole)]
         public async Task<IActionResult> FeedbackIndex()
         {

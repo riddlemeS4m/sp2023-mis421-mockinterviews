@@ -7,6 +7,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int Id { get; set; }
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }
+        [Display(Name = "Event Name")]
         public string EventName { get; set; }
     }
 }

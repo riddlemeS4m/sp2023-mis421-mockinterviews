@@ -3,7 +3,7 @@
 @using sp2023_mis421_mockinterviews.Data.Constants;
 @model IEnumerable<FAQs>
 
-<!DOCTYPE html>
+
 <html>
 <head>
 	<title>FAQs</title>
@@ -41,6 +41,20 @@
 		</div>
 	}
 	<hr />
+	@if(User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
+    {
+        <div>
+            <h1>
+                Ask a Question!
+            </h1>
+        </div>
+        <div>
+			<p>
+				<a asp-action="Create">Question Form</a>
+			</p>
+        </div>
+    }
+	<hr />	
 	@if (User.IsInRole(RolesConstants.InterviewerRole))
 	{
 		<div>

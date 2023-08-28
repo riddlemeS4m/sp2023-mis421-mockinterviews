@@ -4,7 +4,9 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
 {
     public class TimeRangeViewModel
     {
+        [Display(Name = "Start Time")]
         public string StartTime { get; set; }
+        [Display(Name = "End Time")]
         public string EndTime { get; set; }
         [DataType(DataType.Date)]
         public DateTime Date { get; set; }

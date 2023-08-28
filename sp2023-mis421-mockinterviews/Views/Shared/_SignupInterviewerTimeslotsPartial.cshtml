@@ -1,42 +1,6 @@
 ﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.IndexViewModel
 
-<h3>Upcoming Interviewer Bookings</h3>
-@if (Model.InterviewerRangeViewModels.Count() > 0)
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Location</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var signupInterviewerTimeslot in Model.InterviewerRangeViewModels)
-            {
-                <tr>
-                    <td class="date-column">@signupInterviewerTimeslot.Date</td>
-                    <td>@signupInterviewerTimeslot.StartTime - @signupInterviewerTimeslot.EndTime</td>
-                    <td>@signupInterviewerTimeslot.Location</td>
-                    <td>
-                        @Html.ActionLink("Cancel",
-                            "UserDeleteRange",   // <-- ActionMethod
-                            "SignupInterviewerTimeslots",  // <-- Controller Name.
-                            new { timeslots = signupInterviewerTimeslot.TimeslotIds.ToArray() }, // <-- Route arguments.
-                            null
-                            )
-                    </td>   
-                </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>No upcoming events</p>
-}
-<h3>Scheduled Interviews</h3>
+<h3>Assigned Interviews</h3>
 @if (Model.InterviewerScheduledInterviews.Count() > 0)
 {
     <table class="table">
@@ -76,6 +40,43 @@ else
                     <td>
                         <a asp-controller="Users" asp-action="ExternalUserProfileView" asp-route-userId="@interviewEventViewModel.InterviewEvent.StudentId">View Student Profile</a>
                     </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No upcoming events</p>
+}
+<hr />
+<h3>Interviewer Schedule</h3>
+@if (Model.InterviewerRangeViewModels.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Location</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var signupInterviewerTimeslot in Model.InterviewerRangeViewModels)
+            {
+                <tr>
+                    <td class="date-column">@signupInterviewerTimeslot.Date</td>
+                    <td>@signupInterviewerTimeslot.StartTime - @signupInterviewerTimeslot.EndTime</td>
+                    <td>@signupInterviewerTimeslot.Location</td>
+                    <td>
+                        @Html.ActionLink("Cancel",
+                            "UserDeleteRange",   // <-- ActionMethod
+                            "SignupInterviewerTimeslots",  // <-- Controller Name.
+                            new { timeslots = signupInterviewerTimeslot.TimeslotIds.ToArray() }, // <-- Route arguments.
+                            null
+                            )
+                    </td>   
                 </tr>
             }
         </tbody>

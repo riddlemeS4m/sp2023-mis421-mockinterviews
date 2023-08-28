@@ -1,4 +1,5 @@
-﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
+﻿@using sp2023_mis421_mockinterviews.Data.Constants;
+@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
 @model FAQs
 
 @{
@@ -19,13 +20,17 @@
                 <span asp-validation-for="Question" class="text-danger"></span>
             </div>
             <p></p>
-
-            <div class="form-group">
-                <label asp-for="Answer" class="control-label"></label>
-                <input asp-for="Answer" class="form-control" />
-                <span asp-validation-for="Answer" class="text-danger"></span>
-            </div>
-            <p></p>
+            @if(User.IsInRole(RolesConstants.AdminRole))
+            {
+                <div class="form-group">
+                    <label asp-for="Answer" class="control-label"></label>
+                    <input asp-for="Answer" class="form-control" />
+                    <span asp-validation-for="Answer" class="text-danger"></span>
+                </div>
+                <p></p>
+            }
+            
+                        
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
@@ -33,9 +38,13 @@
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
+@if(User.IsInRole(RolesConstants.AdminRole))
+{
+    <div>
+        <a asp-action="Index">Back to List</a>
+    </div>
+}
+
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
