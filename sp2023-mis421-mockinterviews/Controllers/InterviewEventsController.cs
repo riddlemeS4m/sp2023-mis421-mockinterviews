@@ -132,7 +132,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            return View(model);
+            return View("AssessFeedback",model);
         }
 
         [Authorize(Roles = RolesConstants.StudentRole)]
