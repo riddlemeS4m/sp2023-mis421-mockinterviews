@@ -74,6 +74,7 @@
 
 
 body {
+    min-height: 50vh;
     margin: 0;
     font-family: var(--bs-font-sans-serif);
     font-size: 1rem;
@@ -5799,6 +5800,7 @@ textarea.form-control-lg {
 
 .pb-3 {
   padding-bottom: 1rem !important;
+  min-height: 80vh;
 }
 
 .pb-4 {
@@ -8891,14 +8893,26 @@ a:hover {
 
 #footer-time {
     padding-top: 10px;
-    position: fixed;
     bottom: 0;
     width: 100%;
     white-space: nowrap;
 }
 
-#centered-home-not-logged-in {
-    margin-left: -10px;
+#center-everything {
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+#navbarSupportedContent {
+    align-items: center;
+    justify-content: center;
+}
+
+.index-image-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .section-title {

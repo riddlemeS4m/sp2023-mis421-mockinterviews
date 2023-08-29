@@ -48,7 +48,7 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mx-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" id="centered-home-not-logged-in">Home</a>
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
                         {
@@ -167,7 +167,9 @@
                         }
 
                     </ul>
-                    <partial name="_LoginPartial"/>
+                </div>
+                <div style="padding-left: 80px;">
+                  <partial name="_LoginPartial"/>
                 </div>
             </div>
         </nav>
@@ -190,16 +192,16 @@
                 </div>
                 <div class="col-lg-4 col-md-6 mt-4 mt-lg-0">
                     <ul class="list-unstyled list-inline mb-0 text-lg-center">
-                        <li class="list-inline-item me-8">
+                        <li class="list-inline-item me-8" style="padding-left: 10px; padding-right: 10px;">
                             <a class="text-black" href="@Url.Action("Privacy", "Home")">Privacy Policy</a>
                         </li>
-                        <li class="list-inline-item me-8">
+                        <li class="list-inline-item me-8" style="padding-left: 10px; padding-right: 10px;">
                             <a class="text-black" asp-area="Identity" asp-page="/Account/Login">Admin Login</a>
                         </li>
                     </ul>
                 </div>
                 <div class="col-lg-4 col-md-6 text-md-end mt-4 mt-md-0">
-                    <p>© 2023 - UA MIS Mock Interviews</p>
+                    <p style="padding-top: 17px;">© 2023 - UA MIS Mock Interviews</p>
                 </div>
             </div>
         </div>
