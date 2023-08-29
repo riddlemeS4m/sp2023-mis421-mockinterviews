@@ -41,9 +41,19 @@ button.accept-policy {
 }
 
 .footer {
+/*    padding-top: 10px;
+    height: 60px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+    line-height: 60px;*/
+}
+
+#footer-time {
     padding-top: 10px;
     height: 60px;
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     white-space: nowrap;

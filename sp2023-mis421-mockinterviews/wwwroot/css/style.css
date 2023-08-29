@@ -8888,8 +8888,21 @@ a:hover {
   padding-top: 10px;
   padding-bottom: 50px;
 }
+
+#footer-time {
+    padding-top: 10px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    white-space: nowrap;
+}
+
+#centered-home-not-logged-in {
+    margin-left: -10px;
+}
+
 .section-title {
-  margin-bottom: 30px;
+    margin-bottom: 30px;
 }
 
 .bg-cover {
