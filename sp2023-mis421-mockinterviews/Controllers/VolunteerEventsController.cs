@@ -84,12 +84,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public IActionResult Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userTask = _userManager.FindByIdAsync(userId);
+            userTask.GetAwaiter().GetResult();
+            var user = userTask.Result;
 
             var timeslotsTask = _context.Timeslot
                 .Where(x => x.IsVolunteer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => x.EventDate.For221 == false)
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;

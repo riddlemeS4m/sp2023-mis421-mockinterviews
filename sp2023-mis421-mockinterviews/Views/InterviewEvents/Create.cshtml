@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventSignupViewModel
+﻿@using sp2023_mis421_mockinterviews.Data.Constants;
+@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventSignupViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -29,15 +30,21 @@
             <div class="alert alert-danger" role="alert">
                 You have already signed up for an interview.
             </div>
-            
+
         }
+        @*else if((!Model.For221 && Model.ApplicationUser.Class == ClassConstants.FirstSemester) || (Model.For221 && Model.ApplicationUser.Class != ClassConstants.FirstSemester))
+        {
+            <div class="alert alert-danger" role="alert">
+                Your class (@Model.ApplicationUser.Class) does not match the class for which this event is intended. Please sign up for the event that is intended for your class.
+            </div>
+        }*@
         else
         {
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <div class="row">
                     <div class="col-md-6">
-                        <h3>Day @Model.Timeslots[0].EventDateId</h3>
+                        <h3>@Model.Timeslots[0].EventDate.EventName</h3>
                         <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
                         @foreach (var timeslot in Model.Timeslots)
                         {
@@ -50,20 +57,23 @@
                             }
                         }
                     </div>
-                    <div class="col-md-6">
-                        <h3>Day @Model.Timeslots[^1].EventDateId</h3>
-                        <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
-                        @foreach (var timeslot in Model.Timeslots)
-                        {
-                            if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                    @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    {
+                        <div class="col-md-6">
+                            <h3>@Model.Timeslots[^1].EventDate.EventName</h3>
+                            <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
+                            @foreach (var timeslot in Model.Timeslots)
                             {
-                                <div>
-                                    <input type="radio" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
-                                    <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
-                                </div>
+                                if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                                {
+                                    <div>
+                                        <input type="radio" id="@timeslot.Id" name="SelectedEventIds" value="@timeslot.Id">
+                                        <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
+                                    </div>
+                                }
                             }
-                        }
-                    </div>
+                        </div>
+                    }
                 </div>
                 <div class="form-group">
                     <input type="hidden" name="SelectedEventIds" id="SelectedEventIds">

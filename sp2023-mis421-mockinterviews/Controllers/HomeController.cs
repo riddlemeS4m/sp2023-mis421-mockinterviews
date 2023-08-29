@@ -113,8 +113,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
 					.Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
                     .Include(v => v.SignupInterviewer)
-                    .OrderBy(ve => ve.Timeslot.EventDate.Date)
-                    .ThenBy(ve => ve.Timeslot.Time)
+                    //.OrderBy(ve => ve.Timeslot.EventDate.Date)
+                    //.ThenBy(ve => ve.Timeslot.Time)
+                    .OrderBy(ve => ve.TimeslotId)
                     .Where(v => v.SignupInterviewer.InterviewerId == userId && v.Timeslot.IsInterviewer)
                     .ToListAsync();
 

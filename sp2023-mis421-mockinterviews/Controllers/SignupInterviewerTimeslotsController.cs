@@ -88,11 +88,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
             userTask.GetAwaiter().GetResult();
             var user = userTask.Result;
 
-
             var timeslotsTask = _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
+                .Where(x => x.EventDate.For221 == false)
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
@@ -161,6 +161,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return View(volunteerEventsViewModel);
             }
 
+            if (!signupInterviewer.IsVirtual && !signupInterviewer.InPerson)
+            {
+                ModelState.AddModelError("SignupInterviewer.InPerson", "Please select at least one checkbox");
+
+                return View(volunteerEventsViewModel);
+            }
+
             // Check whether at least one timeslot is selected
             if (SelectedEventIds == null || SelectedEventIds.Length == 0)
             {
@@ -212,7 +219,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     FirstName = user.FirstName,
                     LastName = user.LastName,
                     InPerson = signupInterviewer.InPerson,
-                    IsVirtual = !signupInterviewer.InPerson,
+                    IsVirtual = signupInterviewer.IsVirtual,
                     IsBehavioral = signupInterviewer.IsBehavioral,
                     IsTechnical = signupInterviewer.IsTechnical
                 };

@@ -24,6 +24,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 				var currentStart = signupInterviewTimeslots.First().Timeslot;
 				var currentEnd = signupInterviewTimeslots.First().Timeslot;
 				var inperson = signupInterviewTimeslots.First().SignupInterviewer.InPerson;
+				var isvirtual = signupInterviewTimeslots.First().SignupInterviewer.IsVirtual;
 				var interviewerId = signupInterviewTimeslots.First().SignupInterviewer.InterviewerId;
 				var interviewtype = (signupInterviewTimeslots.First().SignupInterviewer.IsBehavioral, signupInterviewTimeslots.First().SignupInterviewer.IsTechnical);
 				ints.Add(signupInterviewTimeslots.First().Id);
@@ -36,6 +37,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 					if (currentEnd.Id + 1 == nextEvent.Id
 						&& currentEnd.EventDate.Date == nextEvent.EventDate.Date
 						&& signupInterviewTimeslots[i].SignupInterviewer.InPerson == inperson
+						&& signupInterviewTimeslots[i].SignupInterviewer.IsVirtual == isvirtual
 						&& signupInterviewTimeslots[i].SignupInterviewer.InterviewerId == interviewerId
 						&& (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical) == interviewtype)
 					{
@@ -44,7 +46,11 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 					}
 					else
 					{
-						if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson)
+						if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson && signupInterviewTimeslots[i - 1].SignupInterviewer.IsVirtual)
+						{
+							location = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.Virtual;
+						}
+						else if(signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson)
 						{
 							location = InterviewLocationConstants.InPerson;
 						}
@@ -54,17 +60,17 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 						}
 
 						string? type;
-						if (signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && !signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
+						if (signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
+						{
+                            type = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
+                        }
+						else if (signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral)
 						{
 							type = InterviewTypesConstants.Behavioral;
 						}
-						else if (!signupInterviewTimeslots[i - 1].SignupInterviewer.IsBehavioral && signupInterviewTimeslots[i - 1].SignupInterviewer.IsTechnical)
-						{
-							type = InterviewTypesConstants.Technical;
-						}
 						else
 						{
-							type = InterviewTypesConstants.Behavioral + "/" + InterviewTypesConstants.Technical;
+							type = InterviewTypesConstants.Technical;
 						}
 
 						var name = await _userManager.FindByIdAsync(signupInterviewTimeslots[i - 1].SignupInterviewer.InterviewerId);
@@ -86,12 +92,17 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 								signupInterviewTimeslots[i].Id
 							};
 						inperson = signupInterviewTimeslots[i].SignupInterviewer.InPerson;
+						isvirtual = signupInterviewTimeslots[i].SignupInterviewer.IsVirtual;
 						interviewerId = signupInterviewTimeslots[i].SignupInterviewer.InterviewerId;
 						interviewtype = (signupInterviewTimeslots[i].SignupInterviewer.IsBehavioral, signupInterviewTimeslots[i].SignupInterviewer.IsTechnical);
 					}
 				}
 
-				if (inperson)
+				if (inperson && isvirtual)
+				{
+					location = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.Virtual;
+				}
+				else if(inperson)
 				{
 					location = InterviewLocationConstants.InPerson;
 				}

@@ -298,10 +298,21 @@ namespace sp2023_mis421_mockinterviews.Controllers
             userTask.GetAwaiter().GetResult();
             var user = userTask.Result;
 
+            var for221 = false;
+            if(user.Class == ClassConstants.FirstSemester)
+            {
+                for221 = true;
+            }
+            else
+            {
+                for221 = false;
+            }
+
             var timeslotsTask = _context.Timeslot
                 .Where(x => x.IsStudent)
                 .Include(y => y.EventDate)
                 .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                .Where(x => x.EventDate.For221 == for221)
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
