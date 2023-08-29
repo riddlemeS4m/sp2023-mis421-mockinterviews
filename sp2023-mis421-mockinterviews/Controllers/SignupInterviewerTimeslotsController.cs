@@ -46,8 +46,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(s => s.Timeslot)
                 .ThenInclude(s => s.EventDate)
                 .OrderBy(ve => ve.SignupInterviewer.InterviewerId)
-                .ThenBy(ve => ve.Timeslot.EventDate.Date)
-                .ThenBy(ve => ve.Timeslot.Time)
+                .ThenBy(ve => ve.TimeslotId)
                 .Where(s => s.Timeslot.IsInterviewer)
                 .ToListAsync();
 
@@ -97,7 +96,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
 
-            SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new SignupInterviewerTimeslotsViewModel
+            SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {
                 Timeslots = timeslots,
                 SignupInterviewer = new SignupInterviewer
@@ -107,10 +106,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     LastName = user.LastName,
                     IsBehavioral = false,
                     IsTechnical = false,
+                    IsCase = false,
                     IsVirtual = false,
                     InPerson = false
                 }
             };
+
+            if (timeslots.Count == 0)
+            {
+                volunteerEventsViewModel.SignedUp = true;
+            }
+            else
+            {
+                volunteerEventsViewModel.SignedUp = false;
+            }
 
             return View(volunteerEventsViewModel);
         }
@@ -121,7 +130,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(int[] SelectedEventIds1, int[] SelectedEventIds2, [Bind("IsTechnical,IsBehavioral,IsVirtual,InPerson")] SignupInterviewer signupInterviewer )
+        public async Task<IActionResult> Create(int[] SelectedEventIds1, int[] SelectedEventIds2, [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch )
         {
             int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray();
 
@@ -135,11 +144,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
             var dates = timeslots
+                .Where(x => x.EventDate.For221 == false)
                 .Select(t => t.EventDate.Id)
                 .Distinct()
                 .ToList();
 
-            SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new SignupInterviewerTimeslotsViewModel
+            SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {
                 Timeslots = timeslots,
                 SignupInterviewer = new SignupInterviewer
@@ -149,12 +159,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     LastName = user.LastName,
                     IsBehavioral = false,
                     IsTechnical = false,
+                    IsCase = false,
                     IsVirtual = false,
                     InPerson = false
                 }
             };
 
-            if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral)
+            if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral && !signupInterviewer.IsCase)
             {
                 ModelState.AddModelError("SignupInterviewer.IsTechnical", "Please select at least one checkbox");
                 
@@ -189,20 +200,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     if (!_context.LocationInterviewer.Any(x => x.InterviewerId == existingSignupInterviewer.InterviewerId && x.EventDateId == date))
                     {
                         var interviewerPreference = "";
-                        if (existingSignupInterviewer.InPerson)
+                        if (existingSignupInterviewer.InPerson && existingSignupInterviewer.IsVirtual)
+                        {
+                            interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
+                        }
+                        else if(existingSignupInterviewer.InPerson)
                         {
                             interviewerPreference = InterviewLocationConstants.InPerson;
                         }
-                        else
+                        else if(existingSignupInterviewer.IsVirtual)
                         {
-                            interviewerPreference = InterviewLocationConstants.Virtual;
+                            interviewerPreference = InterviewLocationConstants.IsVirtual;
                         }
 
                         _context.Add(new LocationInterviewer
                         {
                             LocationId = null,
                             InterviewerId = userId,
-                            InterviewerPreference = interviewerPreference,
+                            LocationPreference = interviewerPreference,
                             EventDateId = date
                         });
 
@@ -213,6 +228,41 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             else
             {
+                var interviewtype = "";
+                if(signupInterviewer.IsBehavioral && signupInterviewer.IsTechnical && signupInterviewer.IsCase)
+                {
+                    interviewtype = InterviewTypeConstants.Behavioral + ", " + InterviewTypeConstants.Technical + ", " + InterviewTypeConstants.Case;
+                }
+                else if(signupInterviewer.IsBehavioral && signupInterviewer.IsTechnical)
+                {
+                    interviewtype = InterviewTypeConstants.Behavioral + ", " + InterviewTypeConstants.Technical;
+                }
+                else if(signupInterviewer.IsBehavioral && signupInterviewer.IsCase)
+                {
+                    interviewtype = InterviewTypeConstants.Behavioral + ", " + InterviewTypeConstants.Case;
+                }
+                else if(signupInterviewer.IsTechnical && signupInterviewer.IsCase)
+                {
+                    interviewtype = InterviewTypeConstants.Technical + ", " + InterviewTypeConstants.Case;
+                }
+                else if(signupInterviewer.IsBehavioral)
+                {
+                    interviewtype = InterviewTypeConstants.Behavioral;
+                }
+                else if(signupInterviewer.IsTechnical)
+                {
+                    interviewtype = InterviewTypeConstants.Technical;
+                }
+                else if(signupInterviewer.IsCase)
+                {
+                    interviewtype = InterviewTypeConstants.Case;
+                }
+
+                if(Lunch == null)
+                {
+                    Lunch = false;
+                }
+
                 post = new SignupInterviewer
                 {
                     InterviewerId = userId,
@@ -221,17 +271,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     InPerson = signupInterviewer.InPerson,
                     IsVirtual = signupInterviewer.IsVirtual,
                     IsBehavioral = signupInterviewer.IsBehavioral,
-                    IsTechnical = signupInterviewer.IsTechnical
+                    IsTechnical = signupInterviewer.IsTechnical,
+                    IsCase = signupInterviewer.IsCase,
+                    Lunch = Lunch,
+                    InterviewType = interviewtype
                 };
 
                 var interviewerPreference = "";
-                if(signupInterviewer.InPerson)
+                if (signupInterviewer.InPerson && signupInterviewer.IsVirtual)
+                {
+                    interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
+                }
+                else if (signupInterviewer.InPerson)
                 {
                     interviewerPreference = InterviewLocationConstants.InPerson;
                 }
-                else
+                else if (signupInterviewer.IsVirtual)
                 {
-                    interviewerPreference = InterviewLocationConstants.Virtual;
+                    interviewerPreference = InterviewLocationConstants.IsVirtual;
                 }
 
                 //foreach(int id in SelectedEventIds)
@@ -250,7 +307,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         {
                             LocationId = null,
                             InterviewerId = userId,
-                            InterviewerPreference = interviewerPreference,
+                            LocationPreference = interviewerPreference,
                             EventDateId = date
                         });
                         await _context.SaveChangesAsync();

@@ -5,7 +5,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
 {
     public class TimeslotSeed
     {
-        public const int MaxSignups = 2;
+        public const int MaxSignups = 0;
         public static readonly string[] Times = { "8:00 AM",
             "8:30 AM",
             "9:00 AM",

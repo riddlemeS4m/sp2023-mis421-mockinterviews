@@ -2,10 +2,11 @@
 
 namespace sp2023_mis421_mockinterviews.Data.Constants
 {
-    public class InterviewTypesConstants
+    public class InterviewTypeConstants
     {
         public const string Behavioral = "Behavioral";
         public const string Technical = "Technical";
+        public const string Case = "Case";
 
         public static List<SelectListItem> GetInterviewTypesOptions()
         {
@@ -13,6 +14,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
             {
                 new SelectListItem { Text = Behavioral, Value = Behavioral },
                 new SelectListItem { Text = Technical, Value = Technical },
+                new SelectListItem { Text = Case, Value = Case }
             };
         }
     }

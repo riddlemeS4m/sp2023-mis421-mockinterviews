@@ -9,89 +9,118 @@
 <div class="row">
     <div class="col-md-3"></div>
     <div class="col-md-6">
-        
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <label asp-for="SignupInterviewer.InPerson" class="control-label">How would you like to interview?</label>
-            <br />
-            <div class="form-check form-check-inline">
-                <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one">
-                <label class="form-check-label" for="InPerson">In Person</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
-                <label class="form-check-label" for="IsVirtual">Virtual</label>
-            </div>
-            <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
-            <br /><br />
-                <label class="control-label">Are you a technical interviewer, behavioral interviewer, or both?</label>
-           <br />
-            <div class="form-check form-check-inline">
-                <input id="IsTechnical" class="form-check-input" type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
-                <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
-            </div>
-            <br />
-            <div class="form-check form-check-inline">
-                <input id="IsBehavioral" class="form-check-input" type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one">
-                <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
-            </div>
-            <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
-            <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
-            <br /><br />
-            <div class="row">
-                <div class="col-md-6">
-                    <h3>@Model.Timeslots[0].EventDate.EventName</h3>
-                    <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
-                    @foreach (var timeslot in Model.Timeslots)
-                    {
-                        if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
-                        {
-                            <div>
-                                <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds1" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
-                                <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
-                                <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
-                            </div>
-                        }
-                    }
+        @if(!Model.SignedUp)
+        {
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <label asp-for="SignupInterviewer.InPerson" class="control-label">Where would you like to be located for the event?</label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one">
+                    <label class="form-check-label" for="InPerson">In Person</label>
                 </div>
-                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
-                {
+                <div class="form-check form-check-inline">
+                    <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
+                    <label class="form-check-label" for="IsVirtual">Virtual</label>
+                </div>
+                <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
+                <br /><br />
+                
+                <div id="lunch-question" style="display: none;">
+                    <label asp-for="SignupInterviewer.Lunch" class="control-label">Would you like us to provide you with lunch?</label>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input id="LunchTrue" class="form-check-input" type="radio" name="Lunch" value="true" data-val="false">
+                        <label class="form-check-label" for="LunchTrue">Yes</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input id="LunchFalse" class="form-check-input" type="radio" name="Lunch" value="false" data-val="false">
+                        <label class="form-check-label" for="LunchFalse">No</label>
+                    </div>
+                    <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
+                    <br /><br />
+                </div>
+                
+                <label class="control-label">What types of interviews would you be comfortable giving?</label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input id="IsTechnical" class="form-check-input" type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
+                    <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
+                </div>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input id="IsBehavioral" class="form-check-input" type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one">
+                    <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
+                </div>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input id="IsCase" class="form-check-input" type="checkbox" name="SignupInterviewer.IsCase" value="true" data-val="true" data-val-required="Please select at least one">
+                    <label for="IsCase" class="form-check-label">Case Interviews</label>
+                </div>
+                <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
+                <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
+                <br /><br />
+                <div class="row">
                     <div class="col-md-6">
-                        <h3>@Model.Timeslots[^1].EventDate.EventName</h3>
-                        <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
+                        <h3>@Model.Timeslots[0].EventDate.EventName</h3>
+                        <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
                         @foreach (var timeslot in Model.Timeslots)
                         {
-                            if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                            if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
                             {
                                 <div>
-                                    <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds2" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
+                                    <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds1" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
                                     <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
                                     <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
                                 </div>
                             }
                         }
                     </div>
-                }
-            </div>
-            <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
-            <div class="form-group">
-                <input type="submit" value="Sign Up" class="btn btn-primary" />
-            </div>
-            <br />
-        </form>
-        <div class="row">
-            <div class="col-md-6">
-                <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
-            </div>
-            <br />
-            @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
-            {
-                <div class="col-md-6">
-                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                    @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    {
+                        <div class="col-md-6">
+                            <h3>@Model.Timeslots[^1].EventDate.EventName</h3>
+                            <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
+                            @foreach (var timeslot in Model.Timeslots)
+                            {
+                                if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                                {
+                                    <div>
+                                        <input type="checkbox" id="@timeslot.Id" name="SelectedEventIds2" value="@timeslot.Id" data-val="true" data-val-required="Please select at least one timeslot">
+                                        <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
+                                        <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
                 </div>
-            }
-            <br />
-        </div>
+                <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
+                <div class="form-group">
+                    <input type="submit" value="Sign Up" class="btn btn-primary" />
+                </div>
+                <br />
+            </form>
+            <div class="row">
+                <div class="col-md-6">
+                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
+                </div>
+                <br />
+                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                {
+                    <div class="col-md-6">
+                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                    </div>
+                }
+                <br />
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-danger" role="alert">
+                You've already signed up for all available interview slots.
+            </div>
+        }
     </div>
     <div class="col-md-3"></div>
 </div>
@@ -113,4 +142,31 @@
             });
         });
     </script>
+   @* <script>
+        function showHiddenDiv() {
+            var checkbox = document.getElementById('InPerson');
+            var divToToggle = document.getElementById('lunch-question');
+
+            if (!checkbox.checked) {
+                divToToggle.style.display = 'block';
+            } 
+            else if(checkbox.checked)
+            {
+                divToToggle.style.display = 'none';
+            }
+        }
+    </script>*@
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var checkbox = document.getElementById('InPerson');
+            var divToToggle = document.getElementById('lunch-question'); // Replace 'divToToggle' with the actual ID of your target div
+
+            checkbox.addEventListener('click', function () {
+                divToToggle.style.display = checkbox.checked ? 'block' : 'none';
+            });
+        });
+    </script>
+
+
 }

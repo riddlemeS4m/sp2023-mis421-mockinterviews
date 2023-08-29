@@ -18,8 +18,8 @@
             @foreach (var interviewEventViewModel in Model.InterviewerScheduledInterviews)
             {
                 <tr>
-                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
-                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
+                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
                     @if (interviewEventViewModel.InterviewEvent.Location == null)
                     {
                         <td>Not Assigned</td>

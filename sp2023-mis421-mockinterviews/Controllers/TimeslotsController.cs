@@ -37,6 +37,38 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
+            foreach (Timeslot timeslot in timeslots)
+            {
+                countlist.Add(new ParticipantCountViewModel
+                {
+                    Timeslot = timeslot,
+                    StudentCount = 0,
+                    InterviewerCount = 0,
+                    VolunteerCount = 0
+                });
+            }
+
+            var viewModel = new TimeslotViewModel()
+            {
+                Timeslots = countlist,
+                EventDates = eventdates
+            };
+
+            return View(viewModel);
+
+            //return _context.Timeslot != null ?
+            //            View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
+            //              Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
+        }
+        public async Task<IActionResult> SignupReport()
+        {
+            var timeslots = await _context.Timeslot
+                .Include(t => t.EventDate)
+                .ToListAsync();
+            var eventdates = await _context.EventDate
+                .ToListAsync();
+
+            var countlist = new List<ParticipantCountViewModel>();
             foreach(Timeslot timeslot in timeslots)
             {
                 var studentCount = await _context.InterviewEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
@@ -57,7 +89,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 EventDates = eventdates
             };
 
-            return View(viewModel);
+            return View("SignupReport", viewModel);
 
             //return _context.Timeslot != null ?
             //            View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
@@ -184,7 +216,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent,MaxSignUps")] Timeslot timeslot)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent,MaxSignUps,EventDateId")] Timeslot timeslot)
         {
             if (id != timeslot.Id)
             {
@@ -197,6 +229,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     _context.Update(timeslot);
                     await _context.SaveChangesAsync();
+
+                    var pairedtimeslot = await _context.Timeslot.FindAsync(id + 1);
+                    if(pairedtimeslot != null)
+                    {
+                        pairedtimeslot.MaxSignUps = timeslot.MaxSignUps;
+                        _context.Update(pairedtimeslot);
+                        await _context.SaveChangesAsync();
+                    }
                 }
                 catch (DbUpdateConcurrencyException)
                 {

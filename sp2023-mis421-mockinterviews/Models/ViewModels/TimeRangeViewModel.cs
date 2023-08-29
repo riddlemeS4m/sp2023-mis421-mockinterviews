@@ -12,8 +12,11 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public DateTime Date { get; set; }
         public string? Location { get; set; }
         public string? Name { get; set; }
+        [Display(Name = "Interview Type")]
         public string? InterviewType { get; set; }
         public List<int> TimeslotIds { get; set; }
+        [Display(Name = "Lunch")]
+        public bool? WantsLunch { get; set; }
 
     }
 }

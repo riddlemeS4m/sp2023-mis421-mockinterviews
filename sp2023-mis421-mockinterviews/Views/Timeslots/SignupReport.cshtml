@@ -1,0 +1,112 @@
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.TimeslotViewModel
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Signup Report</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+    <br />
+    <a asp-action="UpdateMaxTimeslots">Update Max Timeslot Signups</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.EventDate.Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].StudentCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].InterviewerCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].VolunteerCount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.MaxSignUps)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Timeslots)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Timeslot.Time)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.StudentCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.InterviewerCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.VolunteerCount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Timeslot.MaxSignUps)
+                </td>
+                <td>
+                    @if (item.Timeslot.Time.Minute == 0)
+                    {
+                        <a asp-action="Edit" asp-route-id="@item.Timeslot.Id">Edit</a>
+
+                        <a> | </a>
+                    }
+                    <a asp-action="Details" asp-route-id="@item.Timeslot.Id">Details</a> @*|
+                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>*@
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@*<hr />
+<h1>Event Dates</h1>
+
+<p>
+    <a asp-controller="EventDates" asp-action="Create">Create New Event</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDates[0].Date)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.EventDates[0].EventName)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.EventDates)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Date)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.EventName)
+                </td>
+                <td>
+                    <a asp-controller="EventDates" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-controller="EventDates" asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-controller="EventDates" asp-action="Delete" asp-route-id="@item.Id">Cancel</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>*@
+

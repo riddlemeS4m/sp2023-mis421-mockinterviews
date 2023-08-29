@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
+﻿@using sp2023_mis421_mockinterviews.Data.Constants;
+@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
 
 @{
     ViewData["Title"] = "Delete";
@@ -29,21 +30,11 @@
             @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
         </dd>
         <dt>
-            Behavioral and/or Technical:
+            @Html.DisplayNameFor(model => model.SignupInterviewer.InterviewType)
         </dt>
-
-        @if (Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Behavioral, Technical</dd>
-        }
-        else if (Model.SignupInterviewer.IsBehavioral && !Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Behavioral</dd>
-        }
-        else if (!Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Technical</dd>
-        }
+        <dd>
+            @Html.DisplayFor(model => model.SignupInterviewer.InterviewType)
+        </dd>
         <dt>
             In-Person or Virtual:
         </dt>

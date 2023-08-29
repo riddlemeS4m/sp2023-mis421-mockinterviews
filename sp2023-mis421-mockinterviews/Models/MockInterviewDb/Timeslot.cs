@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
 
@@ -15,11 +16,13 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public DateTime Time { get; set; }
         [ForeignKey("EventDate")]
         public int EventDateId { get; set; }
+        [ValidateNever]
         public EventDate EventDate { get; set; }
         public bool IsActive { get; set; }
         public bool IsVolunteer { get; set; }
         public bool IsInterviewer { get; set; }
         public bool IsStudent { get; set; }
+        [Display(Name = "Max Sign Ups")]
         public int MaxSignUps { get; set; }
     }
 }

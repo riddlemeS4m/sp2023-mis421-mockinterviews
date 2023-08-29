@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
+﻿@using sp2023_mis421_mockinterviews.Data.Constants;
+@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
 
 @{
     ViewData["Title"] = "Details";
@@ -29,32 +30,26 @@
             @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.SignupInterviewer.IsBehavioral)
+            @Html.DisplayNameFor(model => model.SignupInterviewer.InterviewType)
         </dt>
-
-        @if (Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Behavioral, Technical</dd>
-        }
-        else if (Model.SignupInterviewer.IsBehavioral && !Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Behavioral</dd>
-        }
-        else if (!Model.SignupInterviewer.IsBehavioral && Model.SignupInterviewer.IsTechnical)
-        {
-            <dd>Technical</dd>
-        }
+        <dd>
+            @Html.DisplayFor(model => model.SignupInterviewer.InterviewType)
+        </dd>
         <dt>
             @Html.DisplayNameFor(model => model.SignupInterviewer.InPerson)
         </dt>
 
-        @if (Model.SignupInterviewer.IsVirtual)
+        @if (Model.SignupInterviewer.IsVirtual && Model.SignupInterviewer.IsBehavioral)
         {
-            <dd>Virtual</dd>
+            <dd>@InterviewLocationConstants.InPerson/@InterviewLocationConstants.IsVirtual</dd>
         }
         else if (Model.SignupInterviewer.InPerson)
         {
-            <dd>In Person</dd>
+            <dd>@InterviewLocationConstants.InPerson</dd>
+        }
+        else
+        {
+            <dd>@InterviewLocationConstants.IsVirtual</dd>
         }
     </dl>
 </div>

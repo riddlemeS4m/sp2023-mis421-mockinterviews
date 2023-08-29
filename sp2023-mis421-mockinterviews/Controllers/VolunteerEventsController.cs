@@ -97,10 +97,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
-            VolunteerEventSignupViewModel volunteerEventsViewModel = new VolunteerEventSignupViewModel
+            VolunteerEventSignupViewModel volunteerEventsViewModel = new()
             {
                 Timeslots = timeslots
             };
+
+            if(timeslots.Count == 0)
+            {
+                volunteerEventsViewModel.SignedUp = true;
+            }
+            else
+            {
+                volunteerEventsViewModel.SignedUp = false;
+            }
+
             return View(volunteerEventsViewModel);
         }
 

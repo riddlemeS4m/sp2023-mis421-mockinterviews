@@ -350,10 +350,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-            var interviewTypeTwo = InterviewTypesConstants.Technical;
+            var interviewTypeTwo = InterviewTypeConstants.Technical;
             if (user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
             {
-                interviewTypeTwo = InterviewTypesConstants.Behavioral;
+                interviewTypeTwo = InterviewTypeConstants.Behavioral;
             }
 
             var interviewEvents = new List<InterviewEvent>
@@ -363,7 +363,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     TimeslotId = SelectedEventIds,
                     StudentId = userId,
                     Status = StatusConstants.Default,
-                    InterviewType = InterviewTypesConstants.Behavioral
+                    InterviewType = InterviewTypeConstants.Behavioral
                 },
                 new InterviewEvent 
                 {
@@ -516,12 +516,27 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     var signupInterviewTimeslot = await _context.SignupInterviewerTimeslot
                         .Include(x => x.SignupInterviewer)
                         .Include(x => x.Timeslot)
+                        .ThenInclude(x => x.EventDate)
                         .Where(x => x.TimeslotId == interviewEvent.TimeslotId && x.SignupInterviewer.InterviewerId == InterviewerId)
                         .FirstOrDefaultAsync();
 
+                    var interviewerPreference = "";
+                    if(signupInterviewTimeslot.SignupInterviewer.IsVirtual && signupInterviewTimeslot.SignupInterviewer.InPerson)
+                    {
+                        interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
+                    }
+                    else if(signupInterviewTimeslot.SignupInterviewer.IsVirtual)
+                    {
+                        interviewerPreference = InterviewLocationConstants.IsVirtual;
+                    }
+                    else if(signupInterviewTimeslot.SignupInterviewer.InPerson)
+                    {
+                        interviewerPreference = InterviewLocationConstants.InPerson;
+                    }
+
                     var location = await _context.LocationInterviewer
                         .Include(x => x.Location)
-                        .Where(x => x.InterviewerId == InterviewerId)
+                        .Where(x => x.InterviewerId == InterviewerId && x.LocationPreference == interviewerPreference && x.EventDateId == signupInterviewTimeslot.Timeslot.EventDateId)
                         .FirstOrDefaultAsync();
 
                     interviewEvent.SignupInterviewerTimeslot = signupInterviewTimeslot;
@@ -618,8 +633,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             //Get list of all distinct interviewers that have signed up to deliver the same type of interview as the student needs
             var selectedTypes = _context.SignupInterviewer
-                .Where(u => ((interviewEvent.InterviewType == InterviewTypesConstants.Technical && u.IsTechnical) ||
-                             (interviewEvent.InterviewType == InterviewTypesConstants.Behavioral && u.IsBehavioral)))
+                .Where(u => ((interviewEvent.InterviewType == InterviewTypeConstants.Technical && u.IsTechnical) ||
+                             (interviewEvent.InterviewType == InterviewTypeConstants.Behavioral && u.IsBehavioral)))
                 .Select(x => x.InterviewerId)
                 .Distinct()
                 .ToList();

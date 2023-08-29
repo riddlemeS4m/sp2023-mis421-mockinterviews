@@ -52,8 +52,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var volunteerEvents = await _context.VolunteerEvent
                     .Include(v => v.Timeslot)
                     .ThenInclude(y => y.EventDate)
-                    .OrderBy(ve => ve.Timeslot.EventDate.Date)
-                    .ThenBy(ve => ve.Timeslot.Time)
+                    .OrderBy(ve => ve.TimeslotId)
                     .Where(v => v.StudentId == userId)
                     .ToListAsync();
 

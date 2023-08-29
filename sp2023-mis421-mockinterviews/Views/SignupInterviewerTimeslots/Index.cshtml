@@ -16,10 +16,13 @@
                 Name
             </th>
             <th>
-                Behavioral/Technical
+                @Html.DisplayNameFor(model => model.InterviewType)
             </th>
             <th>
                 In-Person/Virtual
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.WantsLunch)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Date)
@@ -36,31 +39,14 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Name)
             </td>
-                @*@if(item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
-                {
-                    <td>Behavioral, Technical</td>       
-                } 
-                else if(item.SignupInterviewer.IsBehavioral && !item.SignupInterviewer.IsTechnical) 
-                {
-                    <td>Behavioral</td>
-                }
-                else if (!item.SignupInterviewer.IsBehavioral && item.SignupInterviewer.IsTechnical)
-                {
-                    <td>Technical</td>
-                }
-                @if(item.SignupInterviewer.IsVirtual)
-                {
-                    <td>Virtual</td>
-                } 
-                else if(item.SignupInterviewer.InPerson)
-                {
-                    <td>In Person</td>
-                }*@
             <td>
                 @Html.DisplayFor(modelItem => item.InterviewType)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Location)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.WantsLunch)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)

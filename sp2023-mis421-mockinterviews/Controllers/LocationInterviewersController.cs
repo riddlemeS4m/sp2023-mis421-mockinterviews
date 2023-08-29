@@ -50,7 +50,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         {
                             LocationInterviewer = locationInterviewer,
                             InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
-                            InterviewerPreference = locationInterviewer.InterviewerPreference
+                            InterviewerPreference = locationInterviewer.LocationPreference
                         };
 
             var locationInterviewersWithNames = query.ToList();
@@ -245,7 +245,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             // Get a list of all Locations except those already assigned to LocationInterviewers
             var inPerson = true;
             var isVirtual = false;
-            if (locationInterviewer.InterviewerPreference == InterviewLocationConstants.Virtual)
+            if (locationInterviewer.LocationPreference == InterviewLocationConstants.IsVirtual)
             {
                 inPerson = false;
                 isVirtual = true;
@@ -294,7 +294,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId,EventDateId,InterviewerPreference")] LocationInterviewer locationInterviewer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId,EventDateId,LocationPreference")] LocationInterviewer locationInterviewer)
         {
             if (id != locationInterviewer.Id)
             {
