@@ -11,12 +11,15 @@
     <a asp-action="Create">Create New</a>
 </p>*@
 
-@if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
-{
-    <a asp-area="" asp-controller="Home" asp-action="EmailStudents">Send Students Email Reminder</a>
-    <br />
-    <a asp-area="" asp-controller="Home" asp-action="EmailInterviewers">Send Interviewers Email Reminder</a>
-}
+<div id="center-everything">
+    @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
+    {
+        <a asp-area="" asp-controller="Home" asp-action="EmailStudents">Send Students Email Reminder</a>
+        <br />
+        <a asp-area="" asp-controller="Home" asp-action="EmailInterviewers">Send Interviewers Email Reminder</a>
+    }
+</div>
+
 <hr />
 
 <table class="table">

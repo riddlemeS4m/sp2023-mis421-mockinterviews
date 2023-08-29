@@ -6,17 +6,17 @@
 
 <h1>Feedback Portal</h1>
 
-<h4>Tell us about how your interview went.</h4>
+<h4 id="center-everything">Tell us about how your interview went.</h4>
 <hr />
 @if(Model.StudentScheduledInterviews.Count() <= 1)
 {
-    <div class="alert alert-danger" role="alert">
+    <div class="alert alert-danger" role="alert" id="center-everything">
         You must have completed both interviews to be able to provide feedback.
     </div>
 }
 else
 {
-    <table class="table">
+    <table class="table" id="center-everything">
         <thead>
             <tr>
                 <th>Date</th>

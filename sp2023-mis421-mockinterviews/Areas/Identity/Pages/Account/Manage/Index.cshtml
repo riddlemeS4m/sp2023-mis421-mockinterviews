@@ -9,22 +9,24 @@
 <h3>@Model.Input.FirstName @Model.Input.LastName</h3>
 
 <div class="row">
-    <div class="col-md-6">
-        <label>Phone number:</label>
-        @if(Model.Input.PhoneNumber != null)
-        {
-            <span>@Model.Input.PhoneNumber</span>
-        }
-        else
-        {
-            <span>No phone number specified</span>
-        }
+    <div class="col-md-6" >
+        <div style="padding-bottom: 15px;">
+            <label>Phone number:</label>
+            @if(Model.Input.PhoneNumber != null)
+            {
+                <span>@Model.Input.PhoneNumber</span>
+            }
+            else
+            {
+                <span>No phone number specified</span>
+            }
+        </div>
         <div>
         </div>
 
         @if (User.IsInRole(RolesConstants.StudentRole))
         {
-            <div>
+            <div style="padding-bottom: 15px;">
                 <label>Class:</label>
                 @if(Model.Input.Class != null)
                 {
@@ -35,11 +37,11 @@
                     <span>No class specified</span>
                 }
             </div>
-            <div>
+            <div style="padding-bottom: 15px;">
                 <label>Resume:</label>
                 @if (Model.Input.Resume != null)
                 {
-                    <a href="@Url.Action("DownloadResume", "Users", new { userId = Model.Id })" class="btn btn-primary">Download Resume</a>
+                    <a href="@Url.Action("DownloadResume", "Users", new { userId = Model.Id })">Download Resume</a>
                 }
                 else
                 {
@@ -48,8 +50,8 @@
             </div>
         }
 
-        <div>
-            <label>Profile picture:</label>
+        <div style="padding-bottom: 15px;">
+            <label>Profile Picture:</label>
             @if (Model.Input.ProfilePicture != null)
             {
                 <img src="data:image/*;base64,@(Convert.ToBase64String(Model.Input.ProfilePicture))" style="width: 350px; height: 350px; object-fit: cover" />

@@ -9,8 +9,8 @@
 
 <hr />
 <div class="row">
-    <div class="col-md-3"></div>
-    <div class="col-md-6">
+    <div class="col-md-2"></div>
+    <div class="col-md-8" id="center-everything">
         @if(Model.ApplicationUser.Resume == null)
         {
             <div class="alert alert-danger" role="alert">
@@ -42,7 +42,7 @@
         {
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <div class="row">
+                <div class="row" id="center-everything">
                     <div class="col-md-6">
                         <h3>@Model.Timeslots[0].EventDate.EventName</h3>
                         <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
@@ -75,7 +75,7 @@
                         </div>
                     }
                 </div>
-                <div class="form-group">
+                <div class="form-group" id="center-everything">
                     <input type="hidden" name="SelectedEventIds" id="SelectedEventIds">
                     <input type="submit" value="Sign Up!" class="btn btn-primary" />
                 </div>
@@ -84,7 +84,7 @@
         }
         
     </div>
-    <div class="col-md-3"></div>
+    <div class="col-md-2"></div>
 </div>
 
 
