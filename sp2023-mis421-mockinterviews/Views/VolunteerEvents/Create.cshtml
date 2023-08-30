@@ -99,13 +99,18 @@
         selectAllButtons.forEach(function (button) {
             button.addEventListener("click", function () {
                 var target = this.getAttribute("data-target"); // "list1" or "list2"
-                
+
                 var checkboxes = document.querySelectorAll('input[name="' + target + '"]');
 
+                var allChecked = Array.from(checkboxes).every(function (checkbox) {
+                    return checkbox.checked;
+                });
+
                 checkboxes.forEach(function (checkbox) {
-                    checkbox.checked = !checkbox.checked;
+                    checkbox.checked = !allChecked;
                 });
             });
         });
     </script>
+
 }

@@ -44,9 +44,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var volunteerEvents = await _context.VolunteerEvent
                 .Include(v => v.Timeslot)
                 .ThenInclude(y => y.EventDate)
-                .OrderBy(ve => ve.StudentId)
-                .ThenBy(ve => ve.Timeslot.EventDate.Date)
-                .ThenBy(ve => ve.Timeslot.Time)
+                .OrderBy(ve => ve.TimeslotId)
                 .ToListAsync();
 
             var timeRanges = new ControlBreakVolunteer(_userManager);
@@ -160,8 +158,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var sortedEvents = volEvents
-                .OrderBy(x => x.Timeslot.EventDate.Date)
-                .ThenBy(x => x.Timeslot.Time)
+                .OrderBy(ve => ve.TimeslotId)
                 .ToList();
 
             ComposeEmail(user, sortedEvents);
@@ -333,7 +330,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)) && !User.IsInRole(RolesConstants.AdminRole))
             {
                 return NotFound();
             }
@@ -362,7 +359,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(t => timeslots.Contains(t.Id))
                 .ToListAsync();
 
-            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            if (!timeslotsToDelete.All(e => e.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier)) && !User.IsInRole(RolesConstants.AdminRole))
             {
                 return NotFound();
             }
@@ -371,7 +368,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
             _context.VolunteerEvent.RemoveRange(timeslotsToDelete);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            if (User.IsInRole(RolesConstants.AdminRole))
+            {
+                return RedirectToAction("Index", "VolunteerEvents");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]

@@ -46,7 +46,9 @@
                 @Html.DisplayFor(modelItem => item.Location)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.WantsLunch)
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" disabled checked="@(item.WantsLunch ?? false)">
+                </div>
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Date)

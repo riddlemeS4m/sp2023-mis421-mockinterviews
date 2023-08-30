@@ -144,7 +144,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
             var dates = timeslots
-                .Where(x => x.EventDate.For221 == false)
+                .Where(x => x.EventDate.For221 == false && SelectedEventIds.Contains(x.Id))
                 .Select(t => t.EventDate.Id)
                 .Distinct()
                 .ToList();
@@ -334,8 +334,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var sortedTimes = emailTimes
-                .OrderBy(x => x.Timeslot.EventDate.Date)
-                .ThenBy(x => x.Timeslot.Time)
+                .OrderBy(ve => ve.TimeslotId)
                 .ToList();
 
             ComposeEmail(user, sortedTimes);
@@ -559,7 +558,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            if (!timeslotsToDelete.All(e => e.SignupInterviewer.InterviewerId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            if (!timeslotsToDelete.All(e => e.SignupInterviewer.InterviewerId == User.FindFirstValue(ClaimTypes.NameIdentifier)) && !User.IsInRole(RolesConstants.AdminRole))
             {
                 return NotFound();
             }
@@ -589,7 +588,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(t => timeslots.Contains(t.Id))
                 .ToListAsync();
 
-            if (!timeslotsToDelete.All(e => e.SignupInterviewer.InterviewerId == User.FindFirstValue(ClaimTypes.NameIdentifier)))
+            if (!timeslotsToDelete.All(e => e.SignupInterviewer.InterviewerId == User.FindFirstValue(ClaimTypes.NameIdentifier)) && !User.IsInRole(RolesConstants.AdminRole))
             {
                 return NotFound();
             }
@@ -616,8 +615,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     await _context.SaveChangesAsync();
                 }
             }
-
-            return RedirectToAction("Index", "Home");
+            
+            if(User.IsInRole(RolesConstants.AdminRole))
+            {
+                return RedirectToAction("Index", "SignupInterviewerTimeslots");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]
