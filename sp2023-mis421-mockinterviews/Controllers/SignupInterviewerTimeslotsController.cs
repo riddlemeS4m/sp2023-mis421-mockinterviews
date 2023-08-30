@@ -19,6 +19,7 @@ using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Data.Migrations.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -56,6 +57,80 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(groupedEvents);
         }
 
+        // GET: SignupInterviewerTimeslots
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> LunchReport()
+        {
+            var uniqueSignupInterviewerTimeslots = await _context.SignupInterviewerTimeslot
+                .Include(s => s.SignupInterviewer)
+                .Include(s => s.Timeslot)
+                .ThenInclude(s => s.EventDate)
+                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == false)
+                .ToListAsync();
+
+            var groupedSignupInterviewerTimeslots = uniqueSignupInterviewerTimeslots
+                .GroupBy(s => new { s.SignupInterviewer.InterviewerId, s.Timeslot.EventDateId })
+                .Select(g => g.First()) // Select the first element from each group (unique combination)
+                .OrderBy(ve => ve.SignupInterviewer.InterviewerId)
+                .ThenBy(ve => ve.TimeslotId)
+                .ToList();
+
+            var lunchReport = new LunchReportViewModel();
+
+            if(groupedSignupInterviewerTimeslots.Count != 0)
+            {
+                var lunchReports = new List<LunchReport>();
+
+                foreach (var uniqueSignupInterviewerTimeslot in groupedSignupInterviewerTimeslots)
+                {
+                    var signupInterviewer = uniqueSignupInterviewerTimeslot.SignupInterviewer;
+
+                    lunchReports.Add(new LunchReport
+                    {
+                        Name = signupInterviewer.FirstName + " " + signupInterviewer.LastName,
+                        LunchDesire = signupInterviewer.Lunch ?? false,
+                        ForDate = uniqueSignupInterviewerTimeslot.Timeslot.EventDate.Date
+                    });
+                }
+
+                var lunchReportData = groupedSignupInterviewerTimeslots
+                    .GroupBy(s => s.Timeslot.EventDateId)
+                    .Select(g => new
+                    {
+                        EventDateId = g.Key,
+                        EventDateDate = g.First().Timeslot.EventDate.Date,
+                        EventDateName = g.First().Timeslot.EventDate.EventName,
+                        LunchCount = g.Count(s => s.SignupInterviewer.Lunch == true)
+                    })
+                    .OrderBy(g => g.EventDateId)
+                    .ToList();
+
+                lunchReport = new LunchReportViewModel
+                {
+                    LunchReports = lunchReports,
+                    Day1TotalLunchCount = lunchReportData[0].LunchCount,
+                    Day1Name = $"{lunchReportData[0].EventDateName} ({lunchReportData[0].EventDateDate:M/dd/yyyy})",
+                    AnyLunches = true
+                };
+
+                if (lunchReportData.Count > 1)
+                {
+                    lunchReport.Day2TotalLunchCount = lunchReportData[1].LunchCount;
+                    lunchReport.Day2Name = $"{lunchReportData[1].EventDateName} ({lunchReportData[1].EventDateDate:M/dd/yyyy})";
+                }
+            }
+            else
+            {
+                lunchReport = new LunchReportViewModel
+                {
+                    LunchReports = new List<LunchReport>(),
+                    Day1Name = "No Lunches"
+                };
+            }
+
+            return View("LunchReport", lunchReport);
+        }
+
         // GET: SignupInterviewerTimeslots/Details/5
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
@@ -87,11 +162,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
             userTask.GetAwaiter().GetResult();
             var user = userTask.Result;
 
+            var for221 = false;
+            if (User.IsInRole(RolesConstants.StudentRole))
+            {
+                for221 = true;
+            }
+
             var timeslotsTask = _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                .Where(x => x.EventDate.For221 == false)
+                .Where(x => x.EventDate.For221 == for221)
                 .ToListAsync();
             timeslotsTask.GetAwaiter().GetResult();
             var timeslots = timeslotsTask.Result;
@@ -137,6 +218,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
+            var for221 = false;
+            if (User.IsInRole(RolesConstants.StudentRole))
+            {
+                for221 = true;
+            }
+
             var timeslots = await _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
@@ -144,7 +231,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
             var dates = timeslots
-                .Where(x => x.EventDate.For221 == false && SelectedEventIds.Contains(x.Id))
+                .Where(x => x.EventDate.For221 == for221 && SelectedEventIds.Contains(x.Id))
                 .Select(t => t.EventDate.Id)
                 .Distinct()
                 .ToList();
