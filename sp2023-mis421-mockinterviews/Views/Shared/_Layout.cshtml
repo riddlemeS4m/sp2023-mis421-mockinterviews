@@ -9,8 +9,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="description" content="This is meta description">
     <meta name="author" content="Themefisher">
-    <link rel="shortcut icon" href="images/ScriptA.png" type="image/x-icon">
-    <link rel="icon" href="images/ScriptA.png" type="image/x-icon">
+@*    <link rel="shortcut icon" href="images/ScriptA.png" type="image/x-icon">
+*@    <link rel="icon" href="images/ScriptA.png" type="image/x-icon">
 
     <!-- Data Tables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css" integrity="sha384-nlqJt7hgTYzEtpwtccFUVNZPXLN4pJoZ/QIfCtAIK9txm0dVyw/lz/47SslwYLPj" crossorigin="anonymous">
@@ -39,9 +39,11 @@
     <header class="navigation bg-tertiary">
         <nav class="navbar navbar-expand-xl navbar-light text-center py-3">
             <div class="container">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
-                    <img loading="preload" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
-                </a>
+                <div class="col-md-2">
+                    <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
+                        <img loading="preload" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
+                    </a>
+                </div>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
@@ -168,7 +170,7 @@
 
                     </ul>
                 </div>
-                <div style="padding-left: 80px;">
+                <div>
                   <partial name="_LoginPartial"/>
                 </div>
             </div>

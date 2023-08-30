@@ -8904,6 +8904,10 @@ a:hover {
     text-align: center;
 }
 
+#Input_ProfilePicture.form-control {
+    color: black;
+}
+
 #navbarSupportedContent {
     align-items: center;
     justify-content: center;
