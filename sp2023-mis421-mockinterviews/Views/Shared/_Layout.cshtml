@@ -10,7 +10,7 @@
     <meta name="description" content="This is meta description">
     <meta name="author" content="Themefisher">
 @*    <link rel="shortcut icon" href="images/ScriptA.png" type="image/x-icon">
-*@    <link rel="icon" href="images/ScriptA.png" type="image/x-icon">
+*@    <link rel="icon" href="images/ScriptA.png?v=1" type="image/x-icon">
 
     <!-- Data Tables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css" integrity="sha384-nlqJt7hgTYzEtpwtccFUVNZPXLN4pJoZ/QIfCtAIK9txm0dVyw/lz/47SslwYLPj" crossorigin="anonymous">
@@ -31,6 +31,33 @@
 
     <!-- # Main Style Sheet -->
     <link rel="stylesheet" href="~/css/style.css">
+
+    <script>
+        function adjustPadding(isLoggedIn) {
+            const loginContainer = document.getElementById('loginContainer');
+
+            if (isLoggedIn) {
+                loginContainer.style.paddingLeft = '0px';
+            } else {
+                loginContainer.style.paddingLeft = '120px';
+            }
+        }
+
+        function adjustPaddingTwo(isLoggedIn) {
+            const navbarSupportedContent = document.getElementById('navbarSupportedContent');
+
+            if (isLoggedIn) {
+                navbarSupportedContent.style.paddingLeft = '100px';
+            } else {
+                navbarSupportedContent.style.paddingLeft = '0px';
+            }
+        }
+
+        window.onload = function () {
+            adjustPadding(@(User.Identity.IsAuthenticated.ToString().ToLower()));
+            adjustPaddingTwo(@(User.Identity.IsAuthenticated.ToString().ToLower()));
+        };
+    </script>
 </head>
 
 <body>
@@ -56,7 +83,7 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sign-Up</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                     @if(User.IsInRole(RolesConstants.StudentRole))
                                     {
                                         <li>
@@ -97,7 +124,7 @@
                         @if (User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item dropdown"> <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                      <li>
                                          <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Interviewers</a>
                                      </li>
@@ -129,7 +156,7 @@
                             {
                                 <li class="nav-item dropdown">
                                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Feedback</a>
-                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                    <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                         <li>
                                             <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="FeedbackIndex">Feedback Portal</a>
                                         </li>
@@ -151,7 +178,7 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="FAQs" asp-action="Resources">Resources</a>
                                     </li>
@@ -170,7 +197,7 @@
 
                     </ul>
                 </div>
-                <div>
+                <div id="loginContainer">
                   <partial name="_LoginPartial"/>
                 </div>
             </div>
@@ -178,7 +205,7 @@
     </header>
     <!-- /navigation -->
 
-    <div class="container">
+    <div class="container" style="padding-top: 20px; padding-bottom: 20px;">
         <main role="main" class="pb-3">
             @RenderBody()
         </main>

@@ -8896,6 +8896,7 @@ a:hover {
     bottom: 0;
     width: 100%;
     white-space: nowrap;
+    height: 150px;
 }
 
 #center-everything {
