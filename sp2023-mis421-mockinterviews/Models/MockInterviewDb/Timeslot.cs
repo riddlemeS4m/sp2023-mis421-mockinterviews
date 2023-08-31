@@ -13,6 +13,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         //LT-yes because we want the dependencies to stay around even after a week of mock interviews is over, that way we can go back in the history and see previous stats
         public int Id { get; set; }
         [DataType(DataType.Time)]
+        [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
         public DateTime Time { get; set; }
         [ForeignKey("EventDate")]
         public int EventDateId { get; set; }

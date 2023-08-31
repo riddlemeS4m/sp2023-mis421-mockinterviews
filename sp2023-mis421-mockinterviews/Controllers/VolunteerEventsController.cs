@@ -44,7 +44,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var volunteerEvents = await _context.VolunteerEvent
                 .Include(v => v.Timeslot)
                 .ThenInclude(y => y.EventDate)
-                .OrderBy(ve => ve.TimeslotId)
+                .OrderBy(ve => ve.StudentId)
+                .ThenBy(x => x.TimeslotId)
                 .ToListAsync();
 
             var timeRanges = new ControlBreakVolunteer(_userManager);
@@ -53,7 +54,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(groupedEvents);
         }
 
-        // GET: VolunteerEvents/Details/5
+        // GET: VolunteerEvents/Details/
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {

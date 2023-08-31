@@ -38,7 +38,7 @@
                 Your class (@Model.ApplicationUser.Class) does not match the class for which this event is intended. Please sign up for the event that is intended for your class.
             </div>
         }*@
-        else
+        else if(Model.Timeslots.Count > 0)
         {
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -82,7 +82,13 @@
             </form>
 
         }
-        
+        else
+        {
+            <div class="alert alert-danger" role="alert" style="text-align:center;">
+                We're sorry, but all available timeslots are currently booked. We are actively in the process of adding more interviewers to expand our availability. Please come back later for updated timeslot options.
+            </div>
+        }
+
     </div>
     <div class="col-md-2"></div>
 </div>
