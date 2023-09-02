@@ -19,6 +19,9 @@ using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using System.Globalization;
+using sp2023_mis421_mockinterviews.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
 {
@@ -31,13 +34,15 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
+        private readonly MockInterviewDataDbContext _context;
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             ILogger<ExternalLoginModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            MockInterviewDataDbContext context)
         {
             _signInManager = signInManager;
             _userManager = userManager;
@@ -45,6 +50,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             _emailStore = GetEmailStore();
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         /// <summary>
@@ -141,7 +147,9 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 {
                     Input = new InputModel
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email)
+                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                        FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
                     };
                 }
                 return Page();
@@ -162,10 +170,23 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var user = CreateUser();
-                user.FirstName = Input.FirstName;
-                user.LastName = Input.LastName;
+
+                var textInfo = new CultureInfo("en-US", false).TextInfo;
+                user.FirstName = textInfo.ToTitleCase(Input.FirstName);
+                user.LastName = textInfo.ToTitleCase(Input.LastName);
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
+
+                var exists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(record => record.Email == Input.Email);
+                
+                if(exists != null)
+                {
+                    if(exists.In221)
+                    {
+                        user.Class = ClassConstants.FirstSemester;
+                    }
+                }
 
                 var result = await _userManager.CreateAsync(user);
                 if (result.Succeeded)
@@ -175,13 +196,21 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                     {
                         _logger.LogInformation("User created an account using {Name} provider.", info.LoginProvider);
 
-                        if (Input.Email[(Input.Email.IndexOf('@') + 1)..] == RolesConstants.DesignateStudent)
+                        if (exists != null)
                         {
+                            if(exists.InMasters)
+                            {
+                                await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
+                            }
                             await _userManager.AddToRoleAsync(user, RolesConstants.StudentRole);
+                        }
+                        else if (exists == null)
+                        {
+                            await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
                         }
                         else
                         {
-                            await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
+                            return BadRequest("Role assignment failed. Please try registering again.");
                         }
 
                         var userId = await _userManager.GetUserIdAsync(user);
@@ -203,7 +232,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                         }
 
                         await _signInManager.SignInAsync(user, isPersistent: false, info.LoginProvider);
-                        return LocalRedirect(returnUrl);
+                        //return LocalRedirect(returnUrl);
+                        return RedirectToPage("/Account/Manage/ProfileEdit");
                     }
                 }
                 foreach (var error in result.Errors)

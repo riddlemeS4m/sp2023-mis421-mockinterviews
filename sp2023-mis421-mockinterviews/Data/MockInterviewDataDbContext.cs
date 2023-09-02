@@ -19,5 +19,6 @@ namespace sp2023_mis421_mockinterviews.Data
         public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot>? Timeslot { get; set; }
         public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent>? VolunteerEvent { get; set; }
         public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate>? EventDate { get; set; }
+        public DbSet<sp2023_mis421_mockinterviews.Models.MockInterviewDb.MSTeamsStudentUpload>? MSTeamsStudentUpload { get; set; }
     }
 }

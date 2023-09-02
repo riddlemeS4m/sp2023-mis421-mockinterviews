@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using sp2023_mis421_mockinterviews.Data;
 
@@ -11,9 +12,10 @@ using sp2023_mis421_mockinterviews.Data;
 namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 {
     [DbContext(typeof(MockInterviewDataDbContext))]
-    partial class MockInterviewDataDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230902034713_AddingStudentUploadFile")]
+    partial class AddingStudentUploadFile
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -182,13 +184,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("In221")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("InMasters")
-                        .HasColumnType("bit");
-
                     b.Property<string>("MicrosoftId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")

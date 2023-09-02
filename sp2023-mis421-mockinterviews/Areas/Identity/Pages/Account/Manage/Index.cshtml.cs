@@ -11,6 +11,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using sp2023_mis421_mockinterviews.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 {
@@ -18,13 +20,16 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly MockInterviewDataDbContext _context;
 
         public IndexModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            MockInterviewDataDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _context = context;
         }
 
         /// <summary>
@@ -135,6 +140,29 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             {
                 user.LastName = Input.LastName;
                 await _userManager.UpdateAsync(user);
+            }
+
+            //lock users in 221 or before 221 out of changing their class. 
+            //Only way these students can change their class is by the admin uploading an updated 221 roster
+            var userClass = user.Class;
+            if(Input.Class != userClass && (userClass == ClassConstants.FirstSemester || userClass == null)) 
+            {
+                var shouldBeIn221 = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == user.Email);
+                if(shouldBeIn221 == null)
+                {
+                    user.Class = ClassConstants.PreMIS;
+                    await _userManager.UpdateAsync(user);
+                }
+                else if(shouldBeIn221.In221)
+                {
+                    user.Class = ClassConstants.FirstSemester;
+                    await _userManager.UpdateAsync(user);
+                }
+                else
+                {
+                    user.Class = Input.Class;
+                    await _userManager.UpdateAsync(user);
+                }
             }
 
             if (Request.Form.Files.Count > 0)

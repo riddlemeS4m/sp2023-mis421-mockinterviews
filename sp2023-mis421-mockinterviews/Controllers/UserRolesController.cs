@@ -96,5 +96,81 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> MassAssign()
+        {
+            var users = await _userManager.Users.OrderBy(x => x.FirstName).ToListAsync();
+            var userRolesViewModel = new List<MassAssignRolesViewModel>();
+            foreach (ApplicationUser user in users)
+            {
+                var alreadyinrole = await _userManager.IsInRoleAsync(user, RolesConstants.InterviewerRole);
+                if(!alreadyinrole)
+                {
+                    var thisViewModel = new MassAssignRolesViewModel
+                    {
+                        Name = user.FirstName + " " + user.LastName,
+                        Email = user.Email,
+                        IsAlreadyInRole = alreadyinrole,
+                        OriginalIsAlreadyInRole = alreadyinrole,
+                        UpdatedIsAlreadyInRole = alreadyinrole
+                    };
+                    userRolesViewModel.Add(thisViewModel);
+                }
+            }
+            return View("MassAssign",userRolesViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MassAssignPost(string[] SelectedEventIds1)
+        {
+            //var count = 0;
+            foreach (string x in SelectedEventIds1)
+            {
+                    //++;
+                    //Console.WriteLine(x);
+                    
+                    await _userManager.AddToRoleAsync(await _userManager.FindByEmailAsync(x), RolesConstants.InterviewerRole);
+            }
+
+            return RedirectToAction("Index", "UserRoles");
+        }
+
+        public async Task<IActionResult> MassAssignAdmin()
+        {
+            var users = await _userManager.Users.OrderBy(x => x.FirstName).ToListAsync();
+            var userRolesViewModel = new List<MassAssignRolesViewModel>();
+            foreach (ApplicationUser user in users)
+            {
+                var alreadyinrole = await _userManager.IsInRoleAsync(user, RolesConstants.AdminRole);
+                if (!alreadyinrole)
+                {
+                    var thisViewModel = new MassAssignRolesViewModel
+                    {
+                        Name = user.FirstName + " " + user.LastName,
+                        Email = user.Email,
+                        IsAlreadyInRole = alreadyinrole,
+                        OriginalIsAlreadyInRole = alreadyinrole,
+                        UpdatedIsAlreadyInRole = alreadyinrole
+                    };
+                    userRolesViewModel.Add(thisViewModel);
+                }
+            }
+            return View("MassAssignAdmin", userRolesViewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> MassAssignAdmin(string[] SelectedEventIds1)
+        {
+            //var count = 0;
+            foreach (string x in SelectedEventIds1)
+            {
+                //++;
+                //Console.WriteLine(x);
+
+                await _userManager.AddToRoleAsync(await _userManager.FindByEmailAsync(x), RolesConstants.AdminRole);
+            }
+
+            return RedirectToAction("Index", "UserRoles");
+        }
     }
 }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using SendGrid.Helpers.Mail;
 using sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.UserDb;
@@ -71,6 +72,39 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
             return File(resume, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteUser(string userId)
+        {
+            if (userId == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            return View("DeleteUser",user);
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> DeleteUserConfirmed(string Id)
+        {
+            var user = await _userManager.FindByIdAsync(Id);
+            if (user == null)
+            {
+                return Problem("User not found.");
+            }
+            else
+            {
+                await _userManager.DeleteAsync(user);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

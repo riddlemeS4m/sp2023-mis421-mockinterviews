@@ -4,6 +4,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
 {
     public class StatusConstants
     {
+        //moving a student's interview to completed or no show status removes it from the list of interviews that are displayed
         public const string Default = "Not Arrived";
         public const string CheckedIn = "Checked In";
         public const string Ongoing = "Ongoing";

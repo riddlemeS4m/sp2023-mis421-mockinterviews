@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
@@ -11,5 +12,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string EventName { get; set; }
         [Display(Name = "For MIS 221?")]
         public bool For221 { get; set; }
+        [DefaultValue(true)]
+        public bool IsActive { get; set; }
     }
 }

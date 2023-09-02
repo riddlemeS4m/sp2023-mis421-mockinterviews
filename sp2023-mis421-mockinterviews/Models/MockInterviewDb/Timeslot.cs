@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.CompilerServices;
@@ -19,6 +20,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int EventDateId { get; set; }
         [ValidateNever]
         public EventDate EventDate { get; set; }
+        [DefaultValue(true)]
         public bool IsActive { get; set; }
         public bool IsVolunteer { get; set; }
         public bool IsInterviewer { get; set; }

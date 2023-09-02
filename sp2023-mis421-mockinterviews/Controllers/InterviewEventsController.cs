@@ -46,12 +46,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
         {
+            var timeslot = await _context.Timeslot
+                .OrderByDescending(x => x.MaxSignUps)
+                .FirstOrDefaultAsync();
+            var maxsignups = timeslot.MaxSignUps * 6; //6 is the number of hours in advance we'd like to see (3) * 2 because there are two interviews per hour
             var interviewEvents = await _context.InterviewEvent
                 .Include(i => i.Location)
                 .Include(i => i.SignupInterviewerTimeslot)
                 .ThenInclude(i => i.SignupInterviewer)
                 .Include(i => i.Timeslot)
                 .ThenInclude(j => j.EventDate)
+                .Where(i => i.Status != StatusConstants.Completed || i.Status != StatusConstants.NoShow)
+                .OrderBy(i => i.TimeslotId)
+                .Take(maxsignups)
                 .ToListAsync();
 
             var model = new List<InterviewEventViewModel>();
@@ -59,6 +66,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             foreach(InterviewEvent interviewEvent in interviewEvents)
             {
                 var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+                var studentname = student.FirstName + " " + student.LastName;
 
                 if(interviewEvent.SignupInterviewerTimeslot != null)
                 {
@@ -67,7 +75,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewEventViewModel = new InterviewEventViewModel
                     {
                         InterviewEvent = interviewEvent,
-                        StudentName = student.FirstName + " " + student.LastName,
+                        StudentName = studentname,
                         InterviewerName = interviewer.FirstName + " " + interviewer.LastName
                     };
 
@@ -78,7 +86,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewEventViewModel = new InterviewEventViewModel
                     {
                         InterviewEvent = interviewEvent,
-                        StudentName = student.FirstName + " " + student.LastName,
+                        StudentName = studentname,
                         InterviewerName = "Not Assigned"
                     };
 
@@ -277,16 +285,30 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+
+            if(interviewEvent.SignupInterviewerTimeslot == null)
+            {
+                var viewModel = new InterviewEventViewModel
+                {
+                    InterviewEvent = interviewEvent,
+                    InterviewerName = "Not Assigned",
+                    StudentName = student.FirstName + " " + student.LastName
+                };
+
+                return View(viewModel);
+            }
+
+
             var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
 
-            var viewModel = new InterviewEventViewModel
+            var secondViewModel = new InterviewEventViewModel
             {
                 InterviewEvent = interviewEvent,
                 InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
                 StudentName = student.FirstName + " " + student.LastName
             };
 
-            return View(viewModel);
+            return View(secondViewModel);
         }
 
         // GET: InterviewEvents/Create
@@ -299,7 +321,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var user = userTask.Result;
 
             var for221 = false;
-            if(user.Class == ClassConstants.FirstSemester)
+            if(user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
             {
                 for221 = true;
             }
@@ -576,15 +598,43 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent.Include(i => i.Location).Include(i => i.SignupInterviewerTimeslot)
+            var interviewEvent = await _context.InterviewEvent
+                .Include(i => i.Location)
+                .Include(i => i.SignupInterviewerTimeslot)
+                .ThenInclude(i => i.SignupInterviewer)
                 .Include(i => i.Timeslot)
+                .ThenInclude(j => j.EventDate)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (interviewEvent == null)
             {
                 return NotFound();
             }
 
-            return View(interviewEvent);
+            var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+
+            if (interviewEvent.SignupInterviewerTimeslot == null)
+            {
+                var viewModel = new InterviewEventViewModel
+                {
+                    InterviewEvent = interviewEvent,
+                    InterviewerName = "Not Assigned",
+                    StudentName = student.FirstName + " " + student.LastName
+                };
+
+                return View(viewModel);
+            }
+
+
+            var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+
+            var secondViewModel = new InterviewEventViewModel
+            {
+                InterviewEvent = interviewEvent,
+                InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
+                StudentName = student.FirstName + " " + student.LastName
+            };
+
+            return View(secondViewModel);
         }
 
         // POST: InterviewEvents/Delete/5

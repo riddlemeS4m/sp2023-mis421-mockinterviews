@@ -12,7 +12,8 @@
             <th>Last Name</th>
             <th>Email</th>
             <th>Roles</th>
-            <th>Action</th>
+            <th>Manage</th>
+            <th>Delete</th>
         </tr>
     </thead>
     <tbody>
@@ -25,6 +26,9 @@
                 <td>@string.Join(" , ", user.Roles.ToList())</td>
                 <td>
                     <a class="btn btn-primary" asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Manage Roles</a>
+                </td>
+                <td>
+                    <a class="btn btn-primary" asp-controller="Users" asp-action="DeleteUser" asp-route-userId="@user.UserId">Delete</a>
                 </td>
             </tr>
         }

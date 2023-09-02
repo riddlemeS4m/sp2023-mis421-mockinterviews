@@ -5,6 +5,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
@@ -17,7 +18,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 
@@ -32,13 +35,15 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
+        private readonly MockInterviewDataDbContext _context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
             IUserStore<ApplicationUser> userStore,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailSender emailSender,
+            MockInterviewDataDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
@@ -46,6 +51,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             _signInManager = signInManager;
             _logger = logger;
             _emailSender = emailSender;
+            _context = context;
         }
 
         /// <summary>
@@ -122,9 +128,13 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
+                
                 var user = CreateUser();
-                user.FirstName = Input.FirstName;
-                user.LastName = Input.LastName;
+
+                var textInfo = new CultureInfo("en-US", false).TextInfo;
+                user.FirstName = textInfo.ToTitleCase(Input.FirstName);
+                user.LastName = textInfo.ToTitleCase(Input.LastName);
+
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
                 var result = await _userManager.CreateAsync(user, Input.Password);
@@ -134,14 +144,19 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
+                    var exists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(record => record.Email == Input.Email);
 
-                    if(Input.Email[(Input.Email.IndexOf('@') + 1)..] == RolesConstants.DesignateStudent)
+                    if(exists != null)
                     {
                         await _userManager.AddToRoleAsync(user, RolesConstants.StudentRole);
                     }
-                    else
+                    else if(exists == null)
                     {
                         await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
+                    }
+                    else
+                    {
+                        return BadRequest("Role assignment failed. Please try registering again.");
                     }
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -162,7 +177,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                     else
                     {
                         await _signInManager.SignInAsync(user, isPersistent: false);
-                        return LocalRedirect(returnUrl);
+                        //return LocalRedirect(returnUrl);
+                        return RedirectToPage("/Account/Manage/ProfileEdit");
                     }
                 }
                 foreach (var error in result.Errors)

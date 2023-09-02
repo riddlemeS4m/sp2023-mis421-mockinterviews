@@ -10,6 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         public const string ThirdSemester = "3rd Semester (MIS 405 / MIS 430)";
         public const string FourthSemesterOn = "4th Semester + (Capstone / AMP)";
         public const string Cybersecurity = "Cybersecurity";
+        //public const string MBA = "Stem to MBA/Traditional MBA";
 
         public static List<SelectListItem> GetClassOptions()
         {
@@ -21,6 +22,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 new SelectListItem { Text = ThirdSemester, Value = ThirdSemester },
                 new SelectListItem { Text = FourthSemesterOn, Value = FourthSemesterOn },
                 new SelectListItem { Text = Cybersecurity, Value = Cybersecurity }
+                //new SelectListItem { Text = MBA, Value = MBA }
             };
         }
     }
