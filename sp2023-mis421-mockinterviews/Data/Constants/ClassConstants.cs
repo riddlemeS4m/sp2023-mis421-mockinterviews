@@ -21,7 +21,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 new SelectListItem { Text = SecondSemester, Value = SecondSemester },
                 new SelectListItem { Text = ThirdSemester, Value = ThirdSemester },
                 new SelectListItem { Text = FourthSemesterOn, Value = FourthSemesterOn },
-                new SelectListItem { Text = Cybersecurity, Value = Cybersecurity }
+                //new SelectListItem { Text = Cybersecurity, Value = Cybersecurity }
                 //new SelectListItem { Text = MBA, Value = MBA }
             };
         }

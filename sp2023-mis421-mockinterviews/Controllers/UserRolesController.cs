@@ -22,18 +22,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var users = await _userManager.Users.ToListAsync();
-            var userRolesViewModel = new List<UserRolesViewModel>();
-            foreach (ApplicationUser user in users)
-            {
-                var thisViewModel = new UserRolesViewModel();
-                thisViewModel.UserId = user.Id;
-                thisViewModel.Email = user.Email;
-                thisViewModel.FirstName = user.FirstName;
-                thisViewModel.LastName = user.LastName;
-                thisViewModel.Roles = await GetUserRoles(user);
-                userRolesViewModel.Add(thisViewModel);
-            }
+            var userRolesViewModel = await _userManager.Users
+                .Select(user => new UserRolesViewModel
+                {
+                    UserId = user.Id,
+                    Email = user.Email,
+                    FirstName = user.FirstName,
+                    LastName = user.LastName
+                    //Roles = await GetUserRoles(user)
+                })
+                .ToListAsync();
+
             return View(userRolesViewModel);
         }
         private async Task<List<string>> GetUserRoles(ApplicationUser user)
@@ -99,25 +98,33 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> MassAssign()
         {
-            var users = await _userManager.Users.OrderBy(x => x.FirstName).ToListAsync();
-            var userRolesViewModel = new List<MassAssignRolesViewModel>();
-            foreach (ApplicationUser user in users)
+
+            var interviewerRole = await _roleManager.FindByNameAsync(RolesConstants.InterviewerRole);
+
+            if (interviewerRole != null)
             {
-                var alreadyinrole = await _userManager.IsInRoleAsync(user, RolesConstants.InterviewerRole);
-                if(!alreadyinrole)
-                {
-                    var thisViewModel = new MassAssignRolesViewModel
+                var usersInInterviewerRole = await _userManager.GetUsersInRoleAsync(interviewerRole.Name);
+
+                var filteredVMS = await _userManager.Users
+                    .Where(user => !usersInInterviewerRole.Contains(user)) // Filter out users in the Interviewer role
+                    .OrderBy(user => user.FirstName)
+                    .Select(user => new MassAssignRolesViewModel
                     {
                         Name = user.FirstName + " " + user.LastName,
                         Email = user.Email,
-                        IsAlreadyInRole = alreadyinrole,
-                        OriginalIsAlreadyInRole = alreadyinrole,
-                        UpdatedIsAlreadyInRole = alreadyinrole
-                    };
-                    userRolesViewModel.Add(thisViewModel);
-                }
+                        IsAlreadyInRole = false, // Assuming you want to set this to false for users not in the role
+                        OriginalIsAlreadyInRole = false,
+                        UpdatedIsAlreadyInRole = false
+                    })
+                    .ToListAsync();
+
+                return View("MassAssign", filteredVMS);
             }
-            return View("MassAssign",userRolesViewModel);
+            else
+            {
+                // Handle the case where the "Interviewer" role doesn't exist
+                return BadRequest("The 'Interviewer' role does not exist.");
+            }
         }
 
         [HttpPost]
@@ -137,25 +144,32 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> MassAssignAdmin()
         {
-            var users = await _userManager.Users.OrderBy(x => x.FirstName).ToListAsync();
-            var userRolesViewModel = new List<MassAssignRolesViewModel>();
-            foreach (ApplicationUser user in users)
+            var interviewerRole = await _roleManager.FindByNameAsync(RolesConstants.AdminRole);
+
+            if (interviewerRole != null)
             {
-                var alreadyinrole = await _userManager.IsInRoleAsync(user, RolesConstants.AdminRole);
-                if (!alreadyinrole)
-                {
-                    var thisViewModel = new MassAssignRolesViewModel
+                var usersInInterviewerRole = await _userManager.GetUsersInRoleAsync(interviewerRole.Name);
+
+                var filteredVMS = await _userManager.Users
+                    .Where(user => !usersInInterviewerRole.Contains(user)) // Filter out users in the Interviewer role
+                    .OrderBy(user => user.FirstName)
+                    .Select(user => new MassAssignRolesViewModel
                     {
                         Name = user.FirstName + " " + user.LastName,
                         Email = user.Email,
-                        IsAlreadyInRole = alreadyinrole,
-                        OriginalIsAlreadyInRole = alreadyinrole,
-                        UpdatedIsAlreadyInRole = alreadyinrole
-                    };
-                    userRolesViewModel.Add(thisViewModel);
-                }
+                        IsAlreadyInRole = false, // Assuming you want to set this to false for users not in the role
+                        OriginalIsAlreadyInRole = false,
+                        UpdatedIsAlreadyInRole = false
+                    })
+                    .ToListAsync();
+
+                return View("MassAssignAdmin", filteredVMS);
             }
-            return View("MassAssignAdmin", userRolesViewModel);
+            else
+            {
+                // Handle the case where the "Interviewer" role doesn't exist
+                return BadRequest("The 'Interviewer' role does not exist.");
+            }
         }
 
         [HttpPost]

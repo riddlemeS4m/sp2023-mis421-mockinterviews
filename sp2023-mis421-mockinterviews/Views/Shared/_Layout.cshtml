@@ -124,7 +124,7 @@
                         @if (User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item dropdown"> 
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Manage</a>
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Event</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                      <li>
                                          <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Interviewers</a>
@@ -141,14 +141,7 @@
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="Index">Dates</a>
                                     </li>
-                                    <li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="Index">User Roles/Deletion</a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="MassAssign">Add Interviewer Roles</a>
-                                    </li>
-<li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="MassAssignAdmin">Add Admin Roles</a>
+                                    
                                 </ul>
                             </li>
                         }
@@ -186,6 +179,15 @@
                                         <a class="dropdown-item " asp-area="" asp-controller="MSTeamsStudentUploads" asp-action="Index">Program Roster</a>
                                     </li>
                                     <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="Index">User Roles/Deletion</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="MassAssign">Add Interviewer Roles</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="UserRoles" asp-action="MassAssignAdmin">Add Admin Roles</a>
+                                    </li>
+                                    <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="MSTeamsStudentUploads" asp-action="Create">Program Roster Upload</a>
                                     </li>
                                     <li>
@@ -200,10 +202,19 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                     <li>
-                                        <a class="dropdown-item " asp-area="" asp-controller="Timeslots" asp-action="SignupReport">Signup Report</a>
+                                        <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="EventStatistics">Event Statistics</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="Timeslots" asp-action="AllocationReport">Allocation Report</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="Timeslots" asp-action="SignupReport">Timeslots Report</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="LunchReport">Lunch Report</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-area="" asp-controller="InterviewEvents" asp-action="AttendanceReport">Attendance Report</a>
                                     </li>
                                 </ul>
                             </li>

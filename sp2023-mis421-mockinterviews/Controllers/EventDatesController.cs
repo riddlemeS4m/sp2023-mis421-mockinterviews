@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -29,6 +30,72 @@ namespace sp2023_mis421_mockinterviews.Controllers
                           View(await _context.EventDate.ToListAsync()) :
                           Problem("Entity set 'MockInterviewDataDbContext.EventDate'  is null.");
         }
+
+        public async Task<IActionResult> EventStatistics()
+        {
+            var eventDates = await _context.EventDate.ToListAsync();
+
+            var participantCounts = new List<ParticipantCountPerDateViewModel>();
+
+            foreach (var eventDate in eventDates)
+            {
+                var studentCount = await _context.InterviewEvent
+                    .Where(e => e.Timeslot.EventDateId == eventDate.Id)
+                    .Select(e => e.StudentId)
+                    .Distinct()
+                    .CountAsync();
+
+                var interviewerCount = await _context.SignupInterviewerTimeslot
+                    //.Include(s => s.SignupInterviewer)
+                    .Where(s => s.Timeslot.EventDateId == eventDate.Id)
+                    .Select(s => s.SignupInterviewer.InterviewerId)
+                    .Distinct()
+                    .CountAsync();
+
+                var volunteerCount = await _context.VolunteerEvent
+                    .Where(v => v.Timeslot.EventDateId == eventDate.Id)
+                    .Select(v => v.StudentId)
+                    .Distinct()
+                    .CountAsync();
+
+                var countViewModel = new ParticipantCountPerDateViewModel
+                {
+                    EventDate = eventDate,
+                    StudentCount = studentCount,
+                    InterviewerCount = interviewerCount,
+                    VolunteerCount = volunteerCount
+                };
+
+                participantCounts.Add(countViewModel);
+            }
+
+            var uniqueStudentCount = await _context.InterviewEvent
+                .Select(e => e.StudentId)
+                .Distinct()
+                .CountAsync();
+
+            var uniqueInterviewerCount = await _context.SignupInterviewerTimeslot
+                .Select(s => s.SignupInterviewer.InterviewerId)
+                .Distinct()
+                .CountAsync();
+
+            var uniqueVolunteerCount = await _context.VolunteerEvent
+                .Select(v => v.StudentId)
+                .Distinct()
+                .CountAsync();
+
+
+            var eventStatisticsVM = new EventStatisticsViewModel
+            {
+                EventStatistics = participantCounts,
+                TotalStudents = uniqueStudentCount,
+                TotalInterviewers = uniqueInterviewerCount,
+                TotalVolunteers = uniqueVolunteerCount
+            };
+
+            return View("EventStatistics", eventStatisticsVM);
+        }
+
 
         // GET: EventDates/Details/5
         public async Task<IActionResult> Details(int id)

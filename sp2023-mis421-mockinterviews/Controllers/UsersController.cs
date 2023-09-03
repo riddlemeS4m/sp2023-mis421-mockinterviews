@@ -104,7 +104,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _userManager.DeleteAsync(user);
             }
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Index", "UserRoles");
         }
     }
 }

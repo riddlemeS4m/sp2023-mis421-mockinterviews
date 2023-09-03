@@ -12,5 +12,8 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
 		public int InterviewerCount { get; set; }
 		[Display(Name = "Number of Volunteers")]
 		public int VolunteerCount { get; set; }
+		[Display(Name = "Interviewers Needed")]
+		public int? Difference { get; set; }
+
 	}
 }

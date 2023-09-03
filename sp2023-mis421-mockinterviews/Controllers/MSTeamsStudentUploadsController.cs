@@ -389,5 +389,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
           return (_context.MSTeamsStudentUpload?.Any(e => e.Id == id)).GetValueOrDefault();
         }
+
+        public async Task<IActionResult> AttendanceReportAll()
+        {
+
+            return View("AttendanceReportAll", viewModel);
+        }
     }
 }

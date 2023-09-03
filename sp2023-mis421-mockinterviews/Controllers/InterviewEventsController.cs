@@ -49,7 +49,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var timeslot = await _context.Timeslot
                 .OrderByDescending(x => x.MaxSignUps)
                 .FirstOrDefaultAsync();
-            var maxsignups = timeslot.MaxSignUps * 6; //6 is the number of hours in advance we'd like to see (3) * 2 because there are two interviews per hour
+            var maxsignups = timeslot.MaxSignUps * HoursInAdvanceConstant.HoursInAdvance * 2; //* 2 because there are two interviews per hour
             var interviewEvents = await _context.InterviewEvent
                 .Include(i => i.Location)
                 .Include(i => i.SignupInterviewerTimeslot)
@@ -95,6 +95,97 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             return View(model);
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> AttendanceReport()
+        {
+            var uniqueStudentIds = await _context.InterviewEvent
+                .Select(e => e.StudentId)
+                .Distinct()
+                .ToListAsync();
+            
+            if(uniqueStudentIds.Count == 0 || uniqueStudentIds == null)
+            {
+                return BadRequest("There are no students signed up yet.");
+            }
+
+            var students = await _userManager.Users
+                .Where(u => uniqueStudentIds.Contains(u.Id))
+                .Select(u => new
+                {
+                    u.FirstName,
+                    u.LastName,
+                    u.Class // Replace with the actual property name
+                })
+                .ToListAsync();
+
+            var total = 0;
+            var signedup221 = 0;
+            var classReports = new List<ClassReport>();
+            var classes = ClassConstants.GetClassOptions();
+            foreach(SelectListItem item in classes)
+            {
+                var studentsCount = students
+                    .Where(x => x.Class == item.Value)
+                    .Count();
+
+                if(item.Value == ClassConstants.FirstSemester)
+                {
+                    signedup221 = studentsCount;
+                }
+
+                if(studentsCount > 0)
+                {
+                    var classReport = new ClassReport
+                    {
+                        ClassName = item.Value,
+                        StudentCount = studentsCount
+                    };
+
+                    total+= studentsCount;
+                    classReports.Add(classReport);
+                }
+            }
+
+            var summaries = new List<ClassReport>
+            {
+                new ClassReport
+                {
+                    ClassName = "Total",
+                    StudentCount = total
+                }
+            };
+
+            var entireProgram = await _context.MSTeamsStudentUpload.CountAsync();
+            var entire221 = await _context.MSTeamsStudentUpload.Where(x => x.In221 == true).CountAsync();
+
+            double percentEntireProgram = (double)total / entireProgram;
+            double percentEntire221 = (double)signedup221 / entire221;
+
+            // Round to two decimal places
+            percentEntireProgram = Math.Round(percentEntireProgram, 2) * 100;
+            percentEntire221 = Math.Round(percentEntire221, 2) * 100;
+
+            summaries.Add(new ClassReport
+            {
+                ClassName = "Total % Signed Up",
+                StudentCount = (int)percentEntireProgram
+            });
+            summaries.Add(new ClassReport
+            {
+                ClassName = "221 % Signed Up",
+                StudentCount = (int)percentEntire221
+            });
+
+
+            var viewModel = new AttendanceReportViewModel()
+            {
+                ClassReports = classReports,
+                SummaryStats = summaries
+            };
+
+            return View("AttendanceReport", viewModel);
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]

@@ -96,6 +96,48 @@ namespace sp2023_mis421_mockinterviews.Controllers
             //              Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
         }
 
+        public async Task<IActionResult> AllocationReport()
+        {
+            var timeslots = await _context.Timeslot
+                .Include(t => t.EventDate)
+                .Where(x => x.EventDate.For221 == false && x.IsInterviewer == true)
+                .ToListAsync();
+
+            var countlist = new List<ParticipantCountViewModel>();
+            foreach (Timeslot timeslot in timeslots)
+            {
+                var studentCount = await _context.InterviewEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.SignupInterviewerTimeslot.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                countlist.Add(new ParticipantCountViewModel
+                {
+                    Timeslot = timeslot,
+                    StudentCount = studentCount,
+                    InterviewerCount = interviewerCount,
+                    VolunteerCount = volunteerCount,
+                    Difference = studentCount - interviewerCount
+                });
+            }
+
+            var top10underserved = countlist
+                .OrderByDescending(x => x.Difference)
+                .Take(10)
+                .ToList();
+
+            var top10available = countlist
+                .OrderByDescending(x => x.Difference)
+                .TakeLast(10)
+                .ToList();
+
+            var viewModel = new AllocationReportViewModel()
+            {
+                Top10Available = top10available,
+                Top10Underserved = top10underserved,
+            };
+
+            return View("AllocationReport", viewModel);
+        }
+
         // GET: Timeslots/Details/5
         public async Task<IActionResult> Details(int? id)
         {
