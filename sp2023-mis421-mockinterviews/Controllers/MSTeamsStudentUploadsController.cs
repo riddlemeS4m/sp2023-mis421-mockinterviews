@@ -393,7 +393,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> AttendanceReportAll()
         {
 
-            return View("AttendanceReportAll", viewModel);
+            return View("AttendanceReportAll");
         }
     }
 }

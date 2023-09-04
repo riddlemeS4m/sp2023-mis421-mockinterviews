@@ -32,6 +32,10 @@
     <!-- # Main Style Sheet -->
     <link rel="stylesheet" href="~/css/style.css">
 
+@*    <input type="hidden" id="userRoleGet" value="@(User.IsInRole(RolesConstants.StudentRole) ? "StudentRole" :
+                                             User.IsInRole(RolesConstants.InterviewerRole) ? "InterviewerRole" :
+                                             User.IsInRole(RolesConstants.AdminRole) ? "AdminRole" : "Other")" />*@
+
     <script>
         function adjustPadding(isLoggedIn) {
             const loginContainer = document.getElementById('loginContainer');
@@ -43,7 +47,30 @@
             }
         }
 
+        //function adjustPaddingTwo() {
+        //    const navbarSupportedContent = document.getElementById('navbarSupportedContent');
+        //    const userRoleCheck = document.getElementById('userRoleGet').value;
+        //    console.log('here');
+
+        //    switch (userRoleCheck) {
+        //        case 'StudentRole':
+        //            navbarSupportedContent.style.paddingLeft = '100px';
+        //            break;
+        //        case 'InterviewerRole':
+        //            navbarSupportedContent.style.paddingLeft = '100px';
+        //            break;
+        //        case 'AdminRole':
+        //            navbarSupportedContent.style.paddingLeft = '0px';
+        //            console.log('adminhere');
+        //            break;
+        //        default:
+        //            navbarSupportedContent.style.paddingLeft = '0px';
+        //            break;
+        //    }
+        //}
+
         function adjustPaddingTwo(isLoggedIn) {
+            //Bad name, but this refers to the navbar items and the other one is for the log in items; will refactor later
             const navbarSupportedContent = document.getElementById('navbarSupportedContent');
 
             if (isLoggedIn) {
@@ -54,6 +81,7 @@
         }
 
         window.onload = function () {
+            //adjustPaddingTwo();
             adjustPadding(@(User.Identity.IsAuthenticated.ToString().ToLower()));
             adjustPaddingTwo(@(User.Identity.IsAuthenticated.ToString().ToLower()));
         };
@@ -111,11 +139,16 @@
 
                         @if(User.IsInRole(RolesConstants.AdminRole))
                         {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="InterviewEvents" asp-action="Index">Assign Interviews</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Assign Rooms</a>
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Assign</a>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="Index">Assign Interviews</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Assign Rooms</a>
+                                    </li>
+                                </ul>
                             </li>
                         }
 
