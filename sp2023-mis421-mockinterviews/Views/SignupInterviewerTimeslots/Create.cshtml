@@ -13,17 +13,19 @@
         {
             <form asp-action="Create">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                <label asp-for="SignupInterviewer.InPerson" class="control-label">Where would you like to be located for the event?</label>
-                <br />
-                <div class="form-check form-check-inline">
-                    <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one">
-                    <label class="form-check-label" for="InPerson">In Person</label>
+                <div id="center-everything">
+                    <label asp-for="SignupInterviewer.InPerson" class="control-label">Where would you like to be located for the event?</label>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one">
+                        <label class="form-check-label" for="InPerson">In Person</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                        <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
+                        <label class="form-check-label" for="IsVirtual">Virtual</label>
+                    </div>
+                    <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
                 </div>
-                <div class="form-check form-check-inline">
-                    <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
-                    <label class="form-check-label" for="IsVirtual">Virtual</label>
-                </div>
-                <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
                 <br /><br />
                 
                 <div id="lunch-question" style="display: none;">
@@ -40,27 +42,30 @@
                     <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
                     <br /><br />
                 </div>
-                
-                <label class="control-label">What types of interviews would you be comfortable giving?</label>
-                <br />
-                <div class="form-check form-check-inline">
-                    <input id="IsTechnical" class="form-check-input" type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
-                    <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
+
+                <div id="center-everything">
+                    <label class="control-label">What types of interviews would you be comfortable giving?</label>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input id="IsTechnical" class="form-check-input" type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one">
+                        <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
+                    </div>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input id="IsBehavioral" class="form-check-input" type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one">
+                        <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
+                    </div>
+                    <br />
+                    <div class="form-check form-check-inline">
+                        <input id="IsCase" class="form-check-input" type="checkbox" name="SignupInterviewer.IsCase" value="true" data-val="true" data-val-required="Please select at least one">
+                        <label for="IsCase" class="form-check-label">Case Interviews</label>
+                    </div>
+                    <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
+                    <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
                 </div>
-                <br />
-                <div class="form-check form-check-inline">
-                    <input id="IsBehavioral" class="form-check-input" type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one">
-                    <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
-                </div>
-                <br />
-                <div class="form-check form-check-inline">
-                    <input id="IsCase" class="form-check-input" type="checkbox" name="SignupInterviewer.IsCase" value="true" data-val="true" data-val-required="Please select at least one">
-                    <label for="IsCase" class="form-check-label">Case Interviews</label>
-                </div>
-                <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
-                <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
+
                 <br /><br />
-                <div class="row">
+                <div class="row" id="center-everything">
                     <div class="col-md-6">
                         <h3>@Model.Timeslots[0].EventDate.EventName</h3>
                         <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
@@ -96,12 +101,12 @@
                     }
                 </div>
                 <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
-                <div class="form-group">
+                <div class="form-group" id="center-everything">
                     <input type="submit" value="Sign Up" class="btn btn-primary" />
                 </div>
                 <br />
             </form>
-            <div class="row">
+            <div class="row" id="center-everything">
                 <div class="col-md-6">
                     <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
                 </div>
@@ -117,7 +122,7 @@
         }
         else
         {
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger" role="alert" id="center-everything">
                 You've already signed up for all available interview slots.
             </div>
         }
