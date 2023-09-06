@@ -21,8 +21,8 @@ jobs:
           script: |
             cd /var/www/sp2023-mis421-mockinterviews/
             git pull
-            cd /sp2023-mis421-mockinterviews/
-            dotnet build && sudo systemctl restart kestrel-mockinterviews.service
+            dotnet build &&
+            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl restart kestrel-mockinterviews.service
 
       - name: Exit SSH
         uses: appleboy/ssh-action@master
