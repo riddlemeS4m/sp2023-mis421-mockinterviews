@@ -100,6 +100,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> AttendanceReport()
         {
+            //can't find my other attendance report method for some reason
             var uniqueStudentIds = await _context.InterviewEvent
                 .Select(e => e.StudentId)
                 .Distinct()
