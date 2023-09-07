@@ -26,22 +26,25 @@
                     </div>
                     <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
                 </div>
-                <br /><br />
-                
-                <div id="lunch-question" style="display: none;">
-                    <label asp-for="SignupInterviewer.Lunch" class="control-label">Would you like us to provide you with lunch?</label>
-                    <br />
-                    <div class="form-check form-check-inline">
-                        <input id="LunchTrue" class="form-check-input" type="radio" name="Lunch" value="true" data-val="false">
-                        <label class="form-check-label" for="LunchTrue">Yes</label>
+                <br />
+
+                <div id="center-everything">
+                    <div id="lunch-question" style="display: none;">
+                        <label asp-for="SignupInterviewer.Lunch" class="control-label">Would you like us to provide you with lunch?</label>
+                        <br />
+                        <div class="form-check form-check-inline">
+                            <input id="LunchTrue" class="form-check-input" type="radio" name="Lunch" value="true" data-val="false">
+                            <label class="form-check-label" for="LunchTrue">Yes</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input id="LunchFalse" class="form-check-input" type="radio" name="Lunch" value="false" data-val="false">
+                            <label class="form-check-label" for="LunchFalse">No</label>
+                        </div>
+                        <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
+                        <br /><br />
                     </div>
-                    <div class="form-check form-check-inline">
-                        <input id="LunchFalse" class="form-check-input" type="radio" name="Lunch" value="false" data-val="false">
-                        <label class="form-check-label" for="LunchFalse">No</label>
-                    </div>
-                    <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
-                    <br /><br />
                 </div>
+                
 
                 <div id="center-everything">
                     <label class="control-label">What types of interviews would you be comfortable giving?</label>
@@ -65,6 +68,21 @@
                 </div>
 
                 <br /><br />
+                <div class="row" id="center-everything">
+                    <div class="col-md-6">
+                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
+                    </div>
+                    <br />
+                    @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    {
+                        <div class="col-md-6">
+                            <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                        </div>
+                    }
+                    <br />
+                </div>
+                <br />
+
                 <div class="row" id="center-everything">
                     <div class="col-md-6">
                         <h3>@Model.Timeslots[0].EventDate.EventName</h3>
@@ -106,19 +124,6 @@
                 </div>
                 <br />
             </form>
-            <div class="row" id="center-everything">
-                <div class="col-md-6">
-                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
-                </div>
-                <br />
-                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
-                {
-                    <div class="col-md-6">
-                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
-                    </div>
-                }
-                <br />
-            </div>
         }
         else
         {
