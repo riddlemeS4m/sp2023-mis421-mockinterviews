@@ -19,6 +19,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int? EventDateId { get; set; }
         [ValidateNever]
         public EventDate? EventDate { get; set; }
+        [ValidateNever]
         public string LocationPreference { get; set; }
     }
 }

@@ -650,7 +650,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                     var location = await _context.LocationInterviewer
                         .Include(x => x.Location)
-                        .Where(x => x.InterviewerId == InterviewerId && x.LocationPreference == interviewerPreference && x.EventDateId == signupInterviewTimeslot.Timeslot.EventDateId)
+                        .Where(x => x.InterviewerId == InterviewerId && x.LocationPreference == interviewerPreference && x.EventDateId == signupInterviewTimeslot.Timeslot.EventDateId && x.LocationId != null)
                         .FirstOrDefaultAsync();
 
                     interviewEvent.SignupInterviewerTimeslot = signupInterviewTimeslot;
