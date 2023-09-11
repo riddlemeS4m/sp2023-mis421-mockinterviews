@@ -1,6 +1,14 @@
 ﻿@using sp2023_mis421_mockinterviews.Models.ViewModels
 @using sp2023_mis421_mockinterviews.Data.Constants
+@using sp2023_mis421_mockinterviews.Models.UserDb;
+@using Microsoft.AspNetCore.Identity
 @model IndexViewModel
+@inject UserManager<ApplicationUser> UserManager
+
+@if (User.Identity.IsAuthenticated)
+{
+    <h1>Hello, @UserManager.GetUserAsync(User).Result.FirstName</h1>
+}
 
 @{
     ViewBag.Title = "Welcome to UA MIS Mock Interviews!";
@@ -14,6 +22,7 @@
     <p style="font-size:20px; text-align:center; padding-top: 10px">
         Our mission is to help students prepare for their upcoming job interviews by <br /> providing a realistic simulation of the interview experience.
     </p>
+    
     <p style="font-size:20px; text-align:center; border-bottom: 2px solid black">
         You have successfully signed in. Important information and your current bookings will be shown below.
     </p>

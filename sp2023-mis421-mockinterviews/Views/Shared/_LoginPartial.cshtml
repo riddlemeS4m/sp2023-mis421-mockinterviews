@@ -14,8 +14,7 @@
         }
     </li>
     <li class="nav-item" style="align-self: center;">
-            <a class="btn btn-outline-primary" asp-area="Identity" asp-page="/Account/Manage/Index" title="View Profile">Hello, @UserManager.GetUserAsync(User).Result.FirstName!
-            <span style="font-size:6px">View Your Profile</span></a>
+            <a class="btn btn-outline-primary" asp-area="Identity" asp-page="/Account/Manage/Index" title="View Profile">View Profile</a>
     </li>
         <li class="nav-item" style="align-self: center;">
         <form  class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
