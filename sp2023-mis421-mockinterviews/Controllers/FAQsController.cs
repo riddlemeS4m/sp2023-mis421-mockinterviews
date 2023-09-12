@@ -71,7 +71,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(fAQs);
         }
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
-        public ActionResult Download()
+        public ActionResult DownloadManual()
 		{
 			string fileName = "Mock_Interview_Manual.docx";
 			string filePath = "wwwroot/lib/" + fileName;
@@ -80,6 +80,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
 		}
 
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
+        public ActionResult DownloadParking()
+        {
+            string fileName = "Guest_Parking.pdf";
+            string filePath = "wwwroot/lib/" + fileName;
+
+            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
+            return File(fileBytes, "application/pdf", fileName);
+        }
 
         // GET: FAQs/Create
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
