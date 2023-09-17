@@ -24,7 +24,10 @@ namespace sp2023_mis421_mockinterviews
             var configuration = builder.Configuration;
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1:7281"));
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1:5157"));
+		options.KnownProxies.Add(IPAddress.Parse("45.55.99.114"));
+		options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
+		options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
             });
             configuration.AddUserSecrets<Program>();
 
@@ -89,7 +92,7 @@ namespace sp2023_mis421_mockinterviews
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
