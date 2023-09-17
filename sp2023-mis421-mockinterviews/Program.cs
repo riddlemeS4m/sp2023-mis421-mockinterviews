@@ -24,10 +24,11 @@ namespace sp2023_mis421_mockinterviews
             var configuration = builder.Configuration;
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1:5157"));
+                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
 		options.KnownProxies.Add(IPAddress.Parse("45.55.99.114"));
 		options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
 		options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
+                options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
             });
             configuration.AddUserSecrets<Program>();
 
@@ -77,22 +78,24 @@ namespace sp2023_mis421_mockinterviews
 
             var app = builder.Build();
 
-            app.UseForwardedHeaders(new ForwardedHeadersOptions
+/*            app.UseForwardedHeaders(new ForwardedHeadersOptions
             {
                 ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });
+            });*/
 
             if (app.Environment.IsDevelopment())
             {
+                app.UseForwardedHeaders();
                 app.UseMigrationsEndPoint();
             }
             else
             {
+                app.UseForwardedHeaders();
                 //app.UseDeveloperExceptionPage();
                 app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
