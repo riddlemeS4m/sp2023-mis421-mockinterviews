@@ -105,8 +105,13 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         //initial "sign in with microsoft" button click goes here
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
-            // Request a redirect to the external login provider.
-            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new { returnUrl });
+	
+		//returnUrl = "https://mockinterviews.uamishub.com/signin-microsoft";
+		System.Console.WriteLine("Test");
+		System.Console.WriteLine(returnUrl);        
+    // Request a redirect to the external login provider.
+            var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new {returnUrl});
+		System.Console.WriteLine(redirectUrl);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -115,6 +120,9 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         public async Task<IActionResult> OnGetCallbackAsync(string returnUrl = null, string remoteError = null)
         {
             returnUrl = returnUrl ?? Url.Content("~/");
+
+                Console.WriteLine("Test");
+                Console.WriteLine(returnUrl);
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";

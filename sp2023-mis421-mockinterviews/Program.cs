@@ -24,12 +24,15 @@ namespace sp2023_mis421_mockinterviews
             var configuration = builder.Configuration;
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
-		options.KnownProxies.Add(IPAddress.Parse("45.55.99.114"));
-		options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
-		options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
+                //options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
+		//options.KnownProxies.Add(IPAddress.Parse("45.55.99.114"));
+		//options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
+		//options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
+		options.KnownNetworks.Clear();
+		options.KnownProxies.Clear();            
+
+});
             configuration.AddUserSecrets<Program>();
 
             var connectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
@@ -74,8 +77,7 @@ namespace sp2023_mis421_mockinterviews
                 microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Azure AD Client ID not found.");
                 microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
             });
-
-
+	   
             var app = builder.Build();
 
 /*            app.UseForwardedHeaders(new ForwardedHeadersOptions
@@ -95,7 +97,7 @@ namespace sp2023_mis421_mockinterviews
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
