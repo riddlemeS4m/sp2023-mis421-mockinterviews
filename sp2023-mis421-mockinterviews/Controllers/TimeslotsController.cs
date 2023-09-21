@@ -291,7 +291,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("SignupReport","Timeslots");
             }
             return View(timeslot);
         }
