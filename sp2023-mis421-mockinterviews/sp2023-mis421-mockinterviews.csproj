@@ -35,4 +35,11 @@
     <None Include="wwwroot\lib\Mock_Interview_Manual.docx" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="Views\InterviewEvents\Override.cshtml">
+      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>
