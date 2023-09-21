@@ -31,3 +31,23 @@ jobs:
           username: webadmin
           password: ${{ secrets.DROPLET_PASSWORD }}
           script: exit
+          
+      - name: SSH into DigitalOcean Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP2 }}
+          username: webadmin
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          script: |
+            cd /var/www/sp2023-mis421-mockinterviews/
+            git pull
+            dotnet build &&
+            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl restart kestrel-mockinterviews.service
+
+      - name: Exit SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP2 }}
+          username: webadmin
+          password: ${{ secrets.DROPLET_PASSWORD }}
+          script: exit
