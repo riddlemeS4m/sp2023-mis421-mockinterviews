@@ -56,7 +56,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenInclude(i => i.SignupInterviewer)
                 .Include(i => i.Timeslot)
                 .ThenInclude(j => j.EventDate)
-                .Where(i => i.Status != StatusConstants.Completed || i.Status != StatusConstants.NoShow)
+                .Where(i => i.Status != StatusConstants.Completed && i.Status != StatusConstants.NoShow)
                 .OrderBy(i => i.TimeslotId)
                 .Take(maxsignups)
                 .ToListAsync();
