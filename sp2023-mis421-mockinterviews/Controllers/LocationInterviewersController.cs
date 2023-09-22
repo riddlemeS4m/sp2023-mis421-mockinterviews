@@ -43,6 +43,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var interviewers = await _userManager.Users
                 .Where(u => interviewerIds.Contains(u.Id))
+                .Select(x => new {x.FirstName, x.LastName, x.Id})
                 .ToListAsync();            
 
             var query = from locationInterviewer in locationInterviewers
@@ -55,7 +56,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         };
 
             var locationInterviewersWithNames = query.ToList();
-            var locations = await _context.Location.ToListAsync();
+            var locations = await _context.Location
+                .OrderBy(u => u.Room)
+                .ToListAsync();
 
             var viewModel = new LocationInterviewerViewModel
             {
@@ -93,37 +96,33 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: LocationInterviewers/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             // Get a list of all Interviewers
-            var interviewers = _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole)
-                .GetAwaiter()
-                .GetResult()
-                .ToList();
-
-            var availableInterviewers = interviewers
+            var availableInterviewers = await _context.SignupInterviewer
                 .Select(i => new SelectListItem
                 {
-                    Value = i.Id,
+                    Value = i.InterviewerId,
                     Text = $"{i.FirstName} {i.LastName}"
                 })
-                .ToList();
+                .ToListAsync();
 
-            var availableLocations = _context.Location
-                    .Select(i => new SelectListItem
-                    {
-                        Value = i.Id.ToString(),
-                        Text = $"{i.Room}"
-                    })
-                    .ToList();
 
-            var availableDates = _context.EventDate
+            var availableLocations = await _context.Location
+                .Select(i => new SelectListItem
+                {
+                    Value = i.Id.ToString(),
+                    Text = $"{i.Room}"
+                })
+                .ToListAsync();
+
+            var availableDates = await _context.EventDate
                 .Select(i => new SelectListItem
                 {
                         Value = i.Id.ToString(),
                         Text = $"{i.Date:d}"
-                    })
-                    .ToList();
+                })
+                .ToListAsync();
 
             // Add message to dropdown list if no InterviewerIds or LocationIds are available
             if (availableInterviewers.Count == 0)
@@ -138,6 +137,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (availableLocations.Count == 0)
             {
                 availableLocations.Add(new SelectListItem { Text = "No Locations available", Value = "" });
+            }
+            else
+            {
+                availableLocations = availableLocations.OrderBy(item => item.Text).ToList();
             }
 
             // Create the view model
@@ -330,6 +333,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     Text = $"{i.Room}"
                 })
                 .ToListAsync();
+
+            availableLocations = availableLocations.OrderBy(item => item.Text).ToList();
 
             //// Add message to dropdown list if no InterviewerIds or LocationIds are available
             //if (availableInterviewers.Count == 0)

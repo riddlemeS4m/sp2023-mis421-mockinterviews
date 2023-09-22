@@ -1,5 +1,5 @@
 ﻿@using sp2023_mis421_mockinterviews.Data.Constants
-@model IEnumerable<sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventViewModel>
+@model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventIndexViewModel
 
 @{
     ViewData["Title"] = "Index";
@@ -21,37 +21,57 @@
 </div>
 
 <hr />
+<h4>Available Interviewers</h4>
+<br />
+@if(Model.AvailableInterviewers.Count > 0)
+{
+    foreach (var interviewer in Model.AvailableInterviewers)
+    {
+        <ul><strong><u>@interviewer.Name</u></strong> is available to do <strong><u>@interviewer.InterviewType</u></strong> interviews in room <strong><u>@interviewer.Room</u></strong>.</ul>
+    }
+}
+else
+{
+    <ul>No Interviewers Available.</ul>
+}
 
+<hr />
+<h4>Upcoming Students</h4>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StudentName)
+            <th> 
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.Time)
+                @Html.DisplayNameFor(model => model.Interviews[0].StudentName)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.Timeslot.EventDate.Date)
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Timeslot.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.Status)
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Timeslot.EventDate.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewType)
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewerName)
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.InterviewType)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.Location)
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewerName)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Location)
             </th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Interviews) {
         <tr>
+            <td style="color:white;">
+                @Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)
+            </td>
             <td>
                 @Html.DisplayFor(modelItem => item.StudentName)
             </td>
@@ -91,63 +111,3 @@
 }
     </tbody>
 </table>
-
-@*<hr />
-<h1>Interview Feedback</h1>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.StudentName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewerName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerRating)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.InterviewerFeedback)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewEvent.ProcessFeedback)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            if (item.InterviewEvent.InterviewerRating != null)
-            {
-                <tr>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.StudentName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InterviewerName)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewerRating)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewerFeedback)
-                    </td>
-                    <td>
-                        @Html.DisplayFor(modelItem => item.InterviewEvent.ProcessFeedback)
-                    </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.InterviewEvent.Id">Details</a>
-                    </td>
-                </tr>
-            }
-        }
-    </tbody>
-</table>*@
