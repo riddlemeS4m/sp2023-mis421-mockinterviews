@@ -19,10 +19,11 @@ jobs:
           username: webadmin
           password: ${{ secrets.DROPLET_PASSWORD }}
           script: |
+            sudo systemctl stop kestrel-mockinterviews.service
             cd /var/www/sp2023-mis421-mockinterviews/
             git pull
             dotnet build &&
-            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl restart kestrel-mockinterviews.service
+            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl start kestrel-mockinterviews.service
 
       - name: Exit SSH
         uses: appleboy/ssh-action@master
@@ -39,10 +40,11 @@ jobs:
           username: webadmin
           password: ${{ secrets.DROPLET_PASSWORD }}
           script: |
+            sudo systemctl stop kestrel-mockinterviews.service
             cd /var/www/sp2023-mis421-mockinterviews/
             git pull
             dotnet build &&
-            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl restart kestrel-mockinterviews.service
+            echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl start kestrel-mockinterviews.service
 
       - name: Exit SSH
         uses: appleboy/ssh-action@master
