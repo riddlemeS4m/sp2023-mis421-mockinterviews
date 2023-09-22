@@ -41,7 +41,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             _userManager = userManager;
             _sendGridClient = sendGridClient;
         }
-
+	// adding a dummy comment bc I feel like it
         [Authorize(Roles = RolesConstants.AdminRole)]
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
