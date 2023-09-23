@@ -53,13 +53,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var eventdate = await _context.EventDate
                 .Where(x => x.Date.Date == currdate)
                 .FirstOrDefaultAsync();
-            var for221 = eventdate.For221;
-            var date = eventdate.Date;
-            if(eventdate == null)
-            {
-                for221 = false;
-                date = currdate;
 
+            var for221 = false;
+            var date = currdate;
+            if(eventdate != null)
+            {
+                for221 = eventdate.For221;
+                date = eventdate.Date;
             }
 
             //Gets list of all distinct interviewers that are in an InterviewEvent with a status of checked in or ongoing
