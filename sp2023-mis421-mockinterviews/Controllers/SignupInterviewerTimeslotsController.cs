@@ -48,7 +48,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenInclude(s => s.EventDate)
                 .OrderBy(ve => ve.SignupInterviewer.InterviewerId)
                 .ThenBy(ve => ve.TimeslotId)
-                .Where(s => s.Timeslot.IsInterviewer)
+                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.IsActive)
                 .ToListAsync();
 
             var timeRanges = new ControlBreakInterviewer(_userManager);
@@ -155,12 +155,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         // GET: SignupInterviewerTimeslots/Create
         [Authorize(Roles = RolesConstants.InterviewerRole)]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userTask = _userManager.FindByIdAsync(userId);
-            userTask.GetAwaiter().GetResult();
-            var user = userTask.Result;
+            var user = await _userManager.Users
+                .Where(x => x.Id == userId)
+                .Select(x => new { x.FirstName, x.LastName })
+                .FirstOrDefaultAsync();
 
             var for221 = false;
             if (User.IsInRole(RolesConstants.StudentRole))
@@ -168,14 +169,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 for221 = true;
             }
 
-            var timeslotsTask = _context.Timeslot
+            var timeslots = await _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                .Where(x => x.EventDate.For221 == for221)
+                .Where(x => x.EventDate.For221 == for221 && x.EventDate.IsActive == true)
                 .ToListAsync();
-            timeslotsTask.GetAwaiter().GetResult();
-            var timeslots = timeslotsTask.Result;
 
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {
@@ -227,7 +226,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var timeslots = await _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
-                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
+                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
+                    x.EventDate.IsActive == true &&
+                    x.EventDate.For221 == for221)
                 .ToListAsync();
 
             var dates = timeslots

@@ -44,6 +44,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var volunteerEvents = await _context.VolunteerEvent
                 .Include(v => v.Timeslot)
                 .ThenInclude(y => y.EventDate)
+                .Where(y => y.Timeslot.EventDate.IsActive == true)
                 .OrderBy(ve => ve.StudentId)
                 .ThenBy(x => x.TimeslotId)
                 .ToListAsync();
@@ -80,22 +81,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         // GET: VolunteerEvents/Create
         [Authorize(Roles = RolesConstants.StudentRole)]
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userTask = _userManager.FindByIdAsync(userId);
-            userTask.GetAwaiter().GetResult();
-            var user = userTask.Result;
+            //var userTask = _userManager.FindByIdAsync(userId);
+            //userTask.GetAwaiter().GetResult();
+            //var user = userTask.Result;
 
-            var timeslotsTask = _context.Timeslot
+            var timeslots = await _context.Timeslot
                 .Where(x => x.IsVolunteer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => x.EventDate.For221 == false)
+                .Where(x => x.EventDate.IsActive == true)
                 .ToListAsync();
-            timeslotsTask.GetAwaiter().GetResult();
-            var timeslots = timeslotsTask.Result;
+
             VolunteerEventSignupViewModel volunteerEventsViewModel = new()
             {
                 Timeslots = timeslots
@@ -133,7 +134,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenInclude(y => y.EventDate)
                 .ToListAsync();
 
-            var studentIds = allVolunteerEvents.Select(v => v.StudentId).Distinct().ToList();
+            var studentIds = allVolunteerEvents
+                .Select(v => v.StudentId)
+                .Distinct()
+                .ToList();
 
             foreach (int id in SelectedEventIds)
             {

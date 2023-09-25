@@ -34,6 +34,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var locationInterviewers = await _context.LocationInterviewer
                 .Include(v => v.Location)
                 .Include(v => v.EventDate)
+                .Where(v => v.EventDate.IsActive == true)
                 .ToListAsync();
 
             var interviewerIds = locationInterviewers
@@ -99,12 +100,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Create()
         {
             // Get a list of all Interviewers
-            var availableInterviewers = await _context.SignupInterviewer
+            var availableInterviewers = await _context.SignupInterviewerTimeslot
+                .Include(i => i.SignupInterviewer)
+                .Include(i => i.Timeslot)
+                .ThenInclude(i => i.EventDate)
+                .Where(i => i.Timeslot.EventDate.IsActive == true)
                 .Select(i => new SelectListItem
                 {
-                    Value = i.InterviewerId,
-                    Text = $"{i.FirstName} {i.LastName}"
+                    Value = i.SignupInterviewer.InterviewerId,
+                    Text = $"{i.SignupInterviewer.FirstName} {i.SignupInterviewer.LastName}"
                 })
+                .Distinct()
                 .ToListAsync();
 
 
@@ -117,6 +123,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
             var availableDates = await _context.EventDate
+                .Where(i => i.IsActive)
                 .Select(i => new SelectListItem
                 {
                         Value = i.Id.ToString(),

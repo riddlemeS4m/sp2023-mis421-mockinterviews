@@ -12,6 +12,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string EventName { get; set; }
         [Display(Name = "For MIS 221?")]
         public bool For221 { get; set; }
+        [Display(Name = "Deactivate?")]
         [DefaultValue(true)]
         public bool IsActive { get; set; }
     }

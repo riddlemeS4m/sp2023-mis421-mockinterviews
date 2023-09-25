@@ -32,6 +32,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             var timeslots = await _context.Timeslot
                 .Include(t => t.EventDate)
+                .Where(t => t.EventDate.IsActive == true)
                 .ToListAsync();
             var eventdates = await _context.EventDate
                 .ToListAsync();
