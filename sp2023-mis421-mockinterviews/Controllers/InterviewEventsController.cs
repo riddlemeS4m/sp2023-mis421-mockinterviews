@@ -539,7 +539,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => x.IsStudent)
                 .Include(y => y.EventDate)
                 .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
-                .Where(x => x.EventDate.For221 == for221)
+                .Where(x => x.EventDate.For221 == for221 && x.EventDate.IsActive == true)
                 .ToListAsync();
 
             var interviewEvents = await _context.InterviewEvent
