@@ -1,4 +1,5 @@
-﻿using sp2023_mis421_mockinterviews.Data.Constants;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using sp2023_mis421_mockinterviews.Data.Constants;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
@@ -13,6 +14,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public string EventName { get; set; }
         [Display(Name = "For MIS 221?")]
         [DefaultValue(For221Constants.ForAllMIS)]
+        [ValidateNever]
         public string For221 { get; set; }
         [Display(Name = "Deactivate?")]
         [DefaultValue(true)]

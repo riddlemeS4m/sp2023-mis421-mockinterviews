@@ -226,25 +226,40 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-            var for221 = For221Constants.For321andAbove;
-            if (User.IsInRole(RolesConstants.StudentRole))
+            var timeslots = new List<Timeslot>();
+            var dates = new List<int>();
+            if(User.IsInRole(RolesConstants.StudentRole))
             {
-                for221 = For221Constants.For221;
+                timeslots = await _context.Timeslot
+                    .Where(x => x.IsInterviewer == true)
+                    .Include(y => y.EventDate)
+                    .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
+                        x.EventDate.IsActive == true &&
+                        x.EventDate.For221 != For221Constants.For321andAbove)
+                    .ToListAsync();
+
+                dates = timeslots
+                    .Where(x => x.EventDate.For221 != For221Constants.For321andAbove && SelectedEventIds.Contains(x.Id))
+                    .Select(t => t.EventDate.Id)
+                    .Distinct()
+                    .ToList();
             }
+            else
+            {
+                timeslots = await _context.Timeslot
+                    .Where(x => x.IsInterviewer == true)
+                    .Include(y => y.EventDate)
+                    .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
+                        x.EventDate.IsActive == true &&
+                        x.EventDate.For221 != For221Constants.For221)
+                    .ToListAsync();
 
-            var timeslots = await _context.Timeslot
-                .Where(x => x.IsInterviewer == true)
-                .Include(y => y.EventDate)
-                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
-                    x.EventDate.IsActive == true &&
-                    x.EventDate.For221 == for221)
-                .ToListAsync();
-
-            var dates = timeslots
-                .Where(x => x.EventDate.For221 == for221 && SelectedEventIds.Contains(x.Id))
-                .Select(t => t.EventDate.Id)
-                .Distinct()
-                .ToList();
+                dates = timeslots
+                    .Where(x => x.EventDate.For221 != For221Constants.For221 && SelectedEventIds.Contains(x.Id))
+                    .Select(t => t.EventDate.Id)
+                    .Distinct()
+                    .ToList();
+            }
 
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {

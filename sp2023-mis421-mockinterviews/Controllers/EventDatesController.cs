@@ -190,7 +190,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,EventName,For221,IsActive")] EventDate eventDate)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,EventName,IsActive")] EventDate eventDate)
         {
             if (id != eventDate.Id)
             {
@@ -201,6 +201,23 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 try
                 {
+                    bool isFor221True = Request.Form["For221True"].Count > 0;
+                    bool isFor221False = Request.Form["For221False"].Count > 0;
+
+                    // Set the value of the "For221" field based on the checkboxes
+                    if (isFor221True && isFor221False)
+                    {
+                        eventDate.For221 = "b";
+                    }
+                    else if (isFor221True)
+                    {
+                        eventDate.For221 = "y";
+                    }
+                    else if (isFor221False)
+                    {
+                        eventDate.For221 = "n";
+                    }
+
                     _context.Update(eventDate);
                     await _context.SaveChangesAsync();
                 }
