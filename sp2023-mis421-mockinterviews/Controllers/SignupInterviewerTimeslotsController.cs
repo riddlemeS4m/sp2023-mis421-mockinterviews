@@ -163,18 +163,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Select(x => new { x.FirstName, x.LastName })
                 .FirstOrDefaultAsync();
 
-            var for221 = For221Constants.For321andAbove;
             if (User.IsInRole(RolesConstants.StudentRole))
             {
-                for221 = For221Constants.For221;
-            }
-
-            var timeslots = await _context.Timeslot
+                var timeslots = await _context.Timeslot
                 .Where(x => x.IsInterviewer == true)
                 .Include(y => y.EventDate)
                 .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                .Where(x => x.EventDate.For221 == for221 && x.EventDate.IsActive == true)
+                .Where(x => x.EventDate.For221 != For221Constants.For321andAbove && x.EventDate.IsActive == true)
                 .ToListAsync();
+            }
+            else
+            {
+                var timeslots = await _context.Timeslot
+                .Where(x => x.IsInterviewer == true)
+                .Include(y => y.EventDate)
+                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
+                .Where(x => x.EventDate.For221 != For221Constants.For221 && x.EventDate.IsActive == true)
+                .ToListAsync();
+            }
+
+            
 
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {

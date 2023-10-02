@@ -525,22 +525,25 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => x.Id == userId)
                 .FirstOrDefaultAsync();
 
-            var for221 = For221Constants.ForAllMIS;
-            if(user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
+            var timeslots = new List<Timeslot>();
+            if (user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
             {
-                for221 = For221Constants.For221;
-            }
-            else
-            {
-                for221 = For221Constants.For321andAbove;
-            }
-
-            var timeslots = await _context.Timeslot
+                timeslots = await _context.Timeslot
                 .Where(x => x.IsStudent)
                 .Include(y => y.EventDate)
                 .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
-                .Where(x => x.EventDate.For221 == for221 && x.EventDate.IsActive == true)
+                .Where(x => x.EventDate.For221 != For221Constants.For321andAbove && x.EventDate.IsActive == true)
                 .ToListAsync();
+            }
+            else
+            {
+                timeslots = await _context.Timeslot
+                .Where(x => x.IsStudent)
+                .Include(y => y.EventDate)
+                .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                .Where(x => x.EventDate.For221 != For221Constants.For221 && x.EventDate.IsActive == true)
+                .ToListAsync();
+            }
 
             var interviewEvents = await _context.InterviewEvent
                 .Where(x => x.StudentId == userId)
