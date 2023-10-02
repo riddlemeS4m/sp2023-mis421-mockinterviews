@@ -1,4 +1,5 @@
-﻿using System.ComponentModel;
+﻿using sp2023_mis421_mockinterviews.Data.Constants;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
@@ -11,7 +12,8 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         [Display(Name = "Event Name")]
         public string EventName { get; set; }
         [Display(Name = "For MIS 221?")]
-        public bool For221 { get; set; }
+        [DefaultValue(For221Constants.ForAllMIS)]
+        public string For221 { get; set; }
         [Display(Name = "Deactivate?")]
         [DefaultValue(true)]
         public bool IsActive { get; set; }

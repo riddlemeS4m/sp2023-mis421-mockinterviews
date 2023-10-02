@@ -65,7 +65,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(s => s.SignupInterviewer)
                 .Include(s => s.Timeslot)
                 .ThenInclude(s => s.EventDate)
-                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == false)
+                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == For221Constants.For321andAbove)
                 .ToListAsync();
 
             var groupedSignupInterviewerTimeslots = uniqueSignupInterviewerTimeslots
@@ -163,10 +163,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Select(x => new { x.FirstName, x.LastName })
                 .FirstOrDefaultAsync();
 
-            var for221 = false;
+            var for221 = For221Constants.For321andAbove;
             if (User.IsInRole(RolesConstants.StudentRole))
             {
-                for221 = true;
+                for221 = For221Constants.For221;
             }
 
             var timeslots = await _context.Timeslot
@@ -217,10 +217,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-            var for221 = false;
+            var for221 = For221Constants.For321andAbove;
             if (User.IsInRole(RolesConstants.StudentRole))
             {
-                for221 = true;
+                for221 = For221Constants.For221;
             }
 
             var timeslots = await _context.Timeslot

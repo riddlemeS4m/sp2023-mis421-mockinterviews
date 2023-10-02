@@ -130,6 +130,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Check if both checkboxes are selected
+                bool isFor221True = Request.Form["For221True"].Count > 0;
+                bool isFor221False = Request.Form["For221False"].Count > 0;
+
+                // Set the value of the "For221" field based on the checkboxes
+                if (isFor221True && isFor221False)
+                {
+                    eventDate.For221 = "b";
+                }
+                else if (isFor221True)
+                {
+                    eventDate.For221 = "y";
+                }
+                else if (isFor221False)
+                {
+                    eventDate.For221 = "n";
+                }
+
                 _context.Add(eventDate);
                 await _context.SaveChangesAsync();
 

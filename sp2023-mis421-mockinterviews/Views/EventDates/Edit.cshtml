@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate
+﻿@using sp2023_mis421_mockinterviews.Data.Constants
+@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate
 
 @{
     ViewData["Title"] = "Edit";
@@ -26,30 +27,18 @@
             </div>
 
             <br />
-                <label class="control-label">Is this event for MIS 221 students?</label>
+                <label class="control-label">Which students is this event for?</label>
             <br />
-            @if(Model.For221)
-            {
-                <div class="form-check form-check-inline">
-                    <input id="For221True" class="form-check-input" type="radio" name="For221" value="true" checked="checked" data-val="true" data-val-required="Please select an option">
-                    <label class="form-check-label" for="For221True">Yes</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input id="For221False" class="form-check-input" type="radio" name="For221" value="false" data-val="true" data-val-required="Please select an option">
-                    <label class="form-check-label" for="For221False">No</label>
-                </div>
-            }
-            else
-            {
-                <div class="form-check form-check-inline">
-                    <input id="For221True" class="form-check-input" type="radio" name="For221" value="true" data-val="true" data-val-required="Please select an option">
-                    <label class="form-check-label" for="For221True">Yes</label>
-                </div>
-                <div class="form-check form-check-inline">
-                    <input id="For221False" class="form-check-input" type="radio" name="For221" value="false" checked="checked" data-val="true" data-val-required="Please select an option">
-                    <label class="form-check-label" for="For221False">No</label>
-                </div>
-            }
+
+            <div class="form-check form-check-inline">
+                <input id="For221True" class="form-check-input" type="checkbox" name="For221" value="y" checked="checked" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="For221True">MIS 221</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input id="For221False" class="form-check-input" type="checkbox" name="For221" value="n" data-val="true" data-val-required="Please select an option">
+                <label class="form-check-label" for="For221False">MIS 321 & Above</label>
+            </div>
+            
             
             <span asp-validation-for="For221" class="text-danger"></span>
             <br />

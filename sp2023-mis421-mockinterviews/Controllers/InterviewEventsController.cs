@@ -54,7 +54,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => x.Date.Date == currdate)
                 .FirstOrDefaultAsync();
 
-            var for221 = false;
+            var for221 = For221Constants.For321andAbove;
             var date = currdate;
             if(eventdate != null)
             {
@@ -525,14 +525,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => x.Id == userId)
                 .FirstOrDefaultAsync();
 
-            var for221 = false;
+            var for221 = For221Constants.ForAllMIS;
             if(user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
             {
-                for221 = true;
+                for221 = For221Constants.For221;
             }
             else
             {
-                for221 = false;
+                for221 = For221Constants.For321andAbove;
             }
 
             var timeslots = await _context.Timeslot

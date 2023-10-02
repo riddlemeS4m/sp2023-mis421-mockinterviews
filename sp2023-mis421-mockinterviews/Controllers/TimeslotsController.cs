@@ -101,7 +101,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             var timeslots = await _context.Timeslot
                 .Include(t => t.EventDate)
-                .Where(x => x.EventDate.For221 == false && x.IsInterviewer == true)
+                .Where(x => x.EventDate.For221 == For221Constants.For321andAbove && x.IsInterviewer == true)
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
