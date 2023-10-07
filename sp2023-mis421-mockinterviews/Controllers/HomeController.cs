@@ -201,7 +201,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
 
                 ASendAnEmail emailer = new StudentReminderEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentReminderEmail, userFull.Email, userFull.FirstName, times);
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentReminderEmail, userFull.Email, userFull.FirstName, times, null);
             }
 
             return RedirectToAction("Index", "Home");
@@ -236,7 +236,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 				}
 
 				ASendAnEmail emailer = new InterviewerReminderEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerReminderEmail, userFull.Email, userFull.FirstName, times);
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerReminderEmail, userFull.Email, userFull.FirstName, times, null);
             }
 
             return RedirectToAction("Index", "Home");

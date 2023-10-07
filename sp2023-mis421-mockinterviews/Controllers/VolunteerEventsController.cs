@@ -267,7 +267,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 string fullName = user.FirstName + " " + user.LastName;
 
                 ASendAnEmail emailNotification = new VolunteerCancellationNotification();
-                await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerCancellationNotification + fullName, CurrentAdmin.Email, fullName, volunteerEvent.ToString());
+                await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerCancellationNotification + fullName, CurrentAdmin.Email, fullName, volunteerEvent.ToString(), null);
 
                 _context.VolunteerEvent.Remove(volunteerEvent);
             }
@@ -299,12 +299,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             ASendAnEmail emailer = new VolunteerSignupConfirmation();
-            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupConfirmation, user.Email, user.FirstName, times);
+            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupConfirmation, user.Email, user.FirstName, times, null);
 
             string fullName = user.FirstName + " " + user.LastName;
 
             ASendAnEmail emailNotification = new VolunteerSignupNotification();
-            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupNotification + fullName, CurrentAdmin.Email, fullName, times);
+            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupNotification + fullName, CurrentAdmin.Email, fullName, times, null);
         }
 
         [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]

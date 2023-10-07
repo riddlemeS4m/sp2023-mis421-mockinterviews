@@ -20,6 +20,8 @@ using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Data.Migrations.Data;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Globalization;
+using System.Text;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -576,20 +578,28 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
 			var timeRanges = new ControlBreakInterviewer(_userManager);
 			var groupedEvents = await timeRanges.ToTimeRanges(emailTimes);
+            List<string> calendarEvents = new List<string>();
 
 			var times = "";
 			foreach (TimeRangeViewModel interview in groupedEvents)
 			{
-				times += interview.StartTime + " - " + interview.EndTime + " on " + interview.Date.ToString(@"M/dd/yyyy") + "<br>";
+                DateTime combinedStart = CombineDateWithTimeString(interview.Date, interview.StartTime);
+                Console.WriteLine(combinedStart);
+                DateTime combinedEnd = CombineDateWithTimeString(interview.Date, interview.EndTime);
+                Console.WriteLine(combinedEnd);
+                var plainBytes = Encoding.UTF8.GetBytes(CreateCalendarEvent(combinedStart, combinedEnd));
+                string newEvent = Convert.ToBase64String(plainBytes);
+                calendarEvents.Add(newEvent);
+                times += interview.StartTime + " - " + interview.EndTime + " on " + interview.Date.ToString(@"M/dd/yyyy") + "<br>";
 			}
 
 			ASendAnEmail emailer = new InterviewerSignupConfirmation();
-            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupConfirmation, user.Email, user.FirstName, times);
+            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupConfirmation, user.Email, user.FirstName, times, calendarEvents);
 
             string fullName = user.FirstName + " " + user.LastName;
 
             ASendAnEmail emailNotification = new InterviewerSignupNotification();
-            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupNotification + fullName, CurrentAdmin.Email, fullName, times);
+            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupNotification + fullName, CurrentAdmin.Email, fullName, times, null);
         }
 
         [Authorize(Roles = RolesConstants.InterviewerRole)]
@@ -797,5 +807,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return RedirectToAction("Index", "SignupInterviewerTimeslots");
         }
+        private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
+        {
+            Console.WriteLine(date);
+            Console.WriteLine(timeString);
+            DateTime dateTime = DateTime.ParseExact(timeString, "h:mm tt", CultureInfo.InvariantCulture);
+            TimeSpan timeSpan = dateTime.TimeOfDay;
+            return date.Date + timeSpan;
+        }
+
+        private string CreateCalendarEvent(DateTime start, DateTime end)
+        {
+
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("BEGIN:VCALENDAR");
+            stringBuilder.AppendLine("VERSION:2.0");
+            stringBuilder.AppendLine("BEGIN:VTIMEZONE");
+            stringBuilder.AppendLine("TZID:America/Chicago");
+            stringBuilder.AppendLine("BEGIN:DAYLIGHT");
+            stringBuilder.AppendLine("TZOFFSETFROM:-0600");
+            stringBuilder.AppendLine("TZOFFSETTO:-0500");
+            stringBuilder.AppendLine("TZNAME:CDT");
+            stringBuilder.AppendLine("DTSTART:19700308T020000");
+            stringBuilder.AppendLine("RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU");
+            stringBuilder.AppendLine("END:DAYLIGHT");
+            stringBuilder.AppendLine("BEGIN:STANDARD");
+            stringBuilder.AppendLine("TZOFFSETFROM:-0500");
+            stringBuilder.AppendLine("TZOFFSETTO:-0600");
+            stringBuilder.AppendLine("TZNAME:CST");
+            stringBuilder.AppendLine("DTSTART:19701101T020000");
+            stringBuilder.AppendLine("RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU");
+            stringBuilder.AppendLine("END:STANDARD");
+            stringBuilder.AppendLine("END:VTIMEZONE");
+            stringBuilder.AppendLine("BEGIN:VEVENT");
+            stringBuilder.AppendLine("UID:" + Guid.NewGuid());
+            stringBuilder.AppendFormat("DTSTART;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", start);
+            stringBuilder.AppendFormat("DTEND;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", end);
+            stringBuilder.AppendLine("SUMMARY:UA MIS Mock Interviews");
+            stringBuilder.AppendLine("END:VEVENT");
+            stringBuilder.AppendLine("END:VCALENDAR");
+
+            return stringBuilder.ToString();
+        }
+
     }
 }

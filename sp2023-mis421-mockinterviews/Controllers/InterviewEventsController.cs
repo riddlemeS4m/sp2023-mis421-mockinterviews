@@ -629,7 +629,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
 
                 ASendAnEmail emailer = new StudentSignupEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails);
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails, null);
 
 				return RedirectToAction("Index", "Home");
             }

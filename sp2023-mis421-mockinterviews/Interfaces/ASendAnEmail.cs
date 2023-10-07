@@ -18,7 +18,7 @@ namespace sp2023_mis421_mockinterviews.Interfaces
 
         public abstract void InjectHTMLContent();
 
-        public async Task SendEmailAsync(ISendGridClient sendGridClient, string subject, string emailto, string emailname, string times)
+        public async Task SendEmailAsync(ISendGridClient sendGridClient, string subject, string emailto, string emailname, string times, List<string> base64CalendarContent)
         {
             FromEmail = new EmailAddress(SuperUser.Email, "UA MIS " + SuperUser.FirstName + " " + SuperUser.LastName);
             Subject = subject;
@@ -34,6 +34,15 @@ namespace sp2023_mis421_mockinterviews.Interfaces
             InjectHTMLContent();
 
             var msg = MailHelper.CreateSingleEmail(FromEmail, ToEmail, Subject, PlainTextContent, HTMLContent);
+            if(base64CalendarContent != null)
+            {
+                foreach (string Event in base64CalendarContent)
+                {
+                    msg.AddAttachment("MockInterviews.ics", Event, "text/calendar");
+                }
+            }
+
+
             await sendGridClient.SendEmailAsync(msg);
         }
     }

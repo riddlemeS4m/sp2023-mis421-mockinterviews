@@ -117,7 +117,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 else
                 {
                     ASendAnEmail emailer = new NewFAQSubmitted();
-                    await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.NewFAQSubmitted, CurrentAdmin.Email, user.FirstName + " " + user.LastName, faq.Question);
+                    await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.NewFAQSubmitted, CurrentAdmin.Email, user.FirstName + " " + user.LastName, faq.Question, null);
 
                     return RedirectToAction("Resources", "FAQs");
                 }
