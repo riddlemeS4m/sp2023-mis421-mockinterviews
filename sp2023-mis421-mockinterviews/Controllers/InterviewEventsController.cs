@@ -24,6 +24,8 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
+using System.Globalization;
+using System.Text;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -608,6 +610,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
 
                 var emailTimes = new List<InterviewEvent>();
+                List<string> calendarEvents = new List<string>();
 
                 var newEvent = await _context.InterviewEvent
                     .Include(v => v.Timeslot)
@@ -625,11 +628,16 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 string interviewDetails = "";
                 foreach (var interview in emailTimes)
                 {
+                    //DateTime combinedStart = CombineDateWithTimeString(interview.Timeslot.EventDate.Date, interview.Timeslot.Time.ToString());
+                    //DateTime combinedEnd = CombineDateWithTimeString(interview.Timeslot.EventDate.Date, interview.Timeslot.Time.AddMinutes(30).ToString());
+                    var plainBytes = Encoding.UTF8.GetBytes(CreateCalendarEvent(interview.Timeslot.Time, interview.Timeslot.Time.AddMinutes(30)));
+                    string tempEvent = Convert.ToBase64String(plainBytes);
+                    calendarEvents.Add(tempEvent);
                     interviewDetails += interview.ToString();
                 }
 
                 ASendAnEmail emailer = new StudentSignupEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails, null);
+                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails, calendarEvents); ;
 
 				return RedirectToAction("Index", "Home");
             }
@@ -1185,6 +1193,71 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             await _context.SaveChangesAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
+        {
+            Console.WriteLine(date);
+            Console.WriteLine(timeString);
+            DateTime dateTime = DateTime.ParseExact(timeString, "h:mm tt", CultureInfo.InvariantCulture);
+            TimeSpan timeSpan = dateTime.TimeOfDay;
+            return date.Date + timeSpan;
+        }
+
+        private string CreateCalendarEvent(DateTime start, DateTime end)
+        {
+
+            var stringBuilder = new StringBuilder();
+
+            stringBuilder.AppendLine("BEGIN:VCALENDAR");
+            stringBuilder.AppendLine("VERSION:2.0");
+            stringBuilder.AppendLine("PRODID:-//YourCompany//YourProduct//EN"); // Optional identifier
+            stringBuilder.AppendLine("BEGIN:VTIMEZONE");
+            stringBuilder.AppendLine("TZID:America/Chicago");
+            stringBuilder.AppendLine("BEGIN:DAYLIGHT");
+            stringBuilder.AppendLine("TZOFFSETFROM:-0600");
+            stringBuilder.AppendLine("TZOFFSETTO:-0500");
+            stringBuilder.AppendLine("TZNAME:CDT");
+            stringBuilder.AppendLine("DTSTART:19700308T020000");
+            stringBuilder.AppendLine("RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU");
+            stringBuilder.AppendLine("END:DAYLIGHT");
+            stringBuilder.AppendLine("BEGIN:STANDARD");
+            stringBuilder.AppendLine("TZOFFSETFROM:-0500");
+            stringBuilder.AppendLine("TZOFFSETTO:-0600");
+            stringBuilder.AppendLine("TZNAME:CST");
+            stringBuilder.AppendLine("DTSTART:19701101T020000");
+            stringBuilder.AppendLine("RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU");
+            stringBuilder.AppendLine("END:STANDARD");
+            stringBuilder.AppendLine("END:VTIMEZONE");
+            stringBuilder.AppendLine("BEGIN:VEVENT");
+            stringBuilder.AppendLine("UID:" + Guid.NewGuid());
+            stringBuilder.AppendFormat("DTSTAMP:{0:yyyyMMddTHHmmssZ}\r\n", DateTime.UtcNow); // Added DTSTAMP
+            stringBuilder.AppendLine("SEQUENCE:0"); // Added SEQUENCE for indicating the version of the event
+            stringBuilder.AppendFormat("DTSTART;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", start);
+            stringBuilder.AppendFormat("DTEND;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", end);
+            stringBuilder.AppendLine("SUMMARY:UA MIS Mock Interviews");
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-P14D"); // 14 days before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
+            // Add a reminder for 3 days before the event
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-P3D"); // 3 days before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
+            // Add a reminder for 30 minutes before the event
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-PT30M"); // 30 minutes before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
+            stringBuilder.AppendLine("END:VEVENT");
+            stringBuilder.AppendLine("END:VCALENDAR");
+
+
+            return stringBuilder.ToString();
         }
     }
 }

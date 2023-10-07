@@ -584,9 +584,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			foreach (TimeRangeViewModel interview in groupedEvents)
 			{
                 DateTime combinedStart = CombineDateWithTimeString(interview.Date, interview.StartTime);
-                Console.WriteLine(combinedStart);
                 DateTime combinedEnd = CombineDateWithTimeString(interview.Date, interview.EndTime);
-                Console.WriteLine(combinedEnd);
                 var plainBytes = Encoding.UTF8.GetBytes(CreateCalendarEvent(combinedStart, combinedEnd));
                 string newEvent = Convert.ToBase64String(plainBytes);
                 calendarEvents.Add(newEvent);
@@ -823,6 +821,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             stringBuilder.AppendLine("BEGIN:VCALENDAR");
             stringBuilder.AppendLine("VERSION:2.0");
+            stringBuilder.AppendLine("PRODID:-//YourCompany//YourProduct//EN"); // Optional identifier
             stringBuilder.AppendLine("BEGIN:VTIMEZONE");
             stringBuilder.AppendLine("TZID:America/Chicago");
             stringBuilder.AppendLine("BEGIN:DAYLIGHT");
@@ -842,11 +841,31 @@ namespace sp2023_mis421_mockinterviews.Controllers
             stringBuilder.AppendLine("END:VTIMEZONE");
             stringBuilder.AppendLine("BEGIN:VEVENT");
             stringBuilder.AppendLine("UID:" + Guid.NewGuid());
+            stringBuilder.AppendFormat("DTSTAMP:{0:yyyyMMddTHHmmssZ}\r\n", DateTime.UtcNow); // Added DTSTAMP
+            stringBuilder.AppendLine("SEQUENCE:0"); // Added SEQUENCE for indicating the version of the event
             stringBuilder.AppendFormat("DTSTART;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", start);
             stringBuilder.AppendFormat("DTEND;TZID=America/Chicago:{0:yyyyMMddTHHmmss}\r\n", end);
             stringBuilder.AppendLine("SUMMARY:UA MIS Mock Interviews");
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-P14D"); // 14 days before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
+            // Add a reminder for 3 days before the event
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-P3D"); // 3 days before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
+            // Add a reminder for 30 minutes before the event
+            stringBuilder.AppendLine("BEGIN:VALARM");
+            stringBuilder.AppendLine("TRIGGER:-PT30M"); // 30 minutes before
+            stringBuilder.AppendLine("ACTION:DISPLAY");
+            stringBuilder.AppendLine("DESCRIPTION:Reminder");
+            stringBuilder.AppendLine("END:VALARM");
             stringBuilder.AppendLine("END:VEVENT");
             stringBuilder.AppendLine("END:VCALENDAR");
+
 
             return stringBuilder.ToString();
         }
