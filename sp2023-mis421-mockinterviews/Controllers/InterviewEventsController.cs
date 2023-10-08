@@ -646,7 +646,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: InterviewEvents/Edit/5
-        [Authorize(Roles = RolesConstants.AdminRole)]
+        [Authorize(Roles = RolesConstants.AdminRole +","+RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.InterviewEvent == null)
@@ -732,7 +732,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: InterviewEvents/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = RolesConstants.AdminRole)]
+        [Authorize(Roles = RolesConstants.AdminRole +","+RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,StudentId,LocationId,TimeslotId,InterviewType,Status,SignupInterviewerTimeslotId")] InterviewEvent interviewEvent, string InterviewerId)
@@ -812,7 +812,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                if (User.IsInRole(RolesConstants.AdminRole))
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                return RedirectToAction("Index", "Home");
             }
 
             return View(interviewEvent);

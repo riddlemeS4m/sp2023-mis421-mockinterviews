@@ -33,5 +33,13 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
             };
 
         }
+        public static List<SelectListItem> GetInterviewerCompleteStatusOptions()
+        {
+            return new List<SelectListItem>
+            {
+                new SelectListItem { Text = Completed, Value = Completed },
+                new SelectListItem { Text = NoShow, Value = NoShow },
+            };
+        }
     }
 }
