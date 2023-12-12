@@ -16,10 +16,10 @@
                 <div id="center-everything">
                     <label asp-for="SignupInterviewer.InPerson" class="control-label">Where would you like to be located for the event?</label>
                     <br />
-                    @* <div class="form-check form-check-inline">
+                     <div class="form-check form-check-inline">
                         <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one">
                         <label class="form-check-label" for="InPerson">In Person</label>
-                    </div> *@
+                    </div> 
                     <div class="form-check form-check-inline">
                         <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
                         <label class="form-check-label" for="IsVirtual">Virtual</label>
@@ -44,7 +44,6 @@
                         <br /><br />
                     </div>
                 </div>
-                
 
                 <div id="center-everything">
                     <label class="control-label">What types of interviews would you be comfortable giving?</label>
@@ -70,13 +69,13 @@
                 <br /><br />
                 <div class="row" id="center-everything">
                     <div class="col-md-6">
-                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
+                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @(Model.Timeslots.IndexOf(Model.Timeslots[0]) + 1)</button>
                     </div>
                     <br />
                     @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                     {
                         <div class="col-md-6">
-                            <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                            <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @(Model.Timeslots.IndexOf(Model.Timeslots[^1]) + 1)</button>
                         </div>
                     }
                     <br />
@@ -143,9 +142,7 @@
         selectAllButtons.forEach(function (button) {
             button.addEventListener("click", function () {
                 var target = this.getAttribute("data-target"); // "list1" or "list2"
-
                 var checkboxes = document.querySelectorAll('input[name="' + target + '"]');
-
                 var allChecked = Array.from(checkboxes).every(function (checkbox) {
                     return checkbox.checked;
                 });
@@ -156,7 +153,6 @@
             });
         });
     </script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var checkbox = document.getElementById('InPerson');
@@ -167,6 +163,4 @@
             });
         });
     </script>
-
-
 }

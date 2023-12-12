@@ -49,6 +49,20 @@
                 }
             </div>
         }
+        @if(User.IsInRole(RolesConstants.InterviewerRole))
+        {
+            <div style="padding-bottom: 15px;">
+                <label>Company:</label>
+                @if (Model.Input.Company != null)
+                {
+                    <span>@Model.Input.Company</span>
+                }
+                else
+                {
+                    <span>No company specified</span>
+                }
+            </div>
+        }
 
         <div style="padding-bottom: 15px;">
             <label>Profile Picture:</label>

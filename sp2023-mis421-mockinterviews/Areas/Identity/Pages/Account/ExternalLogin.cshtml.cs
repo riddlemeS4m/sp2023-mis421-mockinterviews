@@ -35,6 +35,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         private readonly IEmailSender _emailSender;
         private readonly ILogger<ExternalLoginModel> _logger;
         private readonly MockInterviewDataDbContext _context;
+        public bool IsStudent { get; set; }
 
         public ExternalLoginModel(
             SignInManager<ApplicationUser> signInManager,
@@ -98,6 +99,10 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             [Required]
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
+            //[Required]
+            [ConditionalRequired(RolesConstants.DesignateStudent, ErrorMessage = "The Company field is required for non-student accounts.")]
+            [Display(Name = "Company")]
+            public string Company { get; set; }
         }
         
         public IActionResult OnGet() => RedirectToPage("./Login");
@@ -106,12 +111,12 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         public IActionResult OnPost(string provider, string returnUrl = null)
         {
 	
-		//returnUrl = "https://mockinterviews.uamishub.com/signin-microsoft";
-		System.Console.WriteLine("Test");
-		System.Console.WriteLine(returnUrl);        
-    // Request a redirect to the external login provider.
+		    //returnUrl = "https://mockinterviews.uamishub.com/signin-microsoft";
+		    //System.Console.WriteLine("Test");
+		    //System.Console.WriteLine(returnUrl);        
+            // Request a redirect to the external login provider.
             var redirectUrl = Url.Page("./ExternalLogin", pageHandler: "Callback", values: new {returnUrl});
-		System.Console.WriteLine(redirectUrl);
+		    //System.Console.WriteLine(redirectUrl);
             var properties = _signInManager.ConfigureExternalAuthenticationProperties(provider, redirectUrl);
             return new ChallengeResult(provider, properties);
         }
@@ -121,8 +126,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         {
             returnUrl = returnUrl ?? Url.Content("~/");
 
-                Console.WriteLine("Test");
-                Console.WriteLine(returnUrl);
+            //Console.WriteLine("Test");
+            //Console.WriteLine(returnUrl);
             if (remoteError != null)
             {
                 ErrorMessage = $"Error from external provider: {remoteError}";
@@ -153,12 +158,27 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    Input = new InputModel
+                    IsStudent = info.Principal.FindFirstValue(ClaimTypes.Email).EndsWith(RolesConstants.DesignateStudent, StringComparison.OrdinalIgnoreCase);
+                    if (IsStudent)
                     {
-                        Email = info.Principal.FindFirstValue(ClaimTypes.Email),
-                        FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
-                        LastName = info.Principal.FindFirstValue(ClaimTypes.Surname)
-                    };
+                        Input = new InputModel
+                        {
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                            LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                            Company = "none"
+                        };
+                    }
+                    else
+                    {
+                        Input = new InputModel
+                        {
+                            Email = info.Principal.FindFirstValue(ClaimTypes.Email),
+                            FirstName = info.Principal.FindFirstValue(ClaimTypes.GivenName),
+                            LastName = info.Principal.FindFirstValue(ClaimTypes.Surname),
+                            Company = ""
+                        };
+                    }
                 }
                 return Page();
             }
@@ -182,6 +202,14 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 var textInfo = new CultureInfo("en-US", false).TextInfo;
                 user.FirstName = textInfo.ToTitleCase(Input.FirstName);
                 user.LastName = textInfo.ToTitleCase(Input.LastName);
+                if(Input.Company != "none" && Input.Company != "" && Input.Company != null)
+                {
+                    user.Company = textInfo.ToTitleCase(Input.Company);
+                }
+                else
+                {
+                    user.Company = null;
+                }
 
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);

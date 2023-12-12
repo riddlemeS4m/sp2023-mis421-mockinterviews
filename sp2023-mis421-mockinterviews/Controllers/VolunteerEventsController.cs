@@ -95,7 +95,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(y => y.EventDate)
                 .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
-                .Where(x => x.EventDate.For221 == For221Constants.For321andAbove)
+                .Where(x => x.EventDate.For221 == For221.n)
                 .Where(x => x.EventDate.IsActive == true)
                 .ToListAsync();
 

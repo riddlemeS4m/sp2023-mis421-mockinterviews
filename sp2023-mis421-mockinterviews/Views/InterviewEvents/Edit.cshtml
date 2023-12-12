@@ -54,7 +54,6 @@
             </form>
         </div>
     </div>
-
     <div>
         <a asp-action="Index">Back to List</a>
     </div>
@@ -68,7 +67,7 @@ else
 
     <div class="row">
         <div class="col-md-4">
-            <form asp-action="Edit">
+            <form id="main-form" asp-action="Edit">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="InterviewEvent.Id" />
                 <input type="hidden" asp-for="InterviewEvent.StudentId" />
@@ -104,16 +103,42 @@ else
                     <span asp-validation-for="InterviewerId" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <input id="submit-button" type="submit" value="Save" class="btn btn-primary" />
                 </div>
             </form>
         </div>
     </div>
-
     <div>
         <a asp-action="Index" asp-controller="Home">Back to Home</a>
     </div>
 }
+
+@*<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder().withUrl("/interviewhub").build();
+
+    connection.start().catch(function (err)
+    {
+        return console.error(err.toString());
+    });
+
+    var form = document.querySelector("form")
+    if(form == null)
+    {
+        throw new Error("Could not find form");
+    }
+    else
+    {
+        form.addEventListener("submit", function (event)
+        {
+            connection.invoke("SendInterviewEventUpdate", @Model.InterviewEvent.Id).catch(function (err)
+            {
+                return console.error(err.toString());
+            });
+            event.preventDefault();
+        });
+    }
+</script>*@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}

@@ -67,7 +67,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(s => s.SignupInterviewer)
                 .Include(s => s.Timeslot)
                 .ThenInclude(s => s.EventDate)
-                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == For221Constants.For321andAbove)
+                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == For221.n)
                 .ToListAsync();
 
             var groupedSignupInterviewerTimeslots = uniqueSignupInterviewerTimeslots
@@ -172,7 +172,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(x => x.IsInterviewer == true)
                     .Include(y => y.EventDate)
                     .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                    .Where(x => x.EventDate.For221 != For221Constants.For321andAbove && x.EventDate.IsActive == true)
+                    .Where(x => x.EventDate.For221 != For221.n && x.EventDate.IsActive == true)
                     .ToListAsync();
             }
             else
@@ -181,7 +181,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(x => x.IsInterviewer == true)
                     .Include(y => y.EventDate)
                     .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                    .Where(x => x.EventDate.For221 != For221Constants.For221 && x.EventDate.IsActive == true)
+                    .Where(x => x.EventDate.For221 != For221.y && x.EventDate.IsActive == true)
                     .ToListAsync();
             }
 
@@ -237,11 +237,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(y => y.EventDate)
                     .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
                         x.EventDate.IsActive == true &&
-                        x.EventDate.For221 != For221Constants.For321andAbove)
+                        x.EventDate.For221 != For221.n)
                     .ToListAsync();
 
                 dates = timeslots
-                    .Where(x => x.EventDate.For221 != For221Constants.For321andAbove && SelectedEventIds.Contains(x.Id))
+                    .Where(x => x.EventDate.For221 != For221.n && SelectedEventIds.Contains(x.Id))
                     .Select(t => t.EventDate.Id)
                     .Distinct()
                     .ToList();
@@ -253,11 +253,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(y => y.EventDate)
                     .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
                         x.EventDate.IsActive == true &&
-                        x.EventDate.For221 != For221Constants.For221)
+                        x.EventDate.For221 != For221.y)
                     .ToListAsync();
 
                 dates = timeslots
-                    .Where(x => x.EventDate.For221 != For221Constants.For221 && SelectedEventIds.Contains(x.Id))
+                    .Where(x => x.EventDate.For221 != For221.y && SelectedEventIds.Contains(x.Id))
                     .Select(t => t.EventDate.Id)
                     .Distinct()
                     .ToList();

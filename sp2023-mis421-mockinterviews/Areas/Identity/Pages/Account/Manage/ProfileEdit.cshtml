@@ -40,7 +40,15 @@
                         <span asp-validation-for="Input.PhoneNumber" class="text-danger"></span>
                     </div>
                     <br />
-                    
+                    @if (User.IsInRole(RolesConstants.InterviewerRole))
+                    {
+                        <div class="form-group">
+                            <label asp-for="Input.Company" class="control-label"></label>
+                            <input asp-for="Input.Company" class="form-control" />
+                            <span asp-validation-for="Input.Company" class="text-danger"></span>
+                        </div>
+                        <br />
+                    }
                     @if (User.IsInRole(RolesConstants.StudentRole))
                     {
                         <div class="form-group">
@@ -62,8 +70,9 @@
                                    maxlength="2097152">
                             <span asp-validation-for="Input.Resume" class="text-danger"></span>
                         </div>
-                    }
-                    <br />
+                        <br />
+                    } 
+                    
                     <button id="update-profile-button" type="submit" class="btn btn-primary">Save</button>
                 </div>
                 <div class="col-md-4">

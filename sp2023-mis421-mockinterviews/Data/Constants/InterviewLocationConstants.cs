@@ -16,4 +16,10 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
             };
         }
     }
+
+    public enum InterviewLocations
+    {
+        InPerson,
+        IsVirtual
+    }
 }

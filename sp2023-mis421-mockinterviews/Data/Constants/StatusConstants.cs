@@ -41,5 +41,14 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 new SelectListItem { Text = NoShow, Value = NoShow },
             };
         }
+
+        public enum Statuses
+        {
+            Default,
+            CheckedIn,
+            Ongoing,
+            Completed,
+            NoShow
+        }
     }
 }

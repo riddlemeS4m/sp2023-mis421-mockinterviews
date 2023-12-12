@@ -137,15 +137,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 // Set the value of the "For221" field based on the checkboxes
                 if (isFor221True && isFor221False)
                 {
-                    eventDate.For221 = "b";
+                    eventDate.For221 = For221.b;
                 }
                 else if (isFor221True)
                 {
-                    eventDate.For221 = "y";
+                    eventDate.For221 = For221.y;
                 }
                 else if (isFor221False)
                 {
-                    eventDate.For221 = "n";
+                    eventDate.For221 = For221.n;
                 }
 
                 _context.Add(eventDate);
@@ -207,15 +207,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     // Set the value of the "For221" field based on the checkboxes
                     if (isFor221True && isFor221False)
                     {
-                        eventDate.For221 = "b";
+                        eventDate.For221 = For221.b;
                     }
                     else if (isFor221True)
                     {
-                        eventDate.For221 = "y";
+                        eventDate.For221 = For221.y;
                     }
                     else if (isFor221False)
                     {
-                        eventDate.For221 = "n";
+                        eventDate.For221 = For221.n;
                     }
 
                     _context.Update(eventDate);

@@ -8,7 +8,6 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public InterviewEvent InterviewEvent { get; set; }
         public List<SelectListItem> InterviewerNames { get; set; }
         public string InterviewerId { get; set; }
-
         public string StudentName { get; set; }
     }
 }

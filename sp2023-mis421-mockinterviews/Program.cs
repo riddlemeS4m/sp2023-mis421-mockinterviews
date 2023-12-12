@@ -36,28 +36,56 @@ namespace sp2023_mis421_mockinterviews
 
             configuration.AddUserSecrets<Program>();
 
-            var connectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            string userDataConnectionString;
+            string mockInterviewDataConnectionString;
+
+            if (environment == Environments.Development)
+            {
+                userDataConnectionString = configuration["UsersLocalConnection"] ?? throw new InvalidOperationException("Connection string 'UsersLocalConnection' not found.");
+                mockInterviewDataConnectionString = configuration["SignupsLocalConnection"] ?? throw new InvalidOperationException("Connection string 'SignupsLocalConnection' not found.");
+            }
+            else
+            {
+                userDataConnectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+                mockInterviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
+            }
+
             services.AddDbContext<UserDataDbContext>(options =>
-                options.UseSqlServer(connectionString));
+                options.UseSqlServer(userDataConnectionString));
 
             //when updating the userdb, first...
             //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
             //second...
             //update-database -context userdatadbcontext
 
-            var interviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
+            //update to the above^^
+            //first line remains the same
+            //second line is now...
+            //update-database -context userdatadbcontext -connection "<insert connection string here>"
+            //this is to account for using two different database sets for the two different environments
+
             services.AddDbContext<MockInterviewDataDbContext>(options =>
-                options.UseSqlServer(interviewDataConnectionString));
+                options.UseSqlServer(mockInterviewDataConnectionString));
 
             //when updating the mockinterviewdb, first...
             //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
             //second...
             //update-database -context mockinterviewdatadbcontext
 
-
+            //update to the above^^
+            //first line remains the same
+            //second line is now...
+            //update-database -context mockinterviewdatadbcontext -connection "<insert connection string here>"
+            //this is to account for using two different database sets for the two different environments
+            //if that doesn't work, try this
+            //update-database -context mockinterviewdatadbcontext -startupproject sp2023-mis421-mockinterviews
 
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
+
+            services.AddSignalR();
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -94,7 +122,6 @@ namespace sp2023_mis421_mockinterviews
             }
             else
             {
-                //app.UseDeveloperExceptionPage();
                 app.UseForwardedHeaders();
                 app.UseHsts();
             }
@@ -107,11 +134,15 @@ namespace sp2023_mis421_mockinterviews
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.MapHub<AssignInterviewsHub>("/interviewhub");
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
+            //look at this later
             using (var scope = app.Services.CreateScope())
             {
                 var newservices = scope.ServiceProvider;
@@ -136,7 +167,6 @@ namespace sp2023_mis421_mockinterviews
             }
             app.MapGet("/Home", () => "");
             app.Run();
-            //Task.WaitAll(app.RunAsync());
         }
     }
 }

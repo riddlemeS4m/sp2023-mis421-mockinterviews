@@ -6,4 +6,11 @@
         public const string For321andAbove = "n";
         public const string For221 = "y";
     }
+
+    public enum For221
+    {
+        b,
+        n,
+        y
+    }
 }

@@ -74,6 +74,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             public string PhoneNumber { get; set; }
             [Display(Name = "Class")]
             public string Class { get; set; }
+            [Display(Name = "Company")]
+            public string Company { get; set; }
             [Display(Name = "Profile Picture")]
             public byte[] ProfilePicture { get; set; }
             [Display(Name = "Resume")]
@@ -89,6 +91,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var userClass = user.Class;
             var profilePicture = user.ProfilePicture;
             var resume = user.Resume;
+            var company = user.Company;
             Username = userName;
             Id = user.Id;
             Input = new InputModel
@@ -98,7 +101,8 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 LastName = lastName,
                 Class = userClass,
                 ProfilePicture = profilePicture,
-                Resume = resume
+                Resume = resume,
+                Company = company
             };
         }
 
@@ -127,6 +131,13 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             {
                 await LoadAsync(user);
                 return Page();
+            }
+
+            var company = user.Company;
+            if (Input.Company != company)
+            {
+                user.Company = Input.Company;
+                await _userManager.UpdateAsync(user);
             }
 
             var firstName = user.FirstName;

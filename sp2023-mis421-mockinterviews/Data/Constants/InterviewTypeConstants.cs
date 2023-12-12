@@ -18,4 +18,11 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
             };
         }
     }
+
+    public enum InterviewTypes
+    {
+        Behavioral,
+        Technical,
+        Case
+    }
 }

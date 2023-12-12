@@ -36,7 +36,7 @@ else
 }
 
 <hr />
-<h4>Upcoming Students</h4>
+<h4 id="testing">Upcoming Students</h4>
 <table class="table">
     <thead>
         <tr>
@@ -68,7 +68,7 @@ else
     </thead>
     <tbody>
 @foreach (var item in Model.Interviews) {
-        <tr>
+        <tr id="@item.InterviewEvent.Id">
             <td style="color:white;">
                 @Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)
             </td>
@@ -111,3 +111,50 @@ else
 }
     </tbody>
 </table>
+
+<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+<script>
+    var connection = new signalR.HubConnectionBuilder()
+        .withUrl("/interviewHub")
+        .build();
+
+    connection.start().catch(function (err)
+    {
+        return console.error(err.toString());
+    });
+
+    connection.on("ReceiveInterviewEventUpdate",function(interviewEvent, studentname, interviewername, time, date)
+    {
+        var row = document.getElementById(interviewEvent.id);
+        if(studentname === 'delete')
+        {
+            row.remove();
+        }
+        else
+        {
+            //console.log(interviewEvent, interviewEvent.id, interviewEvent.status, studentname, interviewername, time, date);
+            if (row) {
+                try {
+                    row.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
+                        "<td>" + studentname + "</td>" +
+                        "<td>" + time + "</td>" +
+                        "<td>" + date + "</td>" +
+                        "<td>" + interviewEvent.status + "</td>" +
+                        "<td>" + interviewEvent.interviewType + "</td>" +
+                        "<td>" + interviewername + "</td>" +
+                        "<td>" + interviewEvent.location.room + "</td>" +
+                        "<td>" +
+                        "<a asp-action='Edit' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'>Edit</a> |" +
+                        "<a asp-action='Details' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Details</a> |" +
+                        "<a asp-action='Override' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Override</a> |" +
+                        "<a asp-action='Delete' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Delete</a>" +
+                        "</td>";
+                }
+                catch
+                {
+                    throw new Error('there was an error');
+                }
+            }
+        }
+    })
+</script>

@@ -2,8 +2,8 @@
 {
     public class CurrentAdmin
     {
-        public const string FirstName = "Logan";
-        public const string LastName = "Thompson";
-        public const string Email = "lmthompson6@crimson.ua.edu";
+        public const string FirstName = "Sam";
+        public const string LastName = "Riddle";
+        public const string Email = "swriddle@crimson.ua.edu";
     }
 }

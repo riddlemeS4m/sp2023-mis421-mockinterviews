@@ -7,4 +7,11 @@
         public const string InterviewerRole = "interviewer";
         public const string DesignateStudent = "crimson.ua.edu";
     }
+
+    public enum Roles
+    {
+        admin,
+        student,
+        interviewer
+    }
 }
