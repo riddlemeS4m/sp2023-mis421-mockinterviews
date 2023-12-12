@@ -69,13 +69,13 @@
                 <br /><br />
                 <div class="row" id="center-everything">
                     <div class="col-md-6">
-                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @(Model.Timeslots.IndexOf(Model.Timeslots[0]) + 1)</button>
+                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
                     </div>
                     <br />
                     @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                     {
                         <div class="col-md-6">
-                            <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @(Model.Timeslots.IndexOf(Model.Timeslots[^1]) + 1)</button>
+                            <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @(Model.EventDates.IndexOf(Model.EventDates[^1]) + 1)</button>
                         </div>
                     }
                     <br />

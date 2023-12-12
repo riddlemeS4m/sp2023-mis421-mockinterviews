@@ -185,7 +185,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .ToListAsync();
             }
 
-            
+            var eventdates = await _context.EventDate
+                .Where(x => x.IsActive == true)
+                .ToListAsync();
 
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {
@@ -200,7 +202,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     IsCase = false,
                     IsVirtual = false,
                     InPerson = false
-                }
+                },
+                EventDates = eventdates
             };
 
             if (timeslots.Count == 0)
