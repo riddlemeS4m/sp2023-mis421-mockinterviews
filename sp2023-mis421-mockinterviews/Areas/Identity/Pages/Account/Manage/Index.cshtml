@@ -28,9 +28,9 @@
         {
             <div style="padding-bottom: 15px;">
                 <label>Class:</label>
-                @if(Model.Input.Class != null)
+                @if(Model.Input.Class != 0)
                 {
-                    <span>@Model.Input.Class</span>
+                    <span>@ClassConstants.GetClassText(Model.Input.Class)</span>
                 }
                 else
                 {

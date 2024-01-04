@@ -94,12 +94,13 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var company = user.Company;
             Username = userName;
             Id = user.Id;
+            
             Input = new InputModel
             {
                 PhoneNumber = phoneNumber,
                 FirstName = firstName,
                 LastName = lastName,
-                Class = (Classes)userClass,
+                Class = userClass,
                 ProfilePicture = profilePicture,
                 Resume = resume,
                 Company = company

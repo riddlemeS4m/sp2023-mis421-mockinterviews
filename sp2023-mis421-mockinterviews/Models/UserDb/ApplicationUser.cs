@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace sp2023_mis421_mockinterviews.Models.UserDb
@@ -10,7 +11,8 @@ namespace sp2023_mis421_mockinterviews.Models.UserDb
         public string? FirstName { get; set; }
         [Display(Name = "Last Name")]
         public string? LastName { get; set; }
-        public Classes? Class { get; set; }
+        [DefaultValue(Classes.NotEnrolled)]
+        public Classes Class { get; set; }
         public string? Company { get; set; }
         [Display(Name = "Profile Picture")]
         public byte[]? ProfilePicture { get; set; }

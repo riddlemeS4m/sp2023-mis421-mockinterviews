@@ -6,6 +6,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
     //database can provide meaning through numbers, app can interpret numbers and display strings
     public class ClassConstants
     {
+        public const string NotEnrolled = "No Class Specified";
         public const string PreMIS = "Pre-MIS (MIS 200)";
         public const string FirstSemester = "1st Semester (MIS 221)";
         public const string SecondSemester = "2nd Semester (MIS 321 / MIS 330)";
@@ -24,14 +25,16 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                                   Value = e.ToString(),
                                   Text = GetClassText(e)
                               }).ToList();
+            classes.Remove(classes.First());
 
             return classes;
         }
 
-        public static string GetClassText(Classes cls)
+        public static string GetClassText(Classes? cls)
         {
             return cls switch
             {
+                Classes.NotEnrolled => NotEnrolled,
                 Classes.NotYetMIS => PreMIS,
                 Classes.FirstSem => FirstSemester,
                 Classes.SecondSem => SecondSemester,
@@ -46,6 +49,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
 
     public enum Classes
     {
+        NotEnrolled,
         NotYetMIS,
         FirstSem,
         SecondSem,
