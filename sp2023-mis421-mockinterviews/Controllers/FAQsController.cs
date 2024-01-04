@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
+using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
@@ -117,7 +118,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 else
                 {
                     ASendAnEmail emailer = new NewFAQSubmitted();
-                    await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.NewFAQSubmitted, CurrentAdmin.Email, user.FirstName + " " + user.LastName, faq.Question, null);
+                    await emailer.SendEmailAsync(_sendGridClient, "Answer Required: Student Submitted New Question", SuperUser.Email, user.FirstName + " " + user.LastName, faq.Question, null);
 
                     return RedirectToAction("Resources", "FAQs");
                 }

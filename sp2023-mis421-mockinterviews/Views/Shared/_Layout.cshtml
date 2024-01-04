@@ -12,7 +12,6 @@
 @*    <link rel="shortcut icon" href="images/ScriptA.png" type="image/x-icon">
 *@    <link rel="icon" href="images/ScriptA.png?v=1" type="image/x-icon">
 
-
     <!-- Data Tables -->
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.2/css/jquery.dataTables.min.css" integrity="sha384-nlqJt7hgTYzEtpwtccFUVNZPXLN4pJoZ/QIfCtAIK9txm0dVyw/lz/47SslwYLPj" crossorigin="anonymous">
     
@@ -31,65 +30,9 @@
     <link rel="stylesheet" href="~/plugins/font-awesome/solid.css">
     <link rel="icon" type="image/png" href="@Url.Content("~/favicon.png")"/>
 
-
     <!-- # Main Style Sheet -->
     <link rel="stylesheet" href="~/css/style.css">
-
-@*    <input type="hidden" id="userRoleGet" value="@(User.IsInRole(RolesConstants.StudentRole) ? "StudentRole" :
-                                             User.IsInRole(RolesConstants.InterviewerRole) ? "InterviewerRole" :
-                                             User.IsInRole(RolesConstants.AdminRole) ? "AdminRole" : "Other")" />*@
-
-
-    <script>
-        function adjustPadding(isLoggedIn) {
-            const loginContainer = document.getElementById('loginContainer');
-
-            if (isLoggedIn) {
-                loginContainer.style.paddingLeft = '0px';
-            } else {
-                loginContainer.style.paddingLeft = '120px';
-            }
-        }
-
-        //function adjustPaddingTwo() {
-        //    const navbarSupportedContent = document.getElementById('navbarSupportedContent');
-        //    const userRoleCheck = document.getElementById('userRoleGet').value;
-        //    console.log('here');
-
-        //    switch (userRoleCheck) {
-        //        case 'StudentRole':
-        //            navbarSupportedContent.style.paddingLeft = '100px';
-        //            break;
-        //        case 'InterviewerRole':
-        //            navbarSupportedContent.style.paddingLeft = '100px';
-        //            break;
-        //        case 'AdminRole':
-        //            navbarSupportedContent.style.paddingLeft = '0px';
-        //            console.log('adminhere');
-        //            break;
-        //        default:
-        //            navbarSupportedContent.style.paddingLeft = '0px';
-        //            break;
-        //    }
-        //}
-
-        function adjustPaddingTwo(isLoggedIn) {
-            //Bad name, but this refers to the navbar items and the other one is for the log in items; will refactor later
-            const navbarSupportedContent = document.getElementById('navbarSupportedContent');
-
-            if (isLoggedIn) {
-                navbarSupportedContent.style.paddingLeft = '100px';
-            } else {
-                navbarSupportedContent.style.paddingLeft = '0px';
-            }
-        }
-
-        window.onload = function () {
-            //adjustPaddingTwo();
-            adjustPadding(@(User.Identity.IsAuthenticated.ToString().ToLower()));
-            adjustPaddingTwo(@(User.Identity.IsAuthenticated.ToString().ToLower()));
-        };
-    </script>
+    
 </head>
 
 <body>
@@ -134,13 +77,7 @@
                                 </ul>
                             </li>
                         }
-                        @*@if (User.IsInRole(RolesConstants.InterviewerRole))
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Create">Interviewer Sign-Up</a>
-                            </li>
-                        }*@
-
+                       
                         @if(User.IsInRole(RolesConstants.AdminRole))
                         {
                             <li class="nav-item dropdown">
@@ -155,8 +92,6 @@
                                 </ul>
                             </li>
                         }
-
-                        
 
                         @if (User.IsInRole(RolesConstants.AdminRole))
                         {
@@ -183,7 +118,7 @@
                             </li>
                         }
 
-                        @if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
+@*                        @if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
                         {
                             @if (User.IsInRole(RolesConstants.AdminRole))
                             {
@@ -206,6 +141,7 @@
                                 </li>
                             }
                         }
+*@
 
                         @if (User.IsInRole(RolesConstants.AdminRole))
                         {
@@ -315,7 +251,6 @@
         </div>
     </footer>
 
-
     <!-- # JS Plugins -->
     <script src="~/plugins/jquery/jquery.min.js"></script>
     <script src="~/plugins/bootstrap/bootstrap.min.js"></script>
@@ -354,6 +289,56 @@
         });
     </script>
     
+    <script>
+        function adjustPadding(isLoggedIn) {
+            const loginContainer = document.getElementById('loginContainer');
+
+            if (isLoggedIn) {
+                loginContainer.style.paddingLeft = '0px';
+            } else {
+                loginContainer.style.paddingLeft = '120px';
+            }
+        }
+
+        //function adjustPaddingTwo() {
+        //    const navbarSupportedContent = document.getElementById('navbarSupportedContent');
+        //    const userRoleCheck = document.getElementById('userRoleGet').value;
+        //    console.log('here');
+
+        //    switch (userRoleCheck) {
+        //        case 'StudentRole':
+        //            navbarSupportedContent.style.paddingLeft = '100px';
+        //            break;
+        //        case 'InterviewerRole':
+        //            navbarSupportedContent.style.paddingLeft = '100px';
+        //            break;
+        //        case 'AdminRole':
+        //            navbarSupportedContent.style.paddingLeft = '0px';
+        //            console.log('adminhere');
+        //            break;
+        //        default:
+        //            navbarSupportedContent.style.paddingLeft = '0px';
+        //            break;
+        //    }
+        //}
+
+        function adjustPaddingTwo(isLoggedIn) {
+            //Bad name, but this refers to the navbar items and the other one is for the log in items; will refactor later
+            const navbarSupportedContent = document.getElementById('navbarSupportedContent');
+
+            if (isLoggedIn) {
+                navbarSupportedContent.style.paddingLeft = '100px';
+            } else {
+                navbarSupportedContent.style.paddingLeft = '0px';
+            }
+        }
+
+        window.onload = function () {
+            //adjustPaddingTwo();
+            adjustPadding(@(User.Identity.IsAuthenticated.ToString().ToLower()));
+            adjustPaddingTwo(@(User.Identity.IsAuthenticated.ToString().ToLower()));
+        };
+    </script>
 
     @await RenderSectionAsync("Scripts", required: false)
 

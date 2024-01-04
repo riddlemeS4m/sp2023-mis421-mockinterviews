@@ -121,7 +121,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var timeslot = await _context.Timeslot
                 .OrderByDescending(x => x.MaxSignUps)
                 .FirstOrDefaultAsync();
-            var maxsignups = timeslot.MaxSignUps * HoursInAdvanceConstant.HoursInAdvance * 2; //* 2 because there are two interviews per hour
+            var maxsignups = timeslot.MaxSignUps * 3 * 2; //* 2 because there are two interviews per hour, 3 hours is how far in advance we can see right now, should be update-able
             var interviewEvents = await _context.InterviewEvent
                 .Include(i => i.Location)
                 .Include(i => i.SignupInterviewerTimeslot)
@@ -233,34 +233,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     u.Class // Replace with the actual property name
                 })
                 .ToListAsync();
-
-            var total = 0;
-            var signedup221 = 0;
-            var classReports = new List<ClassReport>();
-            var classes = ClassConstants.GetClassOptions();
-            foreach(SelectListItem item in classes)
-            {
-                var studentsCount = students
-                    .Where(x => x.Class == item.Value)
-                    .Count();
-
-                if(item.Value == ClassConstants.FirstSemester)
+            
+            var classReports = students
+                .GroupBy(x => x.Class)
+                .Select(g => new ClassReport
                 {
-                    signedup221 = studentsCount;
-                }
+                    ClassName = ClassConstants.GetClassText((Classes)g.Key),
+                    StudentCount = g.Count()
+                })
+                .Where(r => r.StudentCount > 0)
+                .ToList();
 
-                if(studentsCount > 0)
-                {
-                    var classReport = new ClassReport
-                    {
-                        ClassName = item.Value,
-                        StudentCount = studentsCount
-                    };
+            var total = classReports
+                .Select(x => x.StudentCount)
+                .Sum();
 
-                    total+= studentsCount;
-                    classReports.Add(classReport);
-                }
-            }
+            var signedup221 = classReports
+                .Where(x => x.ClassName == ClassConstants.GetClassText(Classes.FirstSem))
+                .Select(x => x.StudentCount)
+                .FirstOrDefault();
+
+            //foreach (SelectListItem item in classes)
+            //{
+            //    var studentsCount = students
+            //        .Where(x => x.Class == (Classes)int.Parse(item.Value))
+            //        .Count();
+
+            //    if(item.Value == ClassConstants.FirstSemester)
+            //    {
+            //        signedup221 = studentsCount;
+            //    }
+
+            //    if(studentsCount > 0)
+            //    {
+            //        var classReport = new ClassReport
+            //        {
+            //            ClassName = item.Value,
+            //            StudentCount = studentsCount
+            //        };
+
+            //        total+= studentsCount;
+            //        classReports.Add(classReport);
+            //    }
+            //}
 
             var summaries = new List<ClassReport>
             {
@@ -533,7 +548,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .FirstOrDefaultAsync();
 
             var timeslots = new List<Timeslot>();
-            if (user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
+            if (user.Class == Classes.NotYetMIS || user.Class == Classes.FirstSem)
             {
                 timeslots = await _context.Timeslot
                 .Where(x => x.IsStudent)
@@ -553,7 +568,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var interviewEvents = await _context.InterviewEvent
-                .Where(x => x.StudentId == userId)
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.StudentId == userId
+                    && x.Timeslot.EventDate.IsActive)
                 .ToListAsync();
 
             bool signedUp = false;
@@ -584,7 +602,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var user = await _userManager.FindByIdAsync(userId);
 
             var interviewTypeTwo = InterviewTypeConstants.Technical;
-            if (user.Class == ClassConstants.PreMIS || user.Class == ClassConstants.FirstSemester)
+            if (user.Class == Classes.NotYetMIS|| user.Class == Classes.FirstSem)
             {
                 interviewTypeTwo = InterviewTypeConstants.Behavioral;
             }
@@ -633,8 +651,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 string interviewDetails = "";
                 foreach (var interview in emailTimes)
                 {
-                    //DateTime combinedStart = CombineDateWithTimeString(interview.Timeslot.EventDate.Date, interview.Timeslot.Time.ToString());
-                    //DateTime combinedEnd = CombineDateWithTimeString(interview.Timeslot.EventDate.Date, interview.Timeslot.Time.AddMinutes(30).ToString());
                     var plainBytes = Encoding.UTF8.GetBytes(CreateCalendarEvent(interview.Timeslot.Time, interview.Timeslot.Time.AddMinutes(30)));
                     string tempEvent = Convert.ToBase64String(plainBytes);
                     calendarEvents.Add(tempEvent);
@@ -642,7 +658,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
 
                 ASendAnEmail emailer = new StudentSignupEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentSignupEmail, user.Email, user.FirstName, interviewDetails, calendarEvents); ;
+                await emailer.SendEmailAsync(_sendGridClient, "UA MIS Mock Interview Sign-Up Confirmation", user.Email, user.FirstName, interviewDetails, calendarEvents); ;
 
 				return RedirectToAction("Index", "Home");
             }

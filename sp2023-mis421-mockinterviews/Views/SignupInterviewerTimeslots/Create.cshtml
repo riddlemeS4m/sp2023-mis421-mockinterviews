@@ -24,7 +24,9 @@
                         <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one">
                         <label class="form-check-label" for="IsVirtual">Virtual</label>
                     </div>
-                    <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
+                    <div>
+                        <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
+                    </div>
                 </div>
                 <br />
 
@@ -40,7 +42,9 @@
                             <input id="LunchFalse" class="form-check-input" type="radio" name="Lunch" value="false" data-val="false">
                             <label class="form-check-label" for="LunchFalse">No</label>
                         </div>
-                        <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
+                        <div>
+                            <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
+                        </div>
                         <br /><br />
                     </div>
                 </div>
@@ -62,9 +66,11 @@
                         <input id="IsCase" class="form-check-input" type="checkbox" name="SignupInterviewer.IsCase" value="true" data-val="true" data-val-required="Please select at least one">
                         <label for="IsCase" class="form-check-label">Case Interviews</label>
                     </div>
-                    <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
-                    <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
-                </div>
+                    <div>
+                        <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
+                    </div>
+@*                    <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
+*@                </div>
 
                 <br /><br />
                 <div class="row" id="center-everything">
@@ -116,10 +122,13 @@
                             }
                         </div>
                     }
-                </div>
-                <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
-                <div class="form-group" id="center-everything">
-                    <input type="submit" value="Sign Up" class="btn btn-primary" />
+                    <br />
+                    <div>
+                        <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
+                    </div>
+                    <div class="form-group" id="center-everything">
+                        <input type="submit" value="Sign Up" class="btn btn-primary" />
+                    </div>
                 </div>
                 <br />
             </form>
@@ -127,7 +136,7 @@
         else
         {
             <div class="alert alert-danger" role="alert" id="center-everything">
-                You've already signed up for all available interview slots.
+                You've either already signed up for all available interview slots, or there are no events available for you to sign up.
             </div>
         }
     </div>
@@ -135,7 +144,9 @@
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
     <script>
         // Attach a click event handler to the "Select All" buttons
         var selectAllButtons = document.querySelectorAll('.selectAllButton');

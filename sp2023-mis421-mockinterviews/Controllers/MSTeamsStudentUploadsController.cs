@@ -112,10 +112,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     }
 
                     var filteredRecords = records
-                        .Where(record => record.Email[(record.Email.IndexOf('@') + 1)..] == RolesConstants.DesignateStudent)
+                        .Where(record => record.Email[(record.Email.IndexOf('@') + 1)..] == "crimson.ua.edu")
                         .ToList();
 
-                    // Now, you have a list of MSTeamsStudentUpload objects (records)
+                    // Now, you have a list of Roster objects (records)
                     // You can save them to the database using Entity Framework Core
 
                     // Example: Save records to the database
@@ -186,7 +186,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         var studentExists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == record.Email);
                         if (studentExists == null)
                         {
-                            if(record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != RolesConstants.DesignateStudent)
+                            if(record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != "crimson.ua.edu")
                             {
                                 await _context.MSTeamsStudentUpload.AddAsync(record);
                             }
@@ -264,7 +264,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         var studentExists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == record.Email);
                         if (studentExists == null)
                         {
-                            if (record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != RolesConstants.DesignateStudent)
+                            if (record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != "crimson.ua.edu")
                             {
                                 await _context.MSTeamsStudentUpload.AddAsync(record);
                             }

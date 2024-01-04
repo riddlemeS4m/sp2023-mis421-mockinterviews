@@ -166,6 +166,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .FirstOrDefaultAsync();
 
             var timeslots = new List<Timeslot>();
+            //if the user is also in a student role, then they should only be able to interview 221 students
             if (User.IsInRole(RolesConstants.StudentRole))
             {
                  timeslots = await _context.Timeslot
@@ -279,20 +280,21 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     IsCase = false,
                     IsVirtual = false,
                     InPerson = false
-                }
+                },
+                EventDates = await _context.EventDate
+                    .Where(x => x.IsActive == true)
+                    .ToListAsync()
             };
 
             if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral && !signupInterviewer.IsCase)
             {
                 ModelState.AddModelError("SignupInterviewer.IsTechnical", "Please select at least one checkbox");
-                
                 return View(volunteerEventsViewModel);
             }
 
             if (!signupInterviewer.IsVirtual && !signupInterviewer.InPerson)
             {
                 ModelState.AddModelError("SignupInterviewer.InPerson", "Please select at least one checkbox");
-
                 return View(volunteerEventsViewModel);
             }
 
@@ -595,12 +597,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			}
 
 			ASendAnEmail emailer = new InterviewerSignupConfirmation();
-            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupConfirmation, user.Email, user.FirstName, times, calendarEvents);
+            await emailer.SendEmailAsync(_sendGridClient, "Interviewer Sign-Up Confirmation", user.Email, user.FirstName, times, calendarEvents);
 
             string fullName = user.FirstName + " " + user.LastName;
 
             ASendAnEmail emailNotification = new InterviewerSignupNotification();
-            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerSignupNotification + fullName, CurrentAdmin.Email, fullName, times, null);
+            await emailNotification.SendEmailAsync(_sendGridClient, "Interviewer Sign-Up Notification: " + fullName, SuperUser.Email, fullName, times, null);
         }
 
         [Authorize(Roles = RolesConstants.InterviewerRole)]

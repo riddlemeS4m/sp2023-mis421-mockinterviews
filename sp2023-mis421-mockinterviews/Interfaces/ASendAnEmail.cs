@@ -2,6 +2,7 @@
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using System.Text;
+using sp2023_mis421_mockinterviews.Data.Access;
 
 namespace sp2023_mis421_mockinterviews.Interfaces
 {
@@ -34,6 +35,7 @@ namespace sp2023_mis421_mockinterviews.Interfaces
             InjectHTMLContent();
 
             var msg = MailHelper.CreateSingleEmail(FromEmail, ToEmail, Subject, PlainTextContent, HTMLContent);
+
             if(base64CalendarContent != null)
             {
                 foreach (string Event in base64CalendarContent)
@@ -41,7 +43,6 @@ namespace sp2023_mis421_mockinterviews.Interfaces
                     msg.AddAttachment("MockInterviews.ics", Event, "text/calendar");
                 }
             }
-
 
             await sendGridClient.SendEmailAsync(msg);
         }

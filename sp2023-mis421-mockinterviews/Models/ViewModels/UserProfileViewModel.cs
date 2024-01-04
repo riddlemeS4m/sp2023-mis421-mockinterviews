@@ -62,7 +62,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string? PhoneNumber { get; set; }
             [Display(Name = "Class")]
-            public string? Class { get; set; }
+            public Classes? Class { get; set; }
             [Display(Name = "Company")]
             public string? Company { get; set; }
             [Display(Name = "Profile Picture")]

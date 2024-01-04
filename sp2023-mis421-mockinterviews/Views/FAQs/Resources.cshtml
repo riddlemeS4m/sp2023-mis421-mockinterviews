@@ -3,7 +3,6 @@
 @using sp2023_mis421_mockinterviews.Data.Constants;
 @model IEnumerable<FAQs>
 
-
 <html>
 <head>
 	<title>FAQs</title>
@@ -36,6 +35,7 @@
     <p style="font-size:20px; text-align:center; padding-top: 10px">
         For sign-in issues or other questions, please contact Sam Riddle at <a href="mailto:swriddle@crimson.ua.edu">swriddle@crimson.ua.edu</a>.
     </p>
+    <hr />
     <h1>FAQs</h1>
     @foreach (var faq in Model)
     {
@@ -81,6 +81,5 @@
         </div>
     }
     <hr />
-
 </body>
 </html>

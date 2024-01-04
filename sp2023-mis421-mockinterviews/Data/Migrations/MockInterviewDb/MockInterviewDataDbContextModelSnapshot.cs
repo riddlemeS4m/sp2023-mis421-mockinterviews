@@ -45,7 +45,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("EventDate");
+                    b.ToTable("EventDate", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.FAQs", b =>
@@ -65,7 +65,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("FAQs");
+                    b.ToTable("FAQs", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent", b =>
@@ -113,7 +113,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("TimeslotId");
 
-                    b.ToTable("InterviewEvent");
+                    b.ToTable("InterviewEvent", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", b =>
@@ -136,7 +136,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Location");
+                    b.ToTable("Location", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.LocationInterviewer", b =>
@@ -167,7 +167,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("LocationInterviewer");
+                    b.ToTable("LocationInterviewer", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.MSTeamsStudentUpload", b =>
@@ -197,7 +197,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("MSTeamsStudentUpload");
+                    b.ToTable("MSTeamsStudentUpload", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewer", b =>
@@ -243,7 +243,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("SignupInterviewer");
+                    b.ToTable("SignupInterviewer", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot", b =>
@@ -266,7 +266,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("TimeslotId");
 
-                    b.ToTable("SignupInterviewerTimeslot");
+                    b.ToTable("SignupInterviewerTimeslot", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
@@ -302,7 +302,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("EventDateId");
 
-                    b.ToTable("Timeslot");
+                    b.ToTable("Timeslot", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent", b =>
@@ -324,7 +324,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("TimeslotId");
 
-                    b.ToTable("VolunteerEvent");
+                    b.ToTable("VolunteerEvent", (string)null);
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent", b =>

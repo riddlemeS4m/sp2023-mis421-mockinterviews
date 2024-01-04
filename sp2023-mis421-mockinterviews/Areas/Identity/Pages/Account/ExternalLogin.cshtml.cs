@@ -100,7 +100,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             [Display(Name = "Last Name")]
             public string LastName { get; set; }
             //[Required]
-            [ConditionalRequired(RolesConstants.DesignateStudent, ErrorMessage = "The Company field is required for non-student accounts.")]
+            [ConditionalRequired("@crimson.ua.edu", ErrorMessage = "The Company field is required for non-student accounts.")]
             [Display(Name = "Company")]
             public string Company { get; set; }
         }
@@ -158,7 +158,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    IsStudent = info.Principal.FindFirstValue(ClaimTypes.Email).EndsWith(RolesConstants.DesignateStudent, StringComparison.OrdinalIgnoreCase);
+                    IsStudent = info.Principal.FindFirstValue(ClaimTypes.Email).EndsWith("@crimson.ua.edu", StringComparison.OrdinalIgnoreCase);
                     if (IsStudent)
                     {
                         Input = new InputModel
@@ -220,7 +220,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 {
                     if(exists.In221)
                     {
-                        user.Class = ClassConstants.FirstSemester;
+                        user.Class = Classes.FirstSem;
                     }
                 }
 

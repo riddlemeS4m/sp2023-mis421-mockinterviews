@@ -53,7 +53,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Timeslot)
                     .ThenInclude(y => y.EventDate)
                     .OrderBy(ve => ve.TimeslotId)
-                    .Where(v => v.StudentId == userId)
+                    .Where(v => v.StudentId == userId && v.Timeslot.EventDate.IsActive)
                     .ToListAsync();
 
                 var timeRanges = new ControlBreakVolunteer(_userManager);
@@ -71,7 +71,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
-                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId)
+                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId 
+                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
@@ -115,7 +116,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     //.OrderBy(ve => ve.Timeslot.EventDate.Date)
                     //.ThenBy(ve => ve.Timeslot.Time)
                     .OrderBy(ve => ve.TimeslotId)
-                    .Where(v => v.SignupInterviewer.InterviewerId == userId && v.Timeslot.IsInterviewer)
+                    .Where(v => v.SignupInterviewer.InterviewerId == userId 
+                        && v.Timeslot.IsInterviewer
+                        && v.Timeslot.EventDate.IsActive)
                     .ToListAsync();
 
                 var timeRanges = new ControlBreakInterviewer(_userManager);
@@ -133,7 +136,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
-                    .Where(v =>  v.StudentId == userId)
+                    .Where(v =>  v.StudentId == userId 
+                        && v.Timeslot.EventDate.IsActive)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
@@ -201,7 +205,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
 
                 ASendAnEmail emailer = new StudentReminderEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.StudentReminderEmail, userFull.Email, userFull.FirstName, times, null);
+                await emailer.SendEmailAsync(_sendGridClient, "Mock Interviews Reminder", userFull.Email, userFull.FirstName, times, null);
             }
 
             return RedirectToAction("Index", "Home");
@@ -236,7 +240,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 				}
 
 				ASendAnEmail emailer = new InterviewerReminderEmail();
-                await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.InterviewerReminderEmail, userFull.Email, userFull.FirstName, times, null);
+                await emailer.SendEmailAsync(_sendGridClient, "UA MIS Mock Interviews Reminder", userFull.Email, userFull.FirstName, times, null);
             }
 
             return RedirectToAction("Index", "Home");

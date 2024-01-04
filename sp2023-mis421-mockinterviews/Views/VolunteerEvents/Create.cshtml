@@ -12,17 +12,20 @@
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8" id="center-everything">
-        @if(!Model.SignedUp)
+        <div>
+            <span asp-validation-for="SelectedEventIds1" class="text-danger"></span>
+        </div>
+        @if (!Model.SignedUp)
         {
             <div class="row">
                 <div class="col-md-6" style="padding-bottom: 10px;">
-                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @Model.Timeslots[0].EventDateId</button>
+                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
                 </div>
                 <br />
                 @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                 {
                     <div class="col-md-6">
-                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @Model.Timeslots[^1].EventDateId</button>
+                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @(Model.EventDates.IndexOf(Model.EventDates[^1]) + 1)</button>
                     </div>
                 }
                 <br />
@@ -88,9 +91,6 @@
     <div class="col-md-2"></div>
 </div>
 
-
-
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
     <script>
@@ -112,5 +112,4 @@
             });
         });
     </script>
-
 }

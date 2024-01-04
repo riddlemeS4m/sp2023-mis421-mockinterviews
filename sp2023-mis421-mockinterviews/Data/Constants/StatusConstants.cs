@@ -2,6 +2,8 @@
 
 namespace sp2023_mis421_mockinterviews.Data.Constants
 {
+    //does not need to be update-able
+    //database can provide meaning through numbers, app can interpret numbers through enum
     public class StatusConstants
     {
         //moving a student's interview to completed or no show status removes it from the list of interviews that are displayed

@@ -5,12 +5,19 @@ using System;
 
 namespace sp2023_mis421_mockinterviews.Data.Access
 {
+    public static class SuperUser
+    {
+        public const string UserName = "mismockinterviews@gmail.com";
+        public const string FirstName = "Program";
+        public const string LastName = "Support";
+        public const string Email = "mismockinterviews@gmail.com";
+    }
+
     public static class UserDbContextSeed
     {
         public static async Task SeedRolesAsync(RoleManager<IdentityRole> roleManager)
         {
             //Seed Roles
-           
             await SeedRoleAsync(roleManager, RolesConstants.AdminRole);
             await SeedRoleAsync(roleManager, RolesConstants.StudentRole);
             await SeedRoleAsync(roleManager, RolesConstants.InterviewerRole);
@@ -26,7 +33,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
             }
         }
 
-        public static async Task SeedSuperAdminAsync(UserManager<ApplicationUser> userManager)
+        public static async Task SeedSuperAdminAsync(UserManager<ApplicationUser> userManager, string adminPwd)
         {
             //Seed Default User
             var defaultUser = new ApplicationUser
@@ -43,7 +50,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
                 var user = await userManager.FindByEmailAsync(defaultUser.Email);
                 if (user == null)
                 {
-                    await userManager.CreateAsync(defaultUser, SuperUser.Password);
+                    await userManager.CreateAsync(defaultUser, adminPwd);
                     await userManager.AddToRoleAsync(defaultUser, RolesConstants.AdminRole);
                     await userManager.AddToRoleAsync(defaultUser, RolesConstants.StudentRole);
                     await userManager.AddToRoleAsync(defaultUser, RolesConstants.InterviewerRole);

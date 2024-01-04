@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-sp2023_mis421_mockinterviews-6d184366-7fbc-4612-b0c8-5e40c252810f</UserSecretsId>
     <RootNamespace>sp2023_mis421_mockinterviews</RootNamespace>

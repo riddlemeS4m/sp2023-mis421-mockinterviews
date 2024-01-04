@@ -40,7 +40,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 Id = user.Id,
                 FirstName = user.FirstName,
                 LastName = user.LastName,
-                Class = user.Class
+                Class = ClassConstants.GetClassText((Classes)user.Class)
             };
 
             // Return the ProfileView with the view model

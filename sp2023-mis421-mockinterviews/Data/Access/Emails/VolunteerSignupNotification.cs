@@ -11,7 +11,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access.Emails
         }
         public override void InjectHTMLContent()
         {
-            HTMLContent = HTMLContent.Replace("{adminName}", CurrentAdmin.FirstName);
+            HTMLContent = HTMLContent.Replace("{adminName}", SuperUser.FirstName);
             HTMLContent = HTMLContent.Replace("{name}", ToName);
             HTMLContent = HTMLContent.Replace("{times}", Times);
         }

@@ -40,6 +40,8 @@ namespace sp2023_mis421_mockinterviews
 
             string userDataConnectionString;
             string mockInterviewDataConnectionString;
+            string adminPwd = "";
+            //adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
 
             if (environment == Environments.Development)
             {
@@ -55,32 +57,26 @@ namespace sp2023_mis421_mockinterviews
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(userDataConnectionString));
 
-            //when updating the userdb, first...
+            //when updating the userdb, run the following commands...
+            //1. create the entity framework migration
             //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
-            //second...
-            //update-database -context userdatadbcontext
-
-            //update to the above^^
-            //first line remains the same
-            //second line is now...
-            //update-database -context userdatadbcontext -connection "<insert connection string here>"
+            //2. specify database environment which you want to update
+            //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
+            //3. update the database 
+            //update-database -context userdatadbcontext -startupproject sp2023-mis421-mockinterviews
             //this is to account for using two different database sets for the two different environments
 
             services.AddDbContext<MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(mockInterviewDataConnectionString));
 
-            //when updating the mockinterviewdb, first...
+            //when updating the userdb, run the following commands...
+            //1. create the entity framework migration
             //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
-            //second...
-            //update-database -context mockinterviewdatadbcontext
-
-            //update to the above^^
-            //first line remains the same
-            //second line is now...
-            //update-database -context mockinterviewdatadbcontext -connection "<insert connection string here>"
-            //this is to account for using two different database sets for the two different environments
-            //if that doesn't work, try this
+            //2. specify database environment which you want to update
+            //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
+            //3. update the database 
             //update-database -context mockinterviewdatadbcontext -startupproject sp2023-mis421-mockinterviews
+            //this is to account for using two different database sets for the two different environments
 
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
@@ -109,10 +105,10 @@ namespace sp2023_mis421_mockinterviews
 	   
             var app = builder.Build();
 
-/*            app.UseForwardedHeaders(new ForwardedHeadersOptions
-            {
-                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            });*/
+            //app.UseForwardedHeaders(new ForwardedHeadersOptions
+            //{
+            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            //});
 
             if (app.Environment.IsDevelopment())
             {
@@ -150,13 +146,12 @@ namespace sp2023_mis421_mockinterviews
 
                 try
                 {
-                    var context = newservices.GetRequiredService<UserDataDbContext>();
+                    var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
                     var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
-                    var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
 
                     UserDbContextSeed.SeedRolesAsync(roleManager).Wait();
-                    UserDbContextSeed.SeedSuperAdminAsync(userManager).Wait();
+                    UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd).Wait();
                     MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
                 }
                 catch (Exception ex)

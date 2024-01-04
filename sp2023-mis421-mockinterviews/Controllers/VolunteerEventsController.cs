@@ -86,9 +86,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            //var userTask = _userManager.FindByIdAsync(userId);
-            //userTask.GetAwaiter().GetResult();
-            //var user = userTask.Result;
 
             var timeslots = await _context.Timeslot
                 .Where(x => x.IsVolunteer == true)
@@ -96,12 +93,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => x.EventDate.For221 == For221.n)
-                .Where(x => x.EventDate.IsActive == true)
+                .Where(x => x.EventDate.IsActive)
                 .ToListAsync();
+            
+            var eventdates = timeslots
+                .Select(x => x.EventDate)
+                .Distinct()
+                .OrderBy(x => x.Id)
+                .ToList();
 
             VolunteerEventSignupViewModel volunteerEventsViewModel = new()
             {
-                Timeslots = timeslots
+                Timeslots = timeslots,
+                EventDates = eventdates
             };
 
             if(timeslots.Count == 0)
@@ -129,21 +133,50 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-            List<VolunteerEvent> volEvents = new List<VolunteerEvent>();
+            List<VolunteerEvent> volEvents = new();
 
-            var allVolunteerEvents = await _context.VolunteerEvent
-                .Include(v => v.Timeslot)
-                .ThenInclude(y => y.EventDate)
+            //var allVolunteerEvents = await _context.VolunteerEvent
+            //    .Include(v => v.Timeslot)
+            //    .ThenInclude(y => y.EventDate)
+            //    .ToListAsync();
+
+            //var studentIds = allVolunteerEvents
+            //    .Select(v => v.StudentId)
+            //    .Distinct()
+            //    .ToList();
+
+            //handle bad input
+            var timeslots = await _context.Timeslot
+                .Where(x => x.IsVolunteer == true)
+                .Include(y => y.EventDate)
+                .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => x.EventDate.For221 == For221.n)
+                .Where(x => x.EventDate.IsActive)
                 .ToListAsync();
 
-            var studentIds = allVolunteerEvents
-                .Select(v => v.StudentId)
+            var eventdates = timeslots
+                .Select(x => x.EventDate)
                 .Distinct()
+                .OrderBy(x => x.Id)
                 .ToList();
 
+            VolunteerEventSignupViewModel volunteerEventsViewModel = new()
+            {
+                Timeslots = timeslots,
+                EventDates = eventdates
+            };
+
+            if (SelectedEventIds.Length == 0)
+            {
+                ModelState.AddModelError("SelectedEventIds1", "Please select at least one checkbox");
+                return View(volunteerEventsViewModel);
+            }
+
+            //handle good input
             foreach (int id in SelectedEventIds)
             {
-                VolunteerEvent volunteerEvent = new VolunteerEvent
+                VolunteerEvent volunteerEvent = new()
                 {
                     TimeslotId = id,
                     StudentId = userId
@@ -269,7 +302,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 string fullName = user.FirstName + " " + user.LastName;
 
                 ASendAnEmail emailNotification = new VolunteerCancellationNotification();
-                await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerCancellationNotification + fullName, CurrentAdmin.Email, fullName, volunteerEvent.ToString(), null);
+                await emailNotification.SendEmailAsync(_sendGridClient, "Volunteer Cancellation Notification: " + fullName, SuperUser.Email, fullName, volunteerEvent.ToString(), null);
 
                 _context.VolunteerEvent.Remove(volunteerEvent);
             }
@@ -307,12 +340,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             ASendAnEmail emailer = new VolunteerSignupConfirmation();
-            await emailer.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupConfirmation, user.Email, user.FirstName, times, calendarEvents);
+            await emailer.SendEmailAsync(_sendGridClient, "Volunteer Sign-Up Confirmation", user.Email, user.FirstName, times, calendarEvents);
 
             string fullName = user.FirstName + " " + user.LastName;
 
             ASendAnEmail emailNotification = new VolunteerSignupNotification();
-            await emailNotification.SendEmailAsync(_sendGridClient, SubjectLineConstants.VolunteerSignupNotification + fullName, CurrentAdmin.Email, fullName, times, null);
+            await emailNotification.SendEmailAsync(_sendGridClient, "Volunteer Sign-Up Notification: " + fullName, SuperUser.Email, fullName, times, null);
         }
 
         [Authorize(Roles = RolesConstants.StudentRole + "," + RolesConstants.AdminRole)]

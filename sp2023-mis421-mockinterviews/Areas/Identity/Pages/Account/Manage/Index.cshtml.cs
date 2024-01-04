@@ -73,7 +73,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Phone number")]
             public string PhoneNumber { get; set; }
             [Display(Name = "Class")]
-            public string Class { get; set; }
+            public Classes Class { get; set; }
             [Display(Name = "Company")]
             public string Company { get; set; }
             [Display(Name = "Profile Picture")]
@@ -99,7 +99,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 PhoneNumber = phoneNumber,
                 FirstName = firstName,
                 LastName = lastName,
-                Class = userClass,
+                Class = (Classes)userClass,
                 ProfilePicture = profilePicture,
                 Resume = resume,
                 Company = company
@@ -156,17 +156,17 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             //lock users in 221 or before 221 out of changing their class. 
             //Only way these students can change their class is by the admin uploading an updated 221 roster
             var userClass = user.Class;
-            if(Input.Class != userClass && (userClass == ClassConstants.FirstSemester || userClass == null)) 
+            if(Input.Class != userClass && (userClass == Classes.FirstSem || userClass == null)) 
             {
                 var shouldBeIn221 = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == user.Email);
                 if(shouldBeIn221 == null)
                 {
-                    user.Class = ClassConstants.PreMIS;
+                    user.Class = Classes.NotYetMIS;
                     await _userManager.UpdateAsync(user);
                 }
                 else if(shouldBeIn221.In221)
                 {
-                    user.Class = ClassConstants.FirstSemester;
+                    user.Class = Classes.FirstSem;
                     await _userManager.UpdateAsync(user);
                 }
                 else

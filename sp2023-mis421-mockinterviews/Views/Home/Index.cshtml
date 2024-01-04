@@ -14,13 +14,11 @@
     ViewBag.Title = "Welcome to UA MIS Mock Interviews!";
 }
 
-
-
-<div style="text-align:center">
+@*<div style="text-align:center">
     <h2>@ViewBag.Title</h2>
-</div>
+</div>*@
 
-<div style="text-align:center; display:none;">
+<div id="disruption-banner" style="text-align:center; display:none;"> <!--This should be displayed based on globalconfigvars-->
     <p style="background-color:crimson; color:white; font-size: 40px; padding-top:10px;">
         We are currently experiencing some sitewide disruption of services, which will be resolved speedily. We apologize for the inconvenience.
     </p>
@@ -28,38 +26,36 @@
 
 @if (User.Identity.IsAuthenticated)
 {
-    <p style="font-size:20px; text-align:center; padding-top: 10px">
+    @*<p style="font-size:20px; text-align:center; padding-top: 10px">
         Our mission is to help students prepare for their upcoming job interviews by <br /> providing a realistic simulation of the interview experience.
-    </p>
-    
+    </p>*@
     <p style="font-size:20px; text-align:center; border-bottom: 2px solid black">
         You have successfully signed in. Important information and your current bookings will be shown below.
     </p>
     <br />
-    @*<div style="text-align:center;">
+    <div id="zoom-link" style="text-align:center; display:none;"> <!--This should be displayed based on globalconfigvars -->
         <p style="font-size:20px; text-align:center;">
             If you have signed up for a virtual interview, please click the button below when it is time for your interview to start.
         </p>
         <div style="text-align:center;">
             <a class="btn btn-primary ms-2 ms-lg-3" title="Join Zoom Meeting" href="https://ua-edu.zoom.us/j/3185332744" target="_blank">Join Zoom Meeting</a>
-        </div>
+        </div> <!--This link should be changed based on globalconfigvars-->
         <br>
         <p style="font-size:20px; text-align:center; border-bottom:2px solid black">
 
         </p>
-    </div>*@
-    
+    </div>
 }
 else
 {
     <p style="font-size:20px; text-align:center; padding-top: 10px;" id="homePageText">
-            Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience. <br> To get started, please create an account or sign in if you already have one.
+            Our mission is to help you prepare for your upcoming job interviews by providing a realistic simulation of the interview experience.
+            <br> To get started, please create an account or sign in if you already have one.
     </p>
     <div class="index-image-container">
         <img src="~/images/HewsonHallNewCropped.jpg" alt="Hewson Hall in the spiring" style="width: 80%">
     </div>
 }
-
 
 <div>
     @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.StudentRole))
@@ -74,5 +70,10 @@ else
     }
 </div>
 
-
+<script>
+    document.getElementById('zoom-link').style.display = 'none';
+</script>
+<script>
+    document.getElementById('disruption-banner').style.display = 'none';)
+</script>
 

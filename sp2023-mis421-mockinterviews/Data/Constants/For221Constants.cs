@@ -1,12 +1,7 @@
 ﻿namespace sp2023_mis421_mockinterviews.Data.Constants
 {
-    public class For221Constants
-    {
-        public const string ForAllMIS = "b";
-        public const string For321andAbove = "n";
-        public const string For221 = "y";
-    }
-
+    //does not need to be update-able
+    //database can provide meaning through numbers, app can interpret numbers through enum
     public enum For221
     {
         b,

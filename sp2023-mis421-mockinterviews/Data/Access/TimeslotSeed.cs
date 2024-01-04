@@ -1,8 +1,10 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using System.Globalization;
 
-namespace sp2023_mis421_mockinterviews.Data.Constants
+namespace sp2023_mis421_mockinterviews.Data.Access
 {
+    //not really a constant class
+    //probably should have a seed directory
     public class TimeslotSeed
     {
         public const int MaxSignups = 0;
