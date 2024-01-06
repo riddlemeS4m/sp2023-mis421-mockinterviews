@@ -1,4 +1,5 @@
-﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+﻿using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Models.ViewModels
 {
@@ -11,5 +12,8 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public List<TimeRangeViewModel> TimeRangeViewModels { get; set; }
         public List<TimeRangeViewModel> InterviewerRangeViewModels { get; set; }
         public string Name { get; set; }
+        public string ZoomLink { get; set; }
+        public string ZoomLinkVisible { get; set; }
+        public string DisruptionBanner { get; set; }
     }
 }

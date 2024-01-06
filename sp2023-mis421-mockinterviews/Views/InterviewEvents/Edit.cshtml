@@ -21,7 +21,7 @@
 
                 <div class="form-group">
                     <label asp-for="InterviewEvent.InterviewType" class="control-label"></label>
-                    <select asp-for="InterviewEvent.InterviewType" class="form-control" asp-items='@InterviewTypeConstants.GetInterviewTypesOptions()'>
+                    <select id="interviewType" asp-for="InterviewEvent.InterviewType" class="form-control" asp-items='@InterviewTypeConstants.GetInterviewTypesOptions()'>
                         <option value="">-- Select One --</option>
                     </select>
                     <span asp-validation-for="InterviewEvent.InterviewType" class="text-danger"></span>
@@ -45,19 +45,15 @@
 
                 <div class="form-group">
                     <label asp-for="InterviewerId" class="control-label"></label>
-                    <select asp-for="InterviewerId" class="form-control" asp-items="@Model.InterviewerNames"></select>
+                    <select id="interviewerId" asp-for="InterviewerId" class="form-control" asp-items="@Model.RequestedInterviewers"></select>
                     <span asp-validation-for="InterviewerId" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary" />
+                    <input type="submit" value="Save" class="btn btn-primary" /> | <a asp-action="Index">Back to Home</a>
                 </div>
             </form>
         </div>
     </div>
-    <div>
-        <a asp-action="Index">Back to List</a>
-    </div>
-
 }
 else
 {
@@ -99,17 +95,14 @@ else
 
                 <div class="form-group" style="visibility:hidden">
                     <label asp-for="InterviewerId" class="control-label"></label>
-                    <select asp-for="InterviewerId" class="form-control" asp-items="@Model.InterviewerNames"></select>
+                    <select asp-for="InterviewerId" class="form-control" asp-items="@Model.RequestedInterviewers"></select>
                     <span asp-validation-for="InterviewerId" class="text-danger"></span>
                 </div>
                 <div class="form-group">
-                    <input id="submit-button" type="submit" value="Save" class="btn btn-primary" />
+                    <input id="submit-button" type="submit" value="Save" class="btn btn-primary" /> | <a asp-action="Index" asp-controller="Home">Back to Home</a>
                 </div>
             </form>
         </div>
-    </div>
-    <div>
-        <a asp-action="Index" asp-controller="Home">Back to Home</a>
     </div>
 }
 
@@ -142,4 +135,32 @@ else
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <script>
+        $(document).ready(function () {
+            $('#interviewType').change(function () {
+                var selectedTypeText = $(this).children("option:selected").text();
+                var interviewerIdSelect = $('#interviewerId');
+
+                if (selectedTypeText === 'Technical') {
+                    populateSelectBox(interviewerIdSelect, @Json.Serialize(Model.TechnicalInterviewers));
+                } else if (selectedTypeText === 'Behavioral') {
+                    populateSelectBox(interviewerIdSelect, @Json.Serialize(Model.BehavioralInterviewers));
+                }
+            });
+
+            function populateSelectBox(selectBox, items) {
+                // Clear existing options
+                selectBox.empty();
+
+                // Add new options based on the received items
+                $.each(items, function (index, item) {
+                    selectBox.append($('<option>', {
+                        value: item.value,
+                        text: item.text
+                    }));
+                });
+            }
+        });
+    </script>
 }

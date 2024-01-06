@@ -14,6 +14,7 @@
 <table class="table">
     <thead>
         <tr>
+            <th></th>
             <th>
                 @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Time)
             </th>
@@ -39,6 +40,7 @@
         @foreach (var item in Model.Timeslots)
         {
             <tr>
+                <td style="color:white;">@Html.DisplayFor(modelItem => item.Timeslot.Id)</td>
                 <td>
                     @Html.DisplayFor(modelItem => item.Timeslot.Time)
                 </td>
@@ -58,10 +60,14 @@
                     @Html.DisplayFor(modelItem => item.Timeslot.MaxSignUps)
                 </td>
                 <td>
-                    @if (item.Timeslot.Time.Minute == 0)
+                    @if (item.Timeslot.Time.Minute != 0)
+                    {
+                        <a href="#" style="color:#999;pointer-events:none;text-decoration:none;">Edit</a>
+                        <a> | </a>
+                    }
+                    else
                     {
                         <a asp-action="Edit" asp-route-id="@item.Timeslot.Id">Edit</a>
-
                         <a> | </a>
                     }
                     <a asp-action="Details" asp-route-id="@item.Timeslot.Id">Details</a> @*|

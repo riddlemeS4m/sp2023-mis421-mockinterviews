@@ -30,6 +30,47 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    public class IVM
+    {
+        public string Name { get; set; }
+        public string Id { get; set; }
+        public bool Technical { get; set; }
+        public bool Behavioral { get; set; }
+    }
+
+    public class AVM
+    {
+        public List<SelectListItem> BehavioralInterviewers { get; set; }
+        public List<SelectListItem> TechnicalInterviewers { get; set; }
+    }
+
+    public class IVMComparer : IEqualityComparer<IVM>
+    {
+        public bool Equals(IVM x, IVM y)
+        {
+            if (x == null || y == null)
+                return false;
+
+            return x.Name == y.Name &&
+                   x.Id == y.Id &&
+                   x.Technical == y.Technical &&
+                   x.Behavioral == y.Behavioral;
+        }
+
+        public int GetHashCode(IVM obj)
+        {
+            unchecked
+            {
+                int hash = 17;
+                hash = hash * 23 + obj.Name.GetHashCode();
+                hash = hash * 23 + obj.Id.GetHashCode();
+                hash = hash * 23 + obj.Technical.GetHashCode();
+                hash = hash * 23 + obj.Behavioral.GetHashCode();
+                return hash;
+            }
+        }
+    }
+
     public class InterviewEventsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -54,74 +95,88 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
         {         
-            var currdate = DateTime.Now.Date;
+            //var currdate = DateTime.Now.Date;
 
-            var eventdate = await _context.EventDate
-                .Where(x => x.Date.Date == currdate)
-                .FirstOrDefaultAsync();
+            //var eventdate = await _context.EventDate
+            //    .Where(x => x.Date.Date == currdate)
+            //    .FirstOrDefaultAsync();
 
             //var for221 = For221Constants.For321andAbove;
-            var for221 = For221.b;
-            var date = currdate;
-            if(eventdate != null)
-            {
-                for221 = eventdate.For221;
-                date = eventdate.Date;
-            }
+            //var for221 = For221.b;
+            //var date = currdate;
+            //if(eventdate != null)
+            //{
+            //    for221 = eventdate.For221;
+            //    date = eventdate.Date;
+            //}
 
-            //Gets list of all distinct interviewers that are in an InterviewEvent with a status of checked in or ongoing
-            var selectedStatus = await _context.InterviewEvent
-                .Include(x => x.SignupInterviewerTimeslot)
-                .ThenInclude(x => x.SignupInterviewer)
-                .Include(x => x.Timeslot)
-                .ThenInclude(x => x.EventDate)
-                .Where(u => (u.Status == StatusConstants.CheckedIn || u.Status == StatusConstants.Ongoing) &&
-                    u.SignupInterviewerTimeslotId != null)
-                .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
-                .Distinct()
-                .ToListAsync();
+            ////Gets list of all distinct interviewers that are in an InterviewEvent with a status of checked in or ongoing
+            //var selectedStatus = await _context.InterviewEvent
+            //    .Include(x => x.SignupInterviewerTimeslot)
+            //    .ThenInclude(x => x.SignupInterviewer)
+            //    .Include(x => x.Timeslot)
+            //    .ThenInclude(x => x.EventDate)
+            //    .Where(u => (u.Status == StatusConstants.CheckedIn || u.Status == StatusConstants.Ongoing) &&
+            //        u.SignupInterviewerTimeslotId != null)
+            //    .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+            //    .Distinct()
+            //    .ToListAsync();
 
-            //Get list of all distinct interviewers that are assigned to a location
-            var selectedLocation = await _context.LocationInterviewer
-                .Where(x => x.LocationId != null && 
-                    x.EventDate.Date == date && 
-                    x.EventDate.For221 == for221)
-                .Select(x => x.InterviewerId)
-                .Distinct()
-                .ToListAsync();
+            ////Get list of all distinct interviewers that are assigned to a location
+            //var selectedLocation = await _context.LocationInterviewer
+            //    .Where(x => x.LocationId != null && 
+            //        x.EventDate.Date == date && 
+            //        x.EventDate.For221 == for221)
+            //    .Select(x => x.InterviewerId)
+            //    .Distinct()
+            //    .ToListAsync();
 
-            var selectedinterviewers = selectedLocation
-                .Except(selectedStatus)
-                .ToList();
+            //var selectedinterviewers = selectedLocation
+            //    .Except(selectedStatus)
+            //    .ToList();
 
 
             var interviewers = new List<AvailableInterviewer>();
-            foreach(var interviewer in selectedinterviewers)
+            //foreach(var interviewer in selectedinterviewers)
+            //{
+            //    var name = await _context.SignupInterviewer
+            //        .Where(x => x.InterviewerId == interviewer)
+            //        .Select(x => x.FirstName + " " + x.LastName)
+            //        .FirstOrDefaultAsync();
+            //    var interviewertype = await _context.SignupInterviewer
+            //        .Where(x => x.InterviewerId == interviewer)
+            //        .Select(x => x.InterviewType)
+            //        .FirstOrDefaultAsync();
+            //    var room = await _context.LocationInterviewer
+            //        .Where(x => x.InterviewerId == interviewer && x.EventDate.Date == date)
+            //        .Select(x => x.Location.Room)
+            //        .FirstOrDefaultAsync();
+            //    interviewers.Add(new AvailableInterviewer
+            //    {
+            //        Name = name,
+            //        InterviewType = interviewertype,
+            //        Room = room
+            //    });
+            //}
+
+            var hoursInAdvanceStr = _context.GlobalConfigVar
+                .Where(x => x.Name == "interview_index_hours")
+                .Select(x => x.Value)
+                .FirstOrDefault();
+
+            var hoursInAdvance = 3;
+            try
             {
-                var name = await _context.SignupInterviewer
-                    .Where(x => x.InterviewerId == interviewer)
-                    .Select(x => x.FirstName + " " + x.LastName)
-                    .FirstOrDefaultAsync();
-                var interviewertype = await _context.SignupInterviewer
-                    .Where(x => x.InterviewerId == interviewer)
-                    .Select(x => x.InterviewType)
-                    .FirstOrDefaultAsync();
-                var room = await _context.LocationInterviewer
-                    .Where(x => x.InterviewerId == interviewer && x.EventDate.Date == date)
-                    .Select(x => x.Location.Room)
-                    .FirstOrDefaultAsync();
-                interviewers.Add(new AvailableInterviewer
-                {
-                    Name = name,
-                    InterviewType = interviewertype,
-                    Room = room
-                });
+                hoursInAdvance = int.Parse(hoursInAdvanceStr);
+            } catch
+            {
+                throw new Exception("GlobalConfigVar 'interview_index_hours' is not an integer.");
             }
 
             var timeslot = await _context.Timeslot
                 .OrderByDescending(x => x.MaxSignUps)
                 .FirstOrDefaultAsync();
-            var maxsignups = timeslot.MaxSignUps * 3 * 2; //* 2 because there are two interviews per hour, 3 hours is how far in advance we can see right now, should be update-able
+            var maxsignups = timeslot.MaxSignUps * hoursInAdvance * 2; //* 2 because there are two interviews per hour
             var interviewEvents = await _context.InterviewEvent
                 .Include(i => i.Location)
                 .Include(i => i.SignupInterviewerTimeslot)
@@ -130,7 +185,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenInclude(j => j.EventDate)
                 .Where(i => i.Status != StatusConstants.Completed && 
                     i.Status != StatusConstants.NoShow && 
-                    i.Timeslot.EventDate.IsActive == true)
+                    i.Timeslot.EventDate.IsActive)
                 .OrderBy(i => i.TimeslotId)
                 .Take(maxsignups)
                 .ToListAsync();
@@ -163,14 +218,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var eventslist = new List<InterviewEventViewModel>();
             foreach(InterviewEvent interviewEvent in interviewEvents)
             {
-                //var student = await _userManager.Users
-                //    .Where(u => u.Id == interviewEvent.StudentId)
-                //    .Select(u => new { u.FirstName, u.LastName })
-                //    .FirstOrDefaultAsync();
-
-                //var studentname = student != null ? $"{student.FirstName} {student.LastName}" : null;
                 var interviewEventViewModel = new InterviewEventViewModel();
-
 
                 if (studentNames.TryGetValue(interviewEvent.StudentId, out var studentName))
                 {
@@ -179,17 +227,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 if (interviewEvent.SignupInterviewerTimeslot != null)
                 {
-                    //var interviewer = await _userManager.Users
-                    //    .Where(x => x.Id == interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
-                    //    .Select(x => new { x.FirstName, x.LastName})
-                    //    .FirstOrDefaultAsync();
-
                     if (interviewerNames.TryGetValue(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId, out var interviewerName))
                     {
                         interviewEventViewModel.InterviewerName = interviewerName;
                     }
 
-                    //interviewEventViewModel.InterviewerName = interviewer.FirstName + " " + interviewer.LastName;
                     interviewEventViewModel.InterviewEvent = interviewEvent;
 
                     eventslist.Add(interviewEventViewModel);
@@ -199,13 +241,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewEventViewModel.InterviewerName = "Not Assigned";
                     interviewEventViewModel.InterviewEvent = interviewEvent;
 
-
                     eventslist.Add(interviewEventViewModel);
                 }
             }
 
             model.Interviews = eventslist;
             model.AvailableInterviewers = interviewers;
+
+            model.TechnicalInterviewers = new();
+            model.BehavioralInterviewers = new();
 
             return View(model);
         }
@@ -551,20 +595,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (user.Class == Classes.NotYetMIS || user.Class == Classes.FirstSem)
             {
                 timeslots = await _context.Timeslot
-                .Where(x => x.IsStudent)
-                .Include(y => y.EventDate)
-                .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
-                .Where(x => x.EventDate.For221 != For221.n && x.EventDate.IsActive == true)
-                .ToListAsync();
+                    .Where(x => x.IsStudent)
+                    .Include(y => y.EventDate)
+                    .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                    .Where(x => x.EventDate.For221 != For221.n 
+                        && x.EventDate.IsActive)
+                    .ToListAsync();
             }
             else
             {
                 timeslots = await _context.Timeslot
-                .Where(x => x.IsStudent)
-                .Include(y => y.EventDate)
-                .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
-                .Where(x => x.EventDate.For221 != For221.y && x.EventDate.IsActive == true)
-                .ToListAsync();
+                    .Where(x => x.IsStudent)
+                    .Include(y => y.EventDate)
+                    .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                    .Where(x => x.EventDate.For221 != For221.y 
+                        && x.EventDate.IsActive)
+                    .ToListAsync();
             }
 
             var interviewEvents = await _context.InterviewEvent
@@ -625,15 +671,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             };
 
-
-
 			if (ModelState.IsValid)
             {
                 _context.AddRange(interviewEvents);
                 await _context.SaveChangesAsync();
 
                 var emailTimes = new List<InterviewEvent>();
-                List<string> calendarEvents = new List<string>();
+                List<string> calendarEvents = new();
 
                 var newEvent = await _context.InterviewEvent
                     .Include(v => v.Timeslot)
@@ -667,7 +711,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: InterviewEvents/Edit/5
-        [Authorize(Roles = RolesConstants.AdminRole +","+RolesConstants.InterviewerRole)]
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.InterviewEvent == null)
@@ -675,64 +719,180 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent.FindAsync(id);
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
             if (interviewEvent == null)
             {
                 return NotFound();
             }
 
-            var selectedInterviewers = await OutsourceQuery(interviewEvent);
-
-            var selectedInterviewersNames = new List<SelectListItem>();
-            if (selectedInterviewers.Count == 0)
+            if(true)
             {
-                if(interviewEvent.SignupInterviewerTimeslot != null)
-                {
-                    selectedInterviewersNames.Add(new SelectListItem
-                    {
-                        Value = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId,
-                        Text = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.LastName
-                    });
-                }
-                else
-                {
-                    selectedInterviewersNames.Add(new SelectListItem
-                    {
-                        Value = "0",
-                        Text = "No Interviewers Available"
-                    });
-                }
+                //process for Fall 2023
+                //var selectedInterviewers = await OutsourceQuery(interviewEvent);
 
+                //var selectedInterviewersNames = new List<SelectListItem>();
+                //if (selectedInterviewers.Count == 0)
+                //{
+                //    if (interviewEvent.SignupInterviewerTimeslot != null)
+                //    {
+                //        selectedInterviewersNames.Add(new SelectListItem
+                //        {
+                //            Value = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId,
+                //            Text = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.LastName
+                //        });
+                //    }
+                //    else
+                //    {
+                //        selectedInterviewersNames.Add(new SelectListItem
+                //        {
+                //            Value = "0",
+                //            Text = "No Interviewers Available"
+                //        });
+                //    }
+
+                //}
+                //else
+                //{
+                //    if (interviewEvent.SignupInterviewerTimeslot != null)
+                //    {
+                //        selectedInterviewersNames.Add(new SelectListItem
+                //        {
+                //            Value = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId,
+                //            Text = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.LastName
+                //        });
+                //    }
+                //    foreach (string sit in selectedInterviewers)
+                //    {
+                //        var user = await _userManager.Users
+                //            .Where(x => x.Id == sit)
+                //            .Select(x => new { x.Id, x.FirstName, x.LastName })
+                //            .FirstOrDefaultAsync();
+
+                //        selectedInterviewersNames.Add(new SelectListItem
+                //        {
+                //            Value = user.Id,
+                //            Text = user.FirstName + " " + user.LastName
+                //        });
+                //    }
+                //    selectedInterviewersNames.Insert(0, new SelectListItem
+                //    {
+                //        Value = "0",
+                //        Text = "Unassigned"
+                //    });
+
+                //}
+
+            }
+
+            //var requestedInterviewers = selectedInterviewersNames;
+            //var behavioralInterviewers = new List<SelectListItem>();
+            //var technicalInterviewers = new List<SelectListItem>();
+
+            //var allInterviewers = await _context.SignupInterviewerTimeslot
+            //    .Join(_context.SignupInterviewer,
+            //        sit => sit.SignupInterviewerId,
+            //        si => si.Id,
+            //        (sit, si) => new { sit, si })
+            //    .Join(_context.Timeslot,
+            //        sit_si => sit_si.sit.TimeslotId,
+            //        t => t.Id,
+            //        (sit_si, t) => new { sit_si.sit, sit_si.si, t })
+            //    .Join(_context.EventDate,
+            //        sit_si_t => sit_si_t.t.EventDateId,
+            //        e => e.Id,
+            //        (sit_si_t, e) => new { sit_si_t.sit, sit_si_t.si, sit_si_t.t, e })
+            //    .Where(sit_si_t_e =>
+            //        sit_si_t_e.e.IsActive && sit_si_t_e.e.Date == _context.InterviewEvent
+            //            .Where(i => i.Id == interviewEvent.Id)
+            //            .Select(i => i.Timeslot.EventDate.Date)
+            //            .FirstOrDefault() &&
+            //        !_context.InterviewEvent
+            //            .Where(i => i.Status == "Ongoing")
+            //            .Select(i => i.SignupInterviewerTimeslot.SignupInterviewerId)
+            //            .Contains(sit_si_t_e.si.Id))
+            //    .Select(sit_si_t_e => new
+            //    {
+            //        Name = sit_si_t_e.si.FirstName + " " + sit_si_t_e.si.LastName,
+            //        Id = sit_si_t_e.si.InterviewerId.ToString(),
+            //        Technical = sit_si_t_e.si.IsTechnical,
+            //        Behavioral = sit_si_t_e.si.IsBehavioral
+            //    })
+            //    .Distinct()
+            //    .OrderBy(x => x.Name)
+            //    .ToListAsync();
+
+            var all = await OutsourceQuery2024(interviewEvent);
+            var behavioralInterviewers = OutsourceQueryBehavioral2024(all);
+            var technicalInterviewers = OutsourceQueryTechnical2024(all);
+
+            //var allInterviewers = await _context.SignupInterviewerTimeslot
+            //    .Include(x => x.SignupInterviewer)
+            //    .Include(x => x.Timeslot)
+            //    .ThenInclude(x => x.EventDate)
+            //    .Where(x =>
+            //        x.Timeslot.EventDate.IsActive &&
+            //        x.Timeslot.EventDate.Date == interviewEvent.Timeslot.EventDate.Date &&
+            //        !_context.InterviewEvent
+            //            .Where(i => i.Status == "Ongoing")
+            //            .Select(i => i.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+            //            .Contains(x.SignupInterviewer.InterviewerId))
+            //    .Select(x => new
+            //    {
+            //        Name = x.SignupInterviewer.FirstName + " " + x.SignupInterviewer.LastName,
+            //        Id = x.SignupInterviewer.InterviewerId.ToString(),
+            //        Technical = x.SignupInterviewer.IsTechnical,
+            //        Behavioral = x.SignupInterviewer.IsBehavioral
+            //    })
+            //    .ToListAsync();
+
+            //allInterviewers = allInterviewers
+            //    .Distinct()
+            //    .OrderBy(x => x.Name)
+            //    .ToList();
+
+            //var behavioralInterviewers = allInterviewers
+            //    .Where(x => x.Behavioral)
+            //    .Select(x => new SelectListItem
+            //    {
+            //        Value = x.Id,
+            //        Text = x.Name
+            //    })
+            //    .ToList();
+
+            //var technicalInterviewers = allInterviewers
+            //    .Where(x => x.Technical)
+            //    .Select(x => new SelectListItem
+            //    {
+            //        Value = x.Id,
+            //        Text = x.Name
+            //    })
+            //    .ToList();
+
+            //behavioralInterviewers.Insert(0, new SelectListItem
+            //{
+            //    Value = "0",
+            //    Text = "--Unassigned--"
+            //});
+
+            //technicalInterviewers.Insert(0, new SelectListItem
+            //{
+            //    Value = "0",
+            //    Text = "--Unassigned--"
+            //});
+
+            var requestedInterviewers = new List<SelectListItem>();
+            if (interviewEvent.InterviewType == InterviewTypeConstants.Technical)
+            {
+                requestedInterviewers = technicalInterviewers;
             }
             else
             {
-                if (interviewEvent.SignupInterviewerTimeslot != null)
-                {
-                    selectedInterviewersNames.Add(new SelectListItem
-                    {
-                        Value = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId,
-                        Text = interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.LastName
-                    });
-                }
-                foreach (string sit in selectedInterviewers)
-                {
-                    var user = await _userManager.Users
-                        .Where(x => x.Id == sit)
-                        .Select(x => new { x.Id, x.FirstName, x.LastName })
-                        .FirstOrDefaultAsync();
-
-                    selectedInterviewersNames.Add(new SelectListItem
-                    {
-                        Value = user.Id,
-                        Text = user.FirstName + " " + user.LastName
-                    });
-                }
-                selectedInterviewersNames.Insert(0, new SelectListItem
-                {
-                    Value = "0",
-                    Text = "Unassigned"
-                });
-                
+                requestedInterviewers = behavioralInterviewers;
             }
 
             var studentname = await _userManager.Users
@@ -743,7 +903,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var interviewEventManageViewModel = new InterviewEventManageViewModel
             {
                 InterviewEvent = interviewEvent,
-                InterviewerNames = selectedInterviewersNames,
+                BehavioralInterviewers = behavioralInterviewers,
+                TechnicalInterviewers = technicalInterviewers,
+                RequestedInterviewers = requestedInterviewers,
                 StudentName = studentname
             };
 
@@ -773,6 +935,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 if(InterviewerId == "0")
                 {
                     interviewEvent.SignupInterviewerTimeslot = null;
+                    interviewEvent.SignupInterviewerTimeslotId = null;
+                    interviewEvent.Location = null;
+                    interviewEvent.LocationId = null;
                 }
                 else
                 {
@@ -780,8 +945,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         .Include(x => x.SignupInterviewer)
                         .Include(x => x.Timeslot)
                         .ThenInclude(x => x.EventDate)
-                        .Where(x => x.TimeslotId == interviewEvent.TimeslotId && 
-                            x.SignupInterviewer.InterviewerId == InterviewerId)
+                        .Where(x => x.SignupInterviewer.InterviewerId == InterviewerId)
                         .FirstOrDefaultAsync();
 
                     if(signupInterviewTimeslot != null && interviewEvent.Status == StatusConstants.CheckedIn)
@@ -808,13 +972,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         .Where(x => x.InterviewerId == InterviewerId && 
                             x.LocationPreference == interviewerPreference && 
                             x.EventDateId == signupInterviewTimeslot.Timeslot.EventDateId && 
-                            x.LocationId != null)
+                            x.LocationId != null) 
                         .FirstOrDefaultAsync();
 
+                    if (location == null)
+                    {
+                        interviewEvent.Location = null;
+                        interviewEvent.LocationId = null;
+                    }
+                    else
+                    {
+                        interviewEvent.Location = location.Location;
+                        interviewEvent.LocationId = location.Location.Id;
+                    }
+
                     interviewEvent.SignupInterviewerTimeslot = signupInterviewTimeslot;
-                    interviewEvent.Location = location.Location;
                     interviewEvent.SignupInterviewerTimeslotId = signupInterviewTimeslot.Id;
-                    interviewEvent.LocationId = location.Location.Id;
                 }
                 
                 try
@@ -835,41 +1008,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 if (User.IsInRole(RolesConstants.AdminRole))
                 {
-                    var newInterviewEvent = await _context.InterviewEvent
-                        .Include(x => x.Location)
-                        .Include(x => x.SignupInterviewerTimeslot)
-                        .ThenInclude(x => x.SignupInterviewer)
-                        .Include(x => x.Timeslot)
-                        .ThenInclude(x => x.EventDate)
-                        .FirstOrDefaultAsync(x => x.Id == id);
-
-                    var studentname = await _userManager.Users
-                        .Where(x => x.Id == newInterviewEvent.StudentId)
-                        .Select(x => x.FirstName + " " + x.LastName)
-                        .FirstOrDefaultAsync();
-
-                    var interviewername = "Not Assigned";
-
-                    if(newInterviewEvent.SignupInterviewerTimeslot != null)
-                    {
-                        interviewername = await _userManager.Users
-                            .Where(x => x.Id == newInterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
-                            .Select(x => x.FirstName + " " + x.LastName)
-                            .FirstOrDefaultAsync();
-                    }
-                    
-                    if(newInterviewEvent.Location == null)
-                    {
-                        newInterviewEvent.Location = new Location()
-                        {
-                            Room = "Not Assigned"
-                        };
-                    }
-
-                    var time = $"{ newInterviewEvent.Timeslot.Time:hh:mm tt}";
-                    var date = $"{newInterviewEvent.Timeslot.EventDate.Date:M/d/yyyy}";
-
-                    await _hubContext.Clients.All.SendAsync("ReceiveInterviewEventUpdate", newInterviewEvent, studentname, interviewername, time, date);
+                    await UpdateHub(id);
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -907,7 +1046,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.EventDate)
                 .Where(x => x.Timeslot.EventDateId == interviewEvent.Timeslot.EventDateId && 
-                    x.TimeslotId == interviewEvent.TimeslotId && 
                     x.Timeslot.EventDate.IsActive)
                 .Select(x => x.SignupInterviewer.InterviewerId)
                 .Distinct()
@@ -929,10 +1067,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     selectedInterviewersNames.Add(new SelectListItem
                     {
                         Value = "0",
-                        Text = "No Interviewers Available"
+                        Text = "--Unassigned--"
                     });
                 }
-
             }
             else
             {
@@ -964,7 +1101,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 selectedInterviewersNames.Insert(0, new SelectListItem
                 {
                     Value = "0",
-                    Text = "Unassigned"
+                    Text = "--Unassigned--"
                 });
 
             }
@@ -973,7 +1110,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var interviewEventManageViewModel = new InterviewEventManageViewModel
             {
                 InterviewEvent = interviewEvent,
-                InterviewerNames = selectedInterviewersNames
+                RequestedInterviewers = selectedInterviewersNames,
+                BehavioralInterviewers = selectedInterviewersNames,
+                TechnicalInterviewers = selectedInterviewersNames
             };
 
             return View(interviewEventManageViewModel);
@@ -1252,6 +1391,81 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return selectedInterviewers;
         }
 
+        private async Task<List<IVM>> OutsourceQuery2024(InterviewEvent ie)
+        {
+            var allInterviewers = await _context.SignupInterviewerTimeslot
+                .Include(x => x.SignupInterviewer)
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x =>
+                    x.Timeslot.EventDate.IsActive &&
+                    x.Timeslot.EventDate.Date == ie.Timeslot.EventDate.Date &&
+                    !_context.InterviewEvent
+                        .Where(i => i.Status == "Ongoing")
+                        .Select(i => i.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                        .Contains(x.SignupInterviewer.InterviewerId))
+                .Select(x => new IVM
+                {
+                    Name = x.SignupInterviewer.FirstName + " " + x.SignupInterviewer.LastName,
+                    Id = x.SignupInterviewer.InterviewerId.ToString(),
+                    Technical = x.SignupInterviewer.IsTechnical,
+                    Behavioral = x.SignupInterviewer.IsBehavioral
+                })
+                .ToListAsync();
+
+            return allInterviewers;
+        }
+
+        private static List<SelectListItem> OutsourceQueryTechnical2024(List<IVM> all)
+        {
+            var allInterviewers = all
+                .Distinct(new IVMComparer())
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            var technicalInterviewers = allInterviewers
+                .Where(x => x.Technical)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id,
+                    Text = x.Name
+                })
+                .ToList();
+
+            technicalInterviewers.Insert(0, new SelectListItem
+            {
+                Value = "0",
+                Text = "--Unassigned--"
+            });
+
+            return technicalInterviewers;
+        }
+
+        private static List<SelectListItem> OutsourceQueryBehavioral2024(List<IVM> all)
+        {
+            var allInterviewers = all
+                .Distinct(new IVMComparer())
+                .OrderBy(x => x.Name)
+                .ToList();
+
+            var behavioralInterviewers = allInterviewers
+                .Where(x => x.Behavioral)
+                .Select(x => new SelectListItem
+                {
+                    Value = x.Id,
+                    Text = x.Name
+                })
+                .ToList();
+
+            behavioralInterviewers.Insert(0, new SelectListItem
+            {
+                Value = "0",
+                Text = "--Unassigned--"
+            });
+
+            return behavioralInterviewers;
+        }
+
         [Authorize(Roles = RolesConstants.StudentRole)]
         public async Task<IActionResult> UserDelete(int? id)
         {
@@ -1295,6 +1509,222 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> StudentCheckIn(int id)
+        {
+            if (id == null || _context.InterviewEvent == null)
+            {
+                return BadRequest("Interview not found.");
+            }
+
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (interviewEvent == null)
+            {
+                return NotFound("Interview not found.");
+            }
+
+            interviewEvent.Status = StatusConstants.CheckedIn;
+
+            try
+            {
+                _context.Update(interviewEvent);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("Concurrency exception occurred.");
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database error occurred.");
+            }
+
+            await UpdateHub(id);
+
+            return NoContent();
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
+        public async Task<IActionResult> StudentComplete(int id)
+        {
+            if (id == null || _context.InterviewEvent == null)
+            {
+                return BadRequest("Interview not found.");
+            }
+
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (interviewEvent == null)
+            {
+                return NotFound("Interview not found.");
+            }
+
+            interviewEvent.Status = StatusConstants.Completed;
+
+            try
+            {
+                _context.Update(interviewEvent);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("Concurrency exception occurred.");
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database error occurred.");
+            }
+
+            await UpdateHub(id);
+
+            return NoContent();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> EditInline(int Id, string Status, string InterviewerId, string Type)
+        {
+            Console.WriteLine($"Id: {Id}, Status: {Status}, InterviewerId: {InterviewerId}, Type: {Type}");
+
+            if (Id == null || Status == null || Type == null)
+            {
+                return BadRequest("Interview not found.");
+            }
+
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Id == Id)
+                .FirstOrDefaultAsync();
+
+            if (interviewEvent == null)
+            {
+                return NotFound();
+            }
+
+            interviewEvent.Status = Status;
+            interviewEvent.InterviewType = Type;
+
+            if (InterviewerId == "0" || InterviewerId == "" || InterviewerId == null)
+            {
+                interviewEvent.SignupInterviewerTimeslot = null;
+                interviewEvent.SignupInterviewerTimeslotId = null;
+                interviewEvent.Location = null;
+                interviewEvent.LocationId = null;
+            }
+            else
+            {
+                var signupInterviewTimeslot = await _context.SignupInterviewerTimeslot
+                    .Include(x => x.SignupInterviewer)
+                    .Include(x => x.Timeslot)
+                    .ThenInclude(x => x.EventDate)
+                    .Where(x => x.SignupInterviewer.InterviewerId == InterviewerId)
+                    .FirstOrDefaultAsync();
+
+                if (signupInterviewTimeslot != null && interviewEvent.Status == StatusConstants.CheckedIn)
+                {
+                    interviewEvent.Status = StatusConstants.Ongoing;
+                }
+
+                var interviewerPreference = "";
+                if (signupInterviewTimeslot.SignupInterviewer.IsVirtual && signupInterviewTimeslot.SignupInterviewer.InPerson)
+                {
+                    interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
+                }
+                else if (signupInterviewTimeslot.SignupInterviewer.IsVirtual)
+                {
+                    interviewerPreference = InterviewLocationConstants.IsVirtual;
+                }
+                else if (signupInterviewTimeslot.SignupInterviewer.InPerson)
+                {
+                    interviewerPreference = InterviewLocationConstants.InPerson;
+                }
+
+                var location = await _context.LocationInterviewer
+                    .Include(x => x.Location)
+                    .Where(x => x.InterviewerId == InterviewerId &&
+                        x.LocationPreference == interviewerPreference &&
+                        x.EventDateId == signupInterviewTimeslot.Timeslot.EventDateId &&
+                        x.LocationId != null)
+                    .FirstOrDefaultAsync();
+
+                if(location == null)
+                {
+                    interviewEvent.Location = null;
+                    interviewEvent.LocationId = null;
+                }
+                else
+                {
+                    interviewEvent.Location = location.Location;
+                    interviewEvent.LocationId = location.Location.Id;
+                }
+
+                interviewEvent.SignupInterviewerTimeslot = signupInterviewTimeslot;
+                interviewEvent.SignupInterviewerTimeslotId = signupInterviewTimeslot.Id;
+            }
+            
+            try
+            {
+                _context.Update(interviewEvent);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!InterviewEventExists(interviewEvent.Id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+            if (User.IsInRole(RolesConstants.AdminRole))
+            {
+                await UpdateHub(Id);
+
+                return NoContent();
+            }
+
+            return BadRequest("There was an error updating the InterviewEvent.");
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<ActionResult<AVM>> GetAvailableInterviewers(int id)
+        {
+            if (id == null || !_context.InterviewEvent.Any(x => x.Id == id))
+            {
+                return BadRequest("Invalid ID or Interview Event not found.");
+            }
+
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (interviewEvent == null)
+            {
+                return NotFound("Interview Event not found.");
+            }
+
+            var vm = new AVM();
+
+            var all = await OutsourceQuery2024(interviewEvent);
+            vm.BehavioralInterviewers = OutsourceQueryBehavioral2024(all);
+            vm.TechnicalInterviewers = OutsourceQueryTechnical2024(all);
+
+            return vm;
+        }
+
         private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
         {
             Console.WriteLine(date);
@@ -1304,7 +1734,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return date.Date + timeSpan;
         }
 
-        private string CreateCalendarEvent(DateTime start, DateTime end)
+        private static string CreateCalendarEvent(DateTime start, DateTime end)
         {
 
             var stringBuilder = new StringBuilder();
@@ -1358,6 +1788,50 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
 
             return stringBuilder.ToString();
+        }
+
+        private async Task UpdateHub(int id)
+        {
+            var newInterviewEvent = await _context.InterviewEvent
+                .Include(x => x.Location)
+                .Include(x => x.SignupInterviewerTimeslot)
+                .ThenInclude(x => x.SignupInterviewer)
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            var studentname = await _userManager.Users
+                .Where(x => x.Id == newInterviewEvent.StudentId)
+                .Select(x => x.FirstName + " " + x.LastName)
+                .FirstOrDefaultAsync();
+
+            if (newInterviewEvent.Status == StatusConstants.Completed)
+            {
+                studentname = "delete";
+            }
+
+            var interviewername = "Not Assigned";
+
+            if (newInterviewEvent.SignupInterviewerTimeslot != null)
+            {
+                interviewername = await _userManager.Users
+                    .Where(x => x.Id == newInterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefaultAsync();
+            }
+
+            if (newInterviewEvent.Location == null)
+            {
+                newInterviewEvent.Location = new Location()
+                {
+                    Room = "Not Assigned"
+                };
+            }
+
+            var time = $"{newInterviewEvent.Timeslot.Time:hh:mm tt}";
+            var date = $"{newInterviewEvent.Timeslot.EventDate.Date:M/d/yyyy}";
+
+            await _hubContext.Clients.All.SendAsync("ReceiveInterviewEventUpdate", newInterviewEvent, studentname, interviewername, time, date);
         }
     }
 }

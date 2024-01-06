@@ -11,16 +11,16 @@
 <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-8" id="center-everything">
-        @if (Model.ApplicationUser.Class == null || Model.ApplicationUser.Resume == null)
+        @if (Model.ApplicationUser.Class == Classes.NotEnrolled || Model.ApplicationUser.Resume == null)
         {
-            if(Model.ApplicationUser.Class == null && Model.ApplicationUser.Resume == null)
+            if(Model.ApplicationUser.Class == 0 && Model.ApplicationUser.Resume == null)
             {
                 <div class="alert alert-danger" role="alert">
                     You must specify which class you are in and upload a resume before you can sign up for an interview.
                     Go to your profile, select your class, upload your resume, save your profile, and then come back here.
                 </div>
             }
-            else if(Model.ApplicationUser.Class == null)
+            else if(Model.ApplicationUser.Class == Classes.NotEnrolled)
             {
                 <div class="alert alert-danger" role="alert">
                     You must specify which class you are in before you can sign up for an interview.

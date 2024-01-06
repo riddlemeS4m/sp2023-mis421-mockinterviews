@@ -22,6 +22,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
+        private readonly HttpClient _httpClient;
 
         public HomeController(/*ILogger<HomeController> logger,*/ 
             MockInterviewDataDbContext context, 
@@ -168,7 +169,61 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
+            model.ZoomLink = await GetZoomLink();
+            model.ZoomLinkVisible = await GetZoomLinkVisible();
+            model.DisruptionBanner = await GetDisruptionBanner();
+
             return View(model);
+        }
+
+        private async Task<string> GetZoomLink()
+        {
+            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link");
+
+            try
+            {
+                return banner.Value;
+            }
+            catch
+            {
+                throw new Exception("GlobalConfigVar 'zoom_link' does not exist.");
+            }
+        }
+
+        private async Task<string> GetDisruptionBanner()
+        {
+            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
+
+            try
+            {
+                if (int.Parse(banner.Value) == 0)
+                {
+                    return "none";
+                }
+                return "block";
+            }
+            catch
+            {
+                throw new Exception("GlobalConfigVar 'disruption_banner' does not exist, or it is not an integer.");
+            }
+        }
+
+        private async Task<string> GetZoomLinkVisible()
+        {
+            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
+
+            try
+            {
+                if (int.Parse(banner.Value) == 0)
+                {
+                    return "none";
+                }
+                return "block";
+            }
+            catch
+            {
+                throw new Exception("GlobalConfigVar 'zoom_link_visible' does not exist, or it is not an integer.");
+            }
         }
 
         public IActionResult Privacy()

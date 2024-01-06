@@ -83,6 +83,8 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddSignalR();
 
+            services.AddHttpClient();
+
             services.AddDatabaseDeveloperPageExceptionFilter();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()

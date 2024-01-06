@@ -7,20 +7,15 @@
 
 <h1>Assign Interviews</h1>
 
-@*<p>
-    <a asp-action="Create">Create New</a>
-</p>*@
-
 <div id="center-everything">
     @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
     {
         <a asp-area="" asp-controller="Home" asp-action="EmailStudents">Send Students Email Reminder</a>
-        <br />
-        <a asp-area="" asp-controller="Home" asp-action="EmailInterviewers">Send Interviewers Email Reminder</a>
+        <a asp-area="" asp-controller="Home" asp-action="EmailInterviewers"> | Send Interviewers Email Reminder</a>
     }
 </div>
 
-<hr />
+@*<hr />
 <h4>Available Interviewers</h4>
 <br />
 @if(Model.AvailableInterviewers.Count > 0)
@@ -33,8 +28,34 @@
 else
 {
     <ul>No Interviewers Available.</ul>
-}
+}*@
 
+<div id="edit-form-div" style="display:none;">
+    <hr />
+    <h4 id="student-name">Edit Students</h4>
+    <div class="row">
+        <div class="col-md-4">
+            <form id="editForm" action="/InterviewEvents/EditInline" method="post">
+                <input type="hidden" id="Id" name="Id">
+                <div class="form-group">
+                    <label for="Status">Status:</label>
+                    <select id="Status" class="form-control" name="Status" asp-items="@StatusConstants.GetCompleteStatusOptions()"></select>
+                </div>
+                <div class="form-group">
+                    <label for="Type">Interview Type:</label>
+                    <select id="Type" class="form-control" name="Type" asp-items="@InterviewTypeConstants.GetInterviewTypesOptions()"></select>
+                </div>
+                <div class="form-group">
+                    <label for="InterviewerId">Interviewer:</label>
+                    <select id="InterviewerId" class="form-control" name="InterviewerId" asp-items="@Model.BehavioralInterviewers"></select>
+                </div>
+                <div class="form-group">
+                    <input type="submit" value="Save" class="btn btn-primary"> <button id="hide-button" class="btn btn-primary" type="button">Hide</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 <hr />
 <h4 id="testing">Upcoming Students</h4>
 <table class="table">
@@ -102,59 +123,237 @@ else
             }
                 
             <td>
-                <a asp-action="Edit" asp-route-id="@item.InterviewEvent.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.InterviewEvent.Id">Details</a> |
-                <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> |
-                <a asp-action="Delete" asp-route-id="@item.InterviewEvent.Id">Delete</a>
+                <a asp-action="StudentCheckIn" asp-route-id="@item.InterviewEvent.Id">Check In</a> |
+                <a class="capture-data">Edit</a> |
+@*                <a asp-action="Edit" asp-route-id="@item.InterviewEvent.Id">Edit</a> |
+*@                <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> |
+                <a asp-action="StudentComplete" asp-route-id="@item.InterviewEvent.Id">Complete</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
 
-<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
-<script>
-    var connection = new signalR.HubConnectionBuilder()
-        .withUrl("/interviewHub")
-        .build();
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        var connection = new signalR.HubConnectionBuilder()
+            .withUrl("/interviewHub")
+            .build();
 
-    connection.start().catch(function (err)
-    {
-        return console.error(err.toString());
-    });
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
 
-    connection.on("ReceiveInterviewEventUpdate",function(interviewEvent, studentname, interviewername, time, date)
-    {
-        var row = document.getElementById(interviewEvent.id);
-        if(studentname === 'delete')
-        {
-            row.remove();
-        }
-        else
-        {
-            //console.log(interviewEvent, interviewEvent.id, interviewEvent.status, studentname, interviewername, time, date);
-            if (row) {
-                try {
-                    row.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
-                        "<td>" + studentname + "</td>" +
-                        "<td>" + time + "</td>" +
-                        "<td>" + date + "</td>" +
-                        "<td>" + interviewEvent.status + "</td>" +
-                        "<td>" + interviewEvent.interviewType + "</td>" +
-                        "<td>" + interviewername + "</td>" +
-                        "<td>" + interviewEvent.location.room + "</td>" +
-                        "<td>" +
-                        "<a asp-action='Edit' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'>Edit</a> |" +
-                        "<a asp-action='Details' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Details</a> |" +
-                        "<a asp-action='Override' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Override</a> |" +
-                        "<a asp-action='Delete' asp-route-id='" + interviewEvent.id + "' style='color:#9E1B32'> Delete</a>" +
-                        "</td>";
+        connection.on("ReceiveInterviewEventUpdate", function (interviewEvent, studentname, interviewername, time, date) {
+            var row = document.getElementById(interviewEvent.id);
+            if (studentname === 'delete') {
+                row.remove();
+
+                console.log(interviewEvent.status);
+                document.getElementById('edit-form-div').style.display = 'none';
+            }
+            else {
+                if (interviewEvent.status === 'Ongoing') {
+                    document.getElementById('edit-form-div').style.display = 'none';
                 }
-                catch
-                {
-                    throw new Error('there was an error');
+                //console.log(interviewEvent, interviewEvent.id, interviewEvent.status, studentname, interviewername, time, date);
+                if (row) {
+                    try {
+                        row.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
+                            "<td>" + studentname + "</td>" +
+                            "<td>" + time + "</td>" +
+                            "<td>" + date + "</td>" +
+                            "<td>" + interviewEvent.status + "</td>" +
+                            "<td>" + interviewEvent.interviewType + "</td>" +
+                            "<td>" + interviewername + "</td>" +
+                            "<td>" + interviewEvent.location.room + "</td>" +
+                            "<td>" +
+                            "<a href='/InterviewEvents/StudentCheckIn/" + interviewEvent.id + "' style='color:#9E1B32'>Check In</a> |" +
+                            "<a class='capture-data'> Edit</a> |" +
+                            "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'> Override</a> |" +
+                            "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'> Complete</a>" +
+                            "</td>";
+
+                        var editLink = row.querySelector('.capture-data');
+                        editLink.addEventListener('click', function() {
+                            var row = this.closest('tr');
+
+                            var id = row.getAttribute('id');
+                            var status = row.cells[4].textContent.trim();
+                            //var interviewerId = row.cells[6].textContent.trim(); 
+                            var interviewType = row.cells[5].textContent.trim();
+                            var studentName = row.cells[1].textContent.trim();
+
+                            console.log(id);
+
+                            if(interviewEvent.status !== 'Ongoing')
+                            {
+                                $('#edit-form-div').show();
+                            }
+
+                            $('#student-name').text('Assign ' + studentName);
+
+                            document.getElementById('Id').value = id;
+                            document.getElementById('Status').value = status;
+                            //document.getElementById('InterviewerId').value = interviewerId;
+                            document.getElementById('Type').value = interviewType;
+
+                            populateInterviewerSelectList(id, interviewType, status);
+                        });
+
+                        console.log(interviewEvent.status);
+                        //console.log(interviewEvent.interviewType);
+                        document.getElementById('Status').value = interviewEvent.status;
+                        document.getElementById('Type').value = interviewEvent.interviewType;
+                        //document.getElementById('InterviewerId').value = interviewername;
+                    }
+                    catch
+                    {
+                        throw new Error('there was an error');
+                    }
                 }
             }
+        })
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var captureButtons = document.querySelectorAll('.capture-data');
+
+            captureButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var row = this.closest('tr');
+
+                    var id = row.getAttribute('id');
+                    var status = row.cells[4].textContent.trim();
+                    //var interviewerId = row.cells[6].textContent.trim(); 
+                    var interviewType = row.cells[5].textContent.trim();
+                    var studentName = row.cells[1].textContent.trim();
+
+                    console.log(id);
+
+                    //$('#edit-form-div').show();
+                    $('#student-name').text('Assign ' + studentName);
+
+                    document.getElementById('Id').value = id;
+                    document.getElementById('Status').value = status;
+                    //document.getElementById('InterviewerId').value = interviewerId;
+                    document.getElementById('Type').value = interviewType;
+
+                    populateInterviewerSelectList(id, interviewType, status);
+                });
+            });
+        });
+
+        let fetchedBehavioralInterviewers = [];
+        let fetchedTechnicalInterviewers = [];
+
+        function populateInterviewerSelectList(id, interviewType, status) {
+            console.log('fetching...')
+            var url = '/InterviewEvents/GetAvailableInterviewers/' + id;
+            fetch(url)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
+                    const behavioralInterviewers = data.behavioralInterviewers;
+                    const technicalInterviewers = data.technicalInterviewers;
+
+                    fetchedBehavioralInterviewers = behavioralInterviewers;
+                    fetchedTechnicalInterviewers = technicalInterviewers;
+
+                    // Select the <select> element with id 'InterviewerId'
+                    const selectElement = document.getElementById('InterviewerId');
+
+                    // Clear previous options
+                    selectElement.innerHTML = '';
+
+                    if(interviewType === 'Technical'){
+                        parseOptions(selectElement, technicalInterviewers);
+                    } else {
+                        parseOptions(selectElement, behavioralInterviewers);
+                    }
+
+                    if(status !== 'Ongoing')
+                    {
+                        $('#edit-form-div').show();
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
         }
-    })
-</script>
+
+        function parseOptions(element, list){
+            list.forEach(interviewer => {
+                const option = document.createElement('option');
+                option.value = interviewer.value;
+                option.text = interviewer.text;
+                element.appendChild(option);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Event listener for form submission
+            document.getElementById('editForm').addEventListener('submit', function (event) {
+                event.preventDefault();
+
+                // Fetch form data
+                let formData = new FormData(this);
+
+                fetch('/InterviewEvents/EditInline', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => {
+                        if (response.ok) {
+                            console.log('Form submitted successfully');
+                        } else {
+                            console.error('Form submission failed');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+
+                document.getElementById('edit-form-div').style.display = 'none';
+            });
+        });
+
+        // Event listener for hiding the form
+        document.getElementById('hide-button').addEventListener('click', function () {
+            document.getElementById('editForm').reset();
+            document.getElementById('edit-form-div').style.display = 'none';
+        });
+
+        $(document).ready(function () {
+            $('#Type').change(function () {
+                var selectedTypeText = $(this).children("option:selected").text();
+                var interviewerIdSelect = $('#InterviewerId');
+
+                if (selectedTypeText === 'Technical') {
+                    populateSelectBox(interviewerIdSelect, fetchedTechnicalInterviewers);
+                } else if (selectedTypeText === 'Behavioral') {
+                    populateSelectBox(interviewerIdSelect, fetchedBehavioralInterviewers);
+                }
+            });
+
+            function populateSelectBox(selectBox, items) {
+                // Clear existing options
+                selectBox.empty();
+
+                // Add new options based on the received items
+                $.each(items, function (index, item) {
+                    selectBox.append($('<option>', {
+                        value: item.value,
+                        text: item.text
+                    }));
+                });
+            }
+        });
+    </script>
+}

@@ -113,6 +113,9 @@
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="Index">Dates</a>
                                     </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="GlobalConfigVars" asp-action="Index">Configuration</a>
+                                    </li>
                                     
                                 </ul>
                             </li>
@@ -263,7 +266,10 @@
     <!-- Data Tables -->
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js" integrity="sha384-apERv/vfl/R6zmx+HUeBeGTjYRpHuiF1JRYCuBd9KhRME4NTtll1FkO+CelUWYgp" crossorigin="anonymous"></script>
 @*    <script src="~/js/site.js" asp-append-version="true"></script>
-*@    
+*@
+    <!-- Signal R -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
+
     <script type="text/javascript">
         //Add datatables formatting to all tables
         $(document).ready(function () {

@@ -12,46 +12,23 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="Id" />
             <input type="hidden" asp-for="EventDateId"/>
-            <div class="form-group">
-                <label asp-for="Time" class="control-label"></label>
-                <input type="hidden" asp-for="Time" />
-@*                <span asp-validation-for="Time" class="text-danger"></span>
-*@            </div>
+            <input type="hidden" asp-for="IsActive" />
+            <input type="hidden" asp-for="IsVolunteer" />
+            <input type="hidden" asp-for="IsInterviewer" />
+            <input type="hidden" asp-for="IsStudent" />
+            <input type="hidden" asp-for="Time" />
+
             <div class="form-group">
                 <label asp-for="MaxSignUps" class="control-label"></label>
                 <input type="number" class="form-control" asp-for="MaxSignUps" />
                 <span asp-validation-for="MaxSignUps" class="text-danger"></span>
             </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input type="hidden" asp-for="IsActive" />
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input type="hidden" asp-for="IsVolunteer" />
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input type="hidden" asp-for="IsInterviewer" />
-                </label>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input type="hidden" asp-for="IsStudent" />
-                </label>
-            </div>
             
             <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+                <input type="submit" value="Save" class="btn btn-primary" /> | <a asp-action="Index">Back to List</a>
             </div>
         </form>
     </div>
-</div>
-
-<div>
-    <a asp-controller="Timeslots" asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

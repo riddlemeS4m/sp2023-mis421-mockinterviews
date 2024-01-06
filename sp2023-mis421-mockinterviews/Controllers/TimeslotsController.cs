@@ -21,7 +21,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public TimeslotsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager)
+        public TimeslotsController(MockInterviewDataDbContext context, 
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _userManager = userManager;
@@ -32,9 +33,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             var timeslots = await _context.Timeslot
                 .Include(t => t.EventDate)
-                .Where(t => t.EventDate.IsActive == true)
+                .Where(t => t.EventDate.IsActive)
                 .ToListAsync();
             var eventdates = await _context.EventDate
+                .Where(x => x.IsActive)
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
@@ -56,17 +58,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
             };
 
             return View(viewModel);
-
-            //return _context.Timeslot != null ?
-            //            View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
-            //              Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
         }
         public async Task<IActionResult> SignupReport()
         {
             var timeslots = await _context.Timeslot
                 .Include(t => t.EventDate)
+                .Where(x => x.EventDate.IsActive)
                 .ToListAsync();
             var eventdates = await _context.EventDate
+                .Where(x => x.IsActive)
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
@@ -91,10 +91,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             };
 
             return View("SignupReport", viewModel);
-
-            //return _context.Timeslot != null ?
-            //            View(await _context.Timeslot.Include(t => t.EventDate).ToListAsync()):
-            //              Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
         }
 
         public async Task<IActionResult> AllocationReport()
