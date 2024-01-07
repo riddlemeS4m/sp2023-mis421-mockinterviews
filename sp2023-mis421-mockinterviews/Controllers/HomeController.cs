@@ -73,7 +73,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.EventDate)
                     .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId 
-                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive)
+                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive
+                        && v.Status != StatusConstants.Completed)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
@@ -163,6 +164,49 @@ namespace sp2023_mis421_mockinterviews.Controllers
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{userFull.FirstName} {userFull.LastName}",
                                 InterviewerName = "Not Assigned"
+                            });
+                        }
+                    }
+                }
+            }
+
+            model.CompletedInterviews = new();
+            if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
+            {
+                var interviewEvents = await _context.InterviewEvent
+                    .Include(v => v.SignupInterviewerTimeslot)
+                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.Location)
+                    .Include(v => v.Timeslot)
+                    .ThenInclude(v => v.EventDate)
+                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId
+                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive
+                        && v.Status == StatusConstants.Completed)
+                    .ToListAsync();
+
+                if (interviewEvents != null && interviewEvents.Count != 0)
+                {
+                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    {
+
+                        if (interviewEvent.SignupInterviewerTimeslot != null)
+                        {
+                            var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
+
+                            model.CompletedInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = $"{student.FirstName} {student.LastName}",
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
+                            });
+                        }
+                        else
+                        {
+                            model.CompletedInterviews.Add(new InterviewEventViewModel()
+                            {
+                                InterviewEvent = interviewEvent,
+                                StudentName = "Not Assigned",
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
                             });
                         }
                     }

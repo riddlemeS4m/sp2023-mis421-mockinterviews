@@ -2,7 +2,7 @@
 @model sp2023_mis421_mockinterviews.Models.ViewModels.InterviewEventIndexViewModel
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Assign Interviews";
 }
 
 <h1>Assign Interviews</h1>
@@ -57,85 +57,128 @@ else
     </div>
 </div>
 <hr />
+<h4 id="testing">Ongoing Interviews</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Interviewer</th>
+            <th>Room</th>
+            <th>Scheduled Start</th>
+            <th>Interview Timer</th>
+            <th>Interview Type</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id ="ongoing">
+        @foreach (var item in Model.Interviews)
+        {
+            if (item.InterviewEvent.Status == StatusConstants.Ongoing)
+            {
+                <tr id="@item.InterviewEvent.Id">
+                    <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Status)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewerName)</td>
+                    @if (item.InterviewEvent.Location == null)
+                    {
+                        <td>Not Assigned</td>
+                    }
+                    else
+                    {
+                        <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Location.Room)</td>
+                    }
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)</td>
+                    <td id="timer-@item.InterviewEvent.Id">@Html.DisplayFor(modelItem => item.InterviewEvent.StartTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)</td>
+                    <td>
+                        <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> |
+                        <a asp-action="StudentComplete" asp-route-id="@item.InterviewEvent.Id">Complete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<hr />
+<h4 id="testing">Students Checked In</h4>
+<table class="table">
+    <thead>
+        <tr>
+            <th></th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Scheduled Start</th>
+            <th>Has Waited For</th>
+            <th>Interview Type</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody id="checkin">
+        @foreach (var item in Model.Interviews)
+        {
+            if (item.InterviewEvent.Status == StatusConstants.CheckedIn)
+            {
+                <tr id="@item.InterviewEvent.Id">
+                    <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
+                    <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Status)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)</td>
+                    <td id="timer-@item.InterviewEvent.Id">@Html.DisplayFor(modelItem => item.InterviewEvent.CheckInTime)</td>
+                    <td>@Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)</td>
+                    <td>
+                        <a class="capture-data">Assign</a> |
+                        <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> | 
+                        <a asp-action="StudentComplete" asp-route-id="@item.InterviewEvent.Id">Complete</a>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
+<hr />
 <h4 id="testing">Upcoming Students</h4>
 <table class="table">
     <thead>
         <tr>
-            <th> 
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].StudentName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Timeslot.Time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Timeslot.EventDate.Date)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Status)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.InterviewType)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewerName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Interviews[0].InterviewEvent.Location)
-            </th>
+            <th></th>
+            <th>Student</th>
+            <th>Status</th>
+            <th>Scheduled Start</th>
+            <th>Date</th>
+            <th>Interview Type</th>
             <th></th>
         </tr>
     </thead>
-    <tbody>
-@foreach (var item in Model.Interviews) {
-        <tr id="@item.InterviewEvent.Id">
-            <td style="color:white;">
-                @Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StudentName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.EventDate.Date)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewEvent.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewerName)
-            </td>
-            @if(item.InterviewEvent.Location == null)
-            {
-                <td>Not Assigned</td>    
-            }
-            else
-            {
+    <tbody id="upcoming">
+    @foreach (var item in Model.Interviews) 
+    {
+        if(item.InterviewEvent.Status != StatusConstants.Ongoing && item.InterviewEvent.Status != StatusConstants.CheckedIn)
+        {
+            <tr id="@item.InterviewEvent.Id">
+                <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
+                <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Status)</td>
+                <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)</td>
+                <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.EventDate.Date)</td>
+                <td>@Html.DisplayFor(modelItem => item.InterviewEvent.InterviewType)</td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.InterviewEvent.Location.Room)
+                    <a asp-action="StudentCheckIn" asp-route-id="@item.InterviewEvent.Id">Check In</a> |
+                    <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> | 
+                    <a asp-action="StudentNoShow" asp-route-id="@item.InterviewEvent.Id">No Show</a>
                 </td>
-            }
-                
-            <td>
-                <a asp-action="StudentCheckIn" asp-route-id="@item.InterviewEvent.Id">Check In</a> |
-                <a class="capture-data">Edit</a> |
-@*                <a asp-action="Edit" asp-route-id="@item.InterviewEvent.Id">Edit</a> |
-*@                <a asp-action="Override" asp-route-id="@item.InterviewEvent.Id">Override</a> |
-                <a asp-action="StudentComplete" asp-route-id="@item.InterviewEvent.Id">Complete</a>
-            </td>
-        </tr>
-}
+            </tr>
+        }
+    }
     </tbody>
 </table>
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- Signal R -->
     <script>
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/interviewHub")
@@ -159,54 +202,128 @@ else
                 }
                 //console.log(interviewEvent, interviewEvent.id, interviewEvent.status, studentname, interviewername, time, date);
                 if (row) {
+                    var newRow = document.createElement('tr');
+                    newRow.id = interviewEvent.id;
                     try {
-                        row.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
-                            "<td>" + studentname + "</td>" +
-                            "<td>" + time + "</td>" +
-                            "<td>" + date + "</td>" +
-                            "<td>" + interviewEvent.status + "</td>" +
-                            "<td>" + interviewEvent.interviewType + "</td>" +
-                            "<td>" + interviewername + "</td>" +
-                            "<td>" + interviewEvent.location.room + "</td>" +
-                            "<td>" +
-                            "<a href='/InterviewEvents/StudentCheckIn/" + interviewEvent.id + "' style='color:#9E1B32'>Check In</a> |" +
-                            "<a class='capture-data'> Edit</a> |" +
-                            "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'> Override</a> |" +
-                            "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'> Complete</a>" +
-                            "</td>";
+                        if(interviewEvent.status === 'Ongoing')
+                        {
+                            console.log(`${studentname} has just been sent to an ongoing interview.`)
+                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
+                                "<td>" + studentname + "</td>" +
+                                "<td>" + interviewEvent.status + "</td>" +
+                                "<td>" + interviewername + "</td>" +
+                                "<td>" + interviewEvent.location.room + "</td>" +
+                                "<td>" + time + "</td>" +
+                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.startTime + "</td>" +
+                                "<td>" + interviewEvent.interviewType + "</td>" +
+                                "<td style='width:158px;'>" +
+                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
+                                "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'>Complete</a>" +
+                                "</td>";
 
-                        var editLink = row.querySelector('.capture-data');
-                        editLink.addEventListener('click', function() {
-                            var row = this.closest('tr');
+                            row.remove();
+                            document.getElementById('ongoing').appendChild(newRow);
+                            try{document.querySelector('#ongoing td[colspan="9"]').parentElement.remove();}catch{console.log('No need to clear table.')}
+                        }
+                        else if(interviewEvent.status === 'Checked In')
+                        {
+                            console.log(`${studentname} has just been checked in.`)
+                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
+                                "<td>" + studentname + "</td>" +
+                                "<td>" + interviewEvent.status + "</td>" +
+                                "<td>" + time + "</td>" +
+                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.checkInTime + "</td>" +
+                                "<td>" + interviewEvent.interviewType + "</td>" +
+                                "<td style='width:260px;'>" +
+                                "<a class='capture-data'>Assign</a> | " +
+                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
+                                "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'>Complete</a>" +
+                                "</td>";
 
-                            var id = row.getAttribute('id');
-                            var status = row.cells[4].textContent.trim();
-                            //var interviewerId = row.cells[6].textContent.trim(); 
-                            var interviewType = row.cells[5].textContent.trim();
-                            var studentName = row.cells[1].textContent.trim();
+                            row.remove();
+                            document.getElementById('checkin').appendChild(newRow);
+                            try{document.querySelector('#checkin td[colspan="7"]').parentElement.remove();}catch{console.log('No need to clear table.')}
 
-                            console.log(id);
+                            var editLink = newRow.querySelector('.capture-data');
+                            editLink.addEventListener('click', function () {
+                                var sameRow = this.closest('tr');
 
-                            if(interviewEvent.status !== 'Ongoing')
-                            {
-                                $('#edit-form-div').show();
+                                var id = sameRow.getAttribute('id');
+                                var studentName = sameRow.cells[1].textContent.trim();
+                                var status = sameRow.cells[2].textContent.trim();
+                                var interviewType = sameRow.cells[5].textContent.trim();
+
+                                console.log(id);
+
+                                if (interviewEvent.status !== 'Ongoing') {
+                                    $('#edit-form-div').show();
+                                }
+
+                                $('#student-name').text('Assign ' + studentName);
+
+                                document.getElementById('Id').value = id;
+                                document.getElementById('Status').value = status;
+                                document.getElementById('Type').value = interviewType;
+
+                                populateInterviewerSelectList(id, interviewType, status);
+                            });
+
+                            console.log(interviewEvent.status);
+                            document.getElementById('Status').value = interviewEvent.status;
+                            document.getElementById('Type').value = interviewEvent.interviewType;
+                        }
+                        else
+                        {
+                            console.log(`${studentname} has just been updated to status ${interviewEvent.status}.`)
+                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
+                                "<td>" + studentname + "</td>" +
+                                "<td>" + interviewEvent.status + "</td>" +
+                                "<td>" + time + "</td>" +
+                                "<td>" + date + "</td>" +
+                                "<td>" + interviewEvent.interviewType + "</td>" +
+                                "<td style='width:291px;'>" +
+                                "<a href='/InterviewEvents/StudentCheckIn/" + interviewEvent.id + "' style='color:#9E1B32'>Check In</a> | " +
+                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
+                                "<a href='/InterviewEvents/StudentNoShow/" + interviewEvent.id + "' style='color:#9E1B32'>No Show</a>" +
+                                "</td>";
+
+                            row.remove();
+                            document.getElementById('upcoming').appendChild(newRow);
+                            try{document.querySelector('#upcoming td[colspan="7"]').parentElement.remove();}catch{console.log('No need to clear table.')}
+                        }
+
+                        var timers = document.querySelectorAll(`#timer-${interviewEvent.id}`);
+
+                        timers.forEach(function (timer) {
+                            var startTimeString = timer.innerText;
+                            var startTime = new Date(startTimeString).getTime();
+
+                            if (isNaN(startTime)) {
+                                console.error('Invalid start time:', startTimeString);
+                                return; // Skip this timer
                             }
 
-                            $('#student-name').text('Assign ' + studentName);
+                            console.log(`Start time: ${startTimeString}`);
 
-                            document.getElementById('Id').value = id;
-                            document.getElementById('Status').value = status;
-                            //document.getElementById('InterviewerId').value = interviewerId;
-                            document.getElementById('Type').value = interviewType;
+                            setInterval(function () {
+                                var currentTime = new Date().getTime();
+                                var elapsedTime = currentTime - startTime;
 
-                            populateInterviewerSelectList(id, interviewType, status);
+                                var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+                                var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+                                var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+                                var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                                timer.innerText = formattedTime;
+
+                                // Change color if elapsed time is over 30 minutes
+                                if (minutes >= 30 || hours > 0) {
+                                    timer.style.color = 'red';
+                                    timer.style.fontWeight = 'bold';
+                                }
+                            }, 1000);
                         });
-
-                        console.log(interviewEvent.status);
-                        //console.log(interviewEvent.interviewType);
-                        document.getElementById('Status').value = interviewEvent.status;
-                        document.getElementById('Type').value = interviewEvent.interviewType;
-                        //document.getElementById('InterviewerId').value = interviewername;
                     }
                     catch
                     {
@@ -216,6 +333,8 @@ else
             }
         })
     </script>
+
+    <!-- Handle Edit Form -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var captureButtons = document.querySelectorAll('.capture-data');
@@ -225,10 +344,9 @@ else
                     var row = this.closest('tr');
 
                     var id = row.getAttribute('id');
-                    var status = row.cells[4].textContent.trim();
-                    //var interviewerId = row.cells[6].textContent.trim(); 
-                    var interviewType = row.cells[5].textContent.trim();
                     var studentName = row.cells[1].textContent.trim();
+                    var status = row.cells[2].textContent.trim();
+                    var interviewType = row.cells[5].textContent.trim();
 
                     console.log(id);
 
@@ -237,7 +355,6 @@ else
 
                     document.getElementById('Id').value = id;
                     document.getElementById('Status').value = status;
-                    //document.getElementById('InterviewerId').value = interviewerId;
                     document.getElementById('Type').value = interviewType;
 
                     populateInterviewerSelectList(id, interviewType, status);
@@ -354,6 +471,44 @@ else
                     }));
                 });
             }
+        });
+    </script>
+
+    <!-- Live Timer -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var timers = document.querySelectorAll('[id^="timer-"]');
+
+            timers.forEach(function (timer) {
+                var startTimeString = timer.innerText;
+                var startTime = new Date(startTimeString).getTime();
+
+                if (isNaN(startTime)) {
+                    console.error('Invalid start time:', startTimeString);
+                    return; // Skip this timer
+                }
+
+                console.log(`Start time: ${startTimeString}`);
+
+                setInterval(function () {
+                    var currentTime = new Date().getTime();
+                    var elapsedTime = currentTime - startTime;
+
+                    var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+                    var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+                    var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    timer.innerText = formattedTime;
+
+                    // Change color if elapsed time is over 30 minutes
+                    if (minutes >= 30 || hours > 0) {
+                        timer.style.color = 'red';
+                        timer.style.fontWeight = 'bold';
+                    }
+                }, 1000);
+            });
         });
     </script>
 }

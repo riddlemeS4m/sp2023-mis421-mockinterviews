@@ -25,5 +25,19 @@ namespace sp2023_mis421_mockinterviews.Data.Access
                 }
             }
         }
+
+        public static async Task SeedGlobalConfigVars(MockInterviewDataDbContext context)
+        {
+            var existingConfigVars = await context.GlobalConfigVar.ToDictionaryAsync(c => c.Name);
+
+            var missingConfigVars = GlobalConfigVarSeed.SeedGlobalConfigVars(existingConfigVars);
+
+            foreach (var missingConfigVar in missingConfigVars)
+            {
+                context.Add(missingConfigVar);
+            }
+
+            await context.SaveChangesAsync();
+        }
     }
 }

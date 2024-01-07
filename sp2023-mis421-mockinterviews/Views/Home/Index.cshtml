@@ -14,9 +14,12 @@
     ViewBag.Title = "Welcome to UA MIS Mock Interviews!";
 }
 
-@*<div style="text-align:center">
-    <h2>@ViewBag.Title</h2>
-</div>*@
+@if(!User.Identity.IsAuthenticated)
+{
+    <div style="text-align:center">
+        <h2>@ViewBag.Title</h2>
+    </div>
+}
 
 <div id="disruption-banner" style="text-align:center; display:@Model.DisruptionBanner;"> <!--This should be displayed based on globalconfigvars-->
     <p style="background-color:crimson; color:white; font-size: 40px; padding-top:10px;">
@@ -69,3 +72,48 @@ else
         @await Html.PartialAsync("_SignupInterviewerTimeslotsPartial", Model)
     }
 </div>
+
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var timers = document.querySelectorAll('[id^="timer-"]');
+
+            if(timers.length === 0)
+            {
+                console.log('no timers found');
+            }
+
+            timers.forEach(function (timer) {
+                var startTimeString = timer.innerText;
+                var startTime = new Date(startTimeString).getTime();
+
+                if (isNaN(startTime)) {
+                    console.error('Invalid start time:', startTimeString);
+                    return; // Skip this timer
+                }
+
+                console.log(`Start time: ${startTimeString}`);
+
+                setInterval(function () {
+                    var currentTime = new Date().getTime();
+                    var elapsedTime = currentTime - startTime;
+
+                    var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+                    var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
+                    var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
+
+                    var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+                    timer.innerText = formattedTime;
+
+                    // Change color if elapsed time is over 30 minutes
+                    if (minutes >= 30 || hours > 0) {
+                        timer.style.color = 'red';
+                        timer.style.fontWeight = 'bold';
+                    }
+                }, 1000);
+            });
+        });
+    </script>
+}

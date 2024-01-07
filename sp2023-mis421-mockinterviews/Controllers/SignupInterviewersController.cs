@@ -30,8 +30,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Index()
         {
-            var mockInterviewDataDbContext = _context.SignupInterviewer;
-            return View(await mockInterviewDataDbContext.ToListAsync());
+            var sits = await _context.SignupInterviewerTimeslot
+                .Include(s => s.SignupInterviewer)
+                .Include(s => s.Timeslot)
+                .ThenInclude(s => s.EventDate)
+                .Where(s => s.Timeslot.EventDate.IsActive)
+                .Select(s => s.SignupInterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            var sis = await _context.SignupInterviewer
+                .Where(s => sits.Contains(s.Id))
+                .ToListAsync();
+
+            return View(sis);
         }
 
         // GET: SignupInterviewers/Details/5

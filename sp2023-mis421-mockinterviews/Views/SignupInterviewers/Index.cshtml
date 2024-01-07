@@ -4,66 +4,28 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
-
-<p>
-    <a asp-action="Create">Create New</a>
+<h1>Interviewers Signed Up</h1>
+<p> 
+    <a asp-controller="SignupInterviewerTimeslots" asp-action="CreateForInterviewer">Manually Signup Interviewer</a>
 </p>
 <table class="table">
     <thead>
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.FirstName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.LastName)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsVirtual)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InPerson)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsTechnical)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsBehavioral)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InterviewerId)
-            </th>
+            <th>Name</th>
+            <th>In Person?</th>
             <th></th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model) 
+{
         <tr>
+            <td>@item.FirstName @item.LastName</td>
+            <td>@item.InPerson</td>
             <td>
-                @Html.DisplayFor(modelItem => item.FirstName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LastName)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsVirtual)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InPerson)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsTechnical)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsBehavioral)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.InterviewerId)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-controller="SignupInterviewerTimeslots" asp-action="Edit" asp-route-id="@item.Id">Edit Availability</a> |
+                <a asp-action="" asp-route-id="@item.Id">Details</a> |
+                <a asp-action="" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

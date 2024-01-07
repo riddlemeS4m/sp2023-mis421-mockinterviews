@@ -6,11 +6,9 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Location</th>
                 <th>Student</th>
                 <th>Interview Type</th>
+                <th>Timer</th>
                 <th>Update Status</th>
                 <th>View Profile</th>
             </tr>
@@ -19,16 +17,6 @@
             @foreach (var interviewEventViewModel in Model.InterviewerScheduledInterviews)
             {
                 <tr>
-                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
-                    <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
-                    @if (interviewEventViewModel.InterviewEvent.Location == null)
-                    {
-                        <td>Not Assigned</td>
-                    }
-                    else
-                    {
-                        <td>@interviewEventViewModel.InterviewEvent.Location.Room</td>
-                    }
                     @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
                     {
                         <td>Not Assigned</td>
@@ -38,8 +26,10 @@
                         <td>@interviewEventViewModel.StudentName</td>
                     }
                     <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td id="timer-@interviewEventViewModel.InterviewEvent.Id">@interviewEventViewModel.InterviewEvent.StartTime</td>
                     <td>
-                        <a asp-action="Edit" asp-route-id="@interviewEventViewModel.InterviewEvent.Id" asp-controller="InterviewEvents">Update</a>
+@*                        <a asp-action="Edit" asp-route-id="@interviewEventViewModel.InterviewEvent.Id" asp-controller="InterviewEvents">Update</a>
+*@                        <a id="canBeRemoved-@interviewEventViewModel.InterviewEvent.Id" asp-action="StudentComplete" asp-route-id="@interviewEventViewModel.InterviewEvent.Id" asp-controller="InterviewEvents">I'm Done</a>
                     </td>
                     <td>
                         <a asp-controller="Users" asp-action="ExternalUserProfileView" asp-route-userId="@interviewEventViewModel.InterviewEvent.StudentId">View @interviewEventViewModel.StudentName's Profile</a>
@@ -91,3 +81,46 @@ else
 {
     <p>No upcoming events</p>
 }
+<hr />
+<h3>Completed Interviews</h3>
+@if (Model.CompletedInterviews.Count() > 0)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Time</th>
+                <th>Student</th>
+                <th>Interview Type</th>
+                <th>View Profile</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var interviewEventViewModel in Model.CompletedInterviews)
+            {
+                <tr>
+                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
+                    @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
+                    {
+                        <td>Not Assigned</td>
+                    }
+                    else
+                    {
+                        <td>@interviewEventViewModel.StudentName</td>
+                    }
+                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td>
+                        <a asp-controller="Users" asp-action="ExternalUserProfileView" asp-route-userId="@interviewEventViewModel.InterviewEvent.StudentId">View @interviewEventViewModel.StudentName's Profile</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No completed interviews</p>
+}
+<hr />
+

@@ -216,6 +216,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var model = new InterviewEventIndexViewModel();
             var eventslist = new List<InterviewEventViewModel>();
+
             foreach(InterviewEvent interviewEvent in interviewEvents)
             {
                 var interviewEventViewModel = new InterviewEventViewModel();
@@ -1512,6 +1513,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> StudentCheckIn(int id)
         {
+            Console.WriteLine($"Interviewee checked in. Interview Id: {id}");
+
             if (id == null || _context.InterviewEvent == null)
             {
                 return BadRequest("Interview not found.");
@@ -1529,6 +1532,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             interviewEvent.Status = StatusConstants.CheckedIn;
+            interviewEvent.CheckInTime = DateTime.Now;
 
             try
             {
@@ -1552,6 +1556,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> StudentComplete(int id)
         {
+            Console.WriteLine($"Interview marked completed. Id: {id}");
+
             if (id == null || _context.InterviewEvent == null)
             {
                 return BadRequest("Interview not found.");
@@ -1569,6 +1575,55 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             interviewEvent.Status = StatusConstants.Completed;
+            interviewEvent.EndTime = DateTime.Now;
+
+            try
+            {
+                _context.Update(interviewEvent);
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return Conflict("Concurrency exception occurred.");
+            }
+            catch (DbUpdateException)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "Database error occurred.");
+            }
+
+            await UpdateHub(id);
+
+            if(User.IsInRole(RolesConstants.InterviewerRole))
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            return NoContent();
+        }
+
+        [Authorize(Roles=RolesConstants.AdminRole)]
+        public async Task<IActionResult> StudentNoShow(int id)
+        {
+            Console.WriteLine($"Interview marked no-show. Id: {id}");
+
+            if (id == null || _context.InterviewEvent == null)
+            {
+                return BadRequest("Interview not found.");
+            }
+
+            var interviewEvent = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (interviewEvent == null)
+            {
+                return NotFound("Interview not found.");
+            }
+
+            interviewEvent.Status = StatusConstants.NoShow;
+            interviewEvent.EndTime = DateTime.Now;
 
             try
             {
@@ -1633,6 +1688,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 if (signupInterviewTimeslot != null && interviewEvent.Status == StatusConstants.CheckedIn)
                 {
                     interviewEvent.Status = StatusConstants.Ongoing;
+                    interviewEvent.StartTime = DateTime.Now;
                 }
 
                 var interviewerPreference = "";
@@ -1725,6 +1781,78 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return vm;
         }
 
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> GetCompletedInterviews()
+        {
+            var interviewEvents = await _context.InterviewEvent
+                .Include(i => i.Location)
+                .Include(i => i.SignupInterviewerTimeslot)
+                .ThenInclude(i => i.SignupInterviewer)
+                .Include(i => i.Timeslot)
+                .ThenInclude(j => j.EventDate)
+                .Where(i => (i.Status == StatusConstants.Completed ||
+                    i.Status == StatusConstants.NoShow) &&
+                    i.Timeslot.EventDate.IsActive)
+                .ToListAsync();
+
+            // 1. Collect unique StudentIds
+            var studentIds = interviewEvents
+                .Select(ie => ie.StudentId)
+                .Distinct()
+                .ToList();
+
+            // 2. Fetch student names for all unique StudentIds
+            var studentNames = await _userManager.Users
+                .Where(u => studentIds.Contains(u.Id))
+                .Select(u => new { u.Id, FullName = $"{u.FirstName} {u.LastName}" })
+                .ToDictionaryAsync(u => u.Id, u => u.FullName);
+
+            //3. Collect unique InterviewerIds
+            var interviewerIds = await _context.SignupInterviewer
+                .Select(ie => ie.InterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            // 4. Fetch interviewer names for all unique InterviewerIds
+            var interviewerNames = await _userManager.Users
+                .Where(u => interviewerIds.Contains(u.Id))
+                .Select(u => new { u.Id, FullName = $"{u.FirstName} {u.LastName}" })
+                .ToDictionaryAsync(u => u.Id, u => u.FullName);
+
+            var eventslist = new List<InterviewEventViewModel>();
+
+            foreach (InterviewEvent interviewEvent in interviewEvents)
+            {
+                var interviewEventViewModel = new InterviewEventViewModel();
+
+                if (studentNames.TryGetValue(interviewEvent.StudentId, out var studentName))
+                {
+                    interviewEventViewModel.StudentName = studentName;
+                }
+
+                if (interviewEvent.SignupInterviewerTimeslot != null)
+                {
+                    if (interviewerNames.TryGetValue(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId, out var interviewerName))
+                    {
+                        interviewEventViewModel.InterviewerName = interviewerName;
+                    }
+
+                    interviewEventViewModel.InterviewEvent = interviewEvent;
+
+                    eventslist.Add(interviewEventViewModel);
+                }
+                else
+                {
+                    interviewEventViewModel.InterviewerName = "Not Assigned";
+                    interviewEventViewModel.InterviewEvent = interviewEvent;
+
+                    eventslist.Add(interviewEventViewModel);
+                }
+            }
+
+            return View(eventslist);
+        }
+
         private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
         {
             Console.WriteLine(date);
@@ -1805,7 +1933,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Select(x => x.FirstName + " " + x.LastName)
                 .FirstOrDefaultAsync();
 
-            if (newInterviewEvent.Status == StatusConstants.Completed)
+            if (newInterviewEvent.Status == StatusConstants.Completed || newInterviewEvent.Status == StatusConstants.NoShow)
             {
                 studentname = "delete";
             }
@@ -1831,7 +1959,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var time = $"{newInterviewEvent.Timeslot.Time:hh:mm tt}";
             var date = $"{newInterviewEvent.Timeslot.EventDate.Date:M/d/yyyy}";
 
+            Console.WriteLine("Requesting all connected clients to update.");
             await _hubContext.Clients.All.SendAsync("ReceiveInterviewEventUpdate", newInterviewEvent, studentname, interviewername, time, date);
+            Console.WriteLine("Requested.");
         }
     }
 }

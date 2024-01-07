@@ -155,6 +155,7 @@ namespace sp2023_mis421_mockinterviews
                     UserDbContextSeed.SeedRolesAsync(roleManager).Wait();
                     UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd).Wait();
                     MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
+                    MockInterviewDbContextSeed.SeedGlobalConfigVars(timeslotcontext).Wait();
                 }
                 catch (Exception ex)
                 {

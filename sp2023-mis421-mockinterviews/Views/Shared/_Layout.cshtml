@@ -99,7 +99,7 @@
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Event</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
                                      <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewerTimeslots" asp-action="Index">Interviewers</a>
+                                         <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interviewers</a>
                                      </li>
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteers</a>
@@ -177,6 +177,9 @@
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
                                 <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="GetCompletedInterviews">Completed Interviews</a>
+                                    </li>
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="EventDates" asp-action="EventStatistics">Event Statistics</a>
                                     </li>

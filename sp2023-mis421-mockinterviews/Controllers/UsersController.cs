@@ -12,6 +12,12 @@ using System.Net.Mime;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
+    public class CreateUserModel
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Email { get; set; }
+    }
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
@@ -105,6 +111,59 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             return RedirectToAction("Index", "UserRoles");
+        }
+
+        [HttpGet]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public IActionResult CreateProvisionaryUser()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> CreateProvisionaryUser(CreateUserModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser { FirstName = model.FirstName, LastName = model.LastName, Email = model.Email, UserName = model.Email };
+                var result = await _userManager.CreateAsync(user, $"{model.FirstName}Spring2024!");
+
+                if (result.Succeeded)
+                {
+                    // User successfully created
+                    // Redirect or return appropriate response
+
+                    var newUser = await _userManager.FindByEmailAsync(model.Email) ?? throw new Exception($"User with email {model.Email} was not successfully created.");
+                    var roleResult = await _userManager.AddToRoleAsync(newUser, RolesConstants.InterviewerRole);
+
+                    if(roleResult.Succeeded)
+                    {
+                        return RedirectToAction("Index", "UserRoles");
+                    }
+                    else
+                    {
+                        // Handle errors in creating the user
+                        // Add model errors if needed
+                        foreach (var error in result.Errors)
+                        {
+                            ModelState.AddModelError(string.Empty, error.Description);
+                        }
+                    }
+                }
+                else
+                {
+                    // Handle errors in creating the user
+                    // Add model errors if needed
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+
+            // If model state is not valid or user creation fails, return to the creation page with errors
+            return View(model);
         }
     }
 }

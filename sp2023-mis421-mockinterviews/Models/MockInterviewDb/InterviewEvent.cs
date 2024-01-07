@@ -30,6 +30,15 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         public int? SignupInterviewerTimeslotId { get; set; }
         [ValidateNever]
         public SignupInterviewerTimeslot? SignupInterviewerTimeslot { get; set; }
+        [Display(Name = "Check-In Time")]
+        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        public DateTime? CheckInTime { get; set; }
+        [Display(Name = "Interview Timer")]
+        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        public DateTime? StartTime { get; set; }
+        [Display(Name = "Interview End Time")]
+        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
+        public DateTime? EndTime { get; set; }
 		public override string ToString()
 		{
 			return $"{Timeslot.Time:h\\:mm tt} on {Timeslot.EventDate.Date:M/dd/yyyy} <br>";
