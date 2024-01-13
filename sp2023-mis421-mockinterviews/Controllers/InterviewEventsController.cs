@@ -71,6 +71,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
     }
 
+    public class EditInlineResponse
+    {
+        public string StudentName { get; set; }
+        public string InterviewType { get; set; }
+        public string InterviewerName { get; set; }
+        public string Location { get; set; }
+    }
+
     public class InterviewEventsController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
@@ -95,70 +103,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
         {         
-            //var currdate = DateTime.Now.Date;
-
-            //var eventdate = await _context.EventDate
-            //    .Where(x => x.Date.Date == currdate)
-            //    .FirstOrDefaultAsync();
-
-            //var for221 = For221Constants.For321andAbove;
-            //var for221 = For221.b;
-            //var date = currdate;
-            //if(eventdate != null)
-            //{
-            //    for221 = eventdate.For221;
-            //    date = eventdate.Date;
-            //}
-
-            ////Gets list of all distinct interviewers that are in an InterviewEvent with a status of checked in or ongoing
-            //var selectedStatus = await _context.InterviewEvent
-            //    .Include(x => x.SignupInterviewerTimeslot)
-            //    .ThenInclude(x => x.SignupInterviewer)
-            //    .Include(x => x.Timeslot)
-            //    .ThenInclude(x => x.EventDate)
-            //    .Where(u => (u.Status == StatusConstants.CheckedIn || u.Status == StatusConstants.Ongoing) &&
-            //        u.SignupInterviewerTimeslotId != null)
-            //    .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
-            //    .Distinct()
-            //    .ToListAsync();
-
-            ////Get list of all distinct interviewers that are assigned to a location
-            //var selectedLocation = await _context.LocationInterviewer
-            //    .Where(x => x.LocationId != null && 
-            //        x.EventDate.Date == date && 
-            //        x.EventDate.For221 == for221)
-            //    .Select(x => x.InterviewerId)
-            //    .Distinct()
-            //    .ToListAsync();
-
-            //var selectedinterviewers = selectedLocation
-            //    .Except(selectedStatus)
-            //    .ToList();
-
-
             var interviewers = new List<AvailableInterviewer>();
-            //foreach(var interviewer in selectedinterviewers)
-            //{
-            //    var name = await _context.SignupInterviewer
-            //        .Where(x => x.InterviewerId == interviewer)
-            //        .Select(x => x.FirstName + " " + x.LastName)
-            //        .FirstOrDefaultAsync();
-            //    var interviewertype = await _context.SignupInterviewer
-            //        .Where(x => x.InterviewerId == interviewer)
-            //        .Select(x => x.InterviewType)
-            //        .FirstOrDefaultAsync();
-            //    var room = await _context.LocationInterviewer
-            //        .Where(x => x.InterviewerId == interviewer && x.EventDate.Date == date)
-            //        .Select(x => x.Location.Room)
-            //        .FirstOrDefaultAsync();
-            //    interviewers.Add(new AvailableInterviewer
-            //    {
-            //        Name = name,
-            //        InterviewType = interviewertype,
-            //        Room = room
-            //    });
-            //}
-
+            
             var hoursInAdvanceStr = _context.GlobalConfigVar
                 .Where(x => x.Name == "interview_index_hours")
                 .Select(x => x.Value)
@@ -1692,16 +1638,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
 
                 var interviewerPreference = "";
-                if (signupInterviewTimeslot.SignupInterviewer.IsVirtual && signupInterviewTimeslot.SignupInterviewer.InPerson)
-                {
+                if (signupInterviewTimeslot.SignupInterviewer.IsVirtual && signupInterviewTimeslot.SignupInterviewer.InPerson){
                     interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
-                }
-                else if (signupInterviewTimeslot.SignupInterviewer.IsVirtual)
-                {
+                } else if (signupInterviewTimeslot.SignupInterviewer.IsVirtual){
                     interviewerPreference = InterviewLocationConstants.IsVirtual;
-                }
-                else if (signupInterviewTimeslot.SignupInterviewer.InPerson)
-                {
+                } else if (signupInterviewTimeslot.SignupInterviewer.InPerson){
                     interviewerPreference = InterviewLocationConstants.InPerson;
                 }
 
@@ -1732,6 +1673,46 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 _context.Update(interviewEvent);
                 await _context.SaveChangesAsync();
+
+                await UpdateHub(Id);
+
+                var ie = await _context.InterviewEvent
+                    .Include(x => x.SignupInterviewerTimeslot)
+                    .ThenInclude(x => x.SignupInterviewer)
+                    .Where(x => x.Id == Id)
+                    .Select(x => new
+                    {
+                        x.StudentId,
+                        InterviewerName = x.SignupInterviewerTimeslot.SignupInterviewer.FirstName + " " + x.SignupInterviewerTimeslot.SignupInterviewer.LastName,
+                    })
+                    .FirstOrDefaultAsync();
+
+                var locationRoom = interviewEvent.Location.Room;
+                if(locationRoom == null)
+                {
+                    locationRoom = "**Not Assigned**";
+                }
+
+                var student = await _userManager.Users
+                    .Where(x => x.Id == ie.StudentId)
+                    .Select(x => new
+                    {
+                        StudentName = x.FirstName + " " + x.LastName,
+                    })
+                    .FirstOrDefaultAsync();
+
+                var response = new EditInlineResponse
+                {
+                    StudentName = student.StudentName, // Replace with actual values
+                    InterviewType = interviewEvent.InterviewType, // Replace with actual values
+                    InterviewerName = ie.InterviewerName, // Replace with actual values
+                    Location = interviewEvent.Location.Room, // Replace with actual values
+                };
+
+                await UpdateHub(Id);
+
+                return Ok(response);
+
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -1744,14 +1725,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     throw;
                 }
             }
-            if (User.IsInRole(RolesConstants.AdminRole))
-            {
-                await UpdateHub(Id);
-
-                return NoContent();
-            }
-
-            return BadRequest("There was an error updating the InterviewEvent.");
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]

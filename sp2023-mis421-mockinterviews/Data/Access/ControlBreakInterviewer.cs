@@ -4,6 +4,7 @@ using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
+using System.Xml.Linq;
 
 namespace sp2023_mis421_mockinterviews.Data.Access
 {
@@ -17,109 +18,82 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 
 		public async Task<List<TimeRangeViewModel>> ToTimeRanges(List<SignupInterviewerTimeslot> signupInterviewTimeslots)
 		{
+			signupInterviewTimeslots = signupInterviewTimeslots.OrderBy(x => x.SignupInterviewerId).ThenBy(x => x.TimeslotId).ToList();
 			var groupedEvents = new List<TimeRangeViewModel>();
+			var name = new ApplicationUser();
+
 			if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
 			{
 				var ints = new List<int>();
-				var currentStart = signupInterviewTimeslots.First().Timeslot;
-				var currentEnd = signupInterviewTimeslots.First().Timeslot;
-				var inperson = signupInterviewTimeslots.First().SignupInterviewer.InPerson;
-				var isvirtual = signupInterviewTimeslots.First().SignupInterviewer.IsVirtual;
-				var interviewerId = signupInterviewTimeslots.First().SignupInterviewer.InterviewerId;
-				var interviewtype = signupInterviewTimeslots.First().SignupInterviewer.InterviewType;
-				var wantslunch = signupInterviewTimeslots.First().SignupInterviewer.Lunch;
+				var currentSI = signupInterviewTimeslots.First().SignupInterviewer;
+				var currentEvent = signupInterviewTimeslots.First().Timeslot;
+				var startAt = signupInterviewTimeslots.First().Timeslot.Time;
+
 				ints.Add(signupInterviewTimeslots.First().Id);
 
-				string? location;
 				for (int i = 1; i < signupInterviewTimeslots.Count; i++)
 				{
+					var nextSI = signupInterviewTimeslots[i].SignupInterviewer;
 					var nextEvent = signupInterviewTimeslots[i].Timeslot;
 
-					if (currentEnd.Id + 1 == nextEvent.Id
-						&& currentEnd.EventDate.Date == nextEvent.EventDate.Date
-						&& signupInterviewTimeslots[i].SignupInterviewer.InPerson == inperson
-						&& signupInterviewTimeslots[i].SignupInterviewer.IsVirtual == isvirtual
-						&& signupInterviewTimeslots[i].SignupInterviewer.InterviewerId == interviewerId
-						&& signupInterviewTimeslots[i].SignupInterviewer.InterviewType == interviewtype)
+					if (signupInterviewTimeslots[i].SignupInterviewerId == currentSI.Id
+						&& signupInterviewTimeslots[i].TimeslotId == currentEvent.Id + 1)
 					{
-						currentEnd = nextEvent;
+						currentEvent = nextEvent;
 						ints.Add(signupInterviewTimeslots[i].Id);
 					}
 					else
 					{
-						if (signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson && signupInterviewTimeslots[i - 1].SignupInterviewer.IsVirtual)
-						{
-							location = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
-						}
-						else if(signupInterviewTimeslots[i - 1].SignupInterviewer.InPerson)
-						{
-							location = InterviewLocationConstants.InPerson;
-						}
-						else
-						{
-							location = InterviewLocationConstants.IsVirtual;
-						}
-
-						var type = signupInterviewTimeslots[i - 1].SignupInterviewer.InterviewType;
-
-						var name = await _userManager.FindByIdAsync(signupInterviewTimeslots[i - 1].SignupInterviewer.InterviewerId);
-						
+						name = await _userManager.FindByIdAsync(currentSI.InterviewerId);
 						groupedEvents.Add(new TimeRangeViewModel
 						{
-							Date = currentStart.EventDate.Date,
-							EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-							StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-							Location = location,
+							Date = currentEvent.EventDate.Date,
+							EndTime = currentEvent.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+							StartTime = startAt.ToString(@"h\:mm tt"),
+							Location = GetLocation(currentSI.InPerson),
 							Name = name.FirstName + " " + name.LastName,
-							InterviewType = type,
+							InterviewType = currentSI.InterviewType,
 							TimeslotIds = ints,
-							WantsLunch = wantslunch
+							WantsLunch = currentSI.Lunch,
+							SignupInterviewerId = currentSI.Id
 						});
 
-						currentStart = nextEvent;
-						currentEnd = nextEvent;
 						ints = new List<int>
-							{
-								signupInterviewTimeslots[i].Id
-							};
-						inperson = signupInterviewTimeslots[i].SignupInterviewer.InPerson;
-						isvirtual = signupInterviewTimeslots[i].SignupInterviewer.IsVirtual;
-						interviewerId = signupInterviewTimeslots[i].SignupInterviewer.InterviewerId;
-						interviewtype = signupInterviewTimeslots[i].SignupInterviewer.InterviewType; 
-						wantslunch = signupInterviewTimeslots[i].SignupInterviewer.Lunch;
+						{
+							signupInterviewTimeslots[i].Id
+						};
+						currentSI = nextSI;
+                        currentEvent = nextEvent;
+                        startAt = nextEvent.Time;
+
                     }
-				}
+                }
 
-				if (inperson && isvirtual)
-				{
-					location = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
-				}
-				else if(inperson)
-				{
-					location = InterviewLocationConstants.InPerson;
-				}
-				else
-				{
-					location = InterviewLocationConstants.IsVirtual;
-				}
-
-				var lasttype = interviewtype;
-
-				var user = await _userManager.FindByIdAsync(interviewerId);
+				name = await _userManager.FindByIdAsync(currentSI.InterviewerId);
 				groupedEvents.Add(new TimeRangeViewModel
 				{
-					Date = currentStart.EventDate.Date,
-					EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
-					StartTime = currentStart.Time.ToString(@"h\:mm tt"),
-					Location = location,
-					Name = user.FirstName + " " + user.LastName,
-					InterviewType = lasttype,
-					TimeslotIds = ints,
-					WantsLunch = wantslunch
-				});
+                    Date = currentEvent.EventDate.Date,
+                    EndTime = currentEvent.Time.AddMinutes(30).ToString(@"h\:mm tt"),
+                    StartTime = startAt.ToString(@"h\:mm tt"),
+                    Location = GetLocation(currentSI.InPerson),
+                    Name = name.FirstName + " " + name.LastName,
+                    InterviewType = currentSI.InterviewType,
+                    TimeslotIds = ints,
+                    WantsLunch = currentSI.Lunch,
+                    SignupInterviewerId = currentSI.Id
+                });
 			}
 
 			return groupedEvents;
+		}
+
+		private static string GetLocation(bool loc)
+		{
+			if(loc)
+			{
+				return InterviewLocationConstants.InPerson;
+			}
+			return InterviewLocationConstants.IsVirtual;
 		}
 	}
 }

@@ -4,44 +4,19 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Cancel</h1>
-
-<h3>Are you sure you want to cancel this?</h3>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Date)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Date)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Location)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Location)
-        </dd>
-    </dl>
-
+<h1>Confirmation</h1>
+<hr />
+@*<h3>Are you sure you want to cancel this?</h3>
+*@
+<div id="center-everything">
+    <h4>Are you sure that you'd like to cancel all your availability?</h4>
+    <br />
     <form asp-action="UserDeleteRangeConfirmed" asp-controller="SignupInterviewerTimeslots">
-        @for (int i = 0; i < Model.TimeslotIds.Count; i++)
-        {
-            <input type="hidden" name="timeslots[@i]" value="@Model.TimeslotIds[i]" />
-        }
-        <input type="submit" value="Delete" class="btn btn-primary" /> |
-        @Html.ActionLink("Cancel", "Index", "Home")
+        <input type="hidden" name="id" value="@Model.SignupInterviewerId" />
+        <div>
+            <input type="submit" value="Yes, Cancel" class="btn btn-primary" /> |
+            <button asp-action="Index" asp-controller="Home" class="btn btn-secondary">No, Go Back</button>
+        </div>
     </form>
 </div>
+

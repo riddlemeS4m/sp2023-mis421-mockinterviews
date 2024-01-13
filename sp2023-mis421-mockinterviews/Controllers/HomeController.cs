@@ -123,6 +123,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         && v.Timeslot.EventDate.IsActive)
                     .ToListAsync();
 
+
+                if (signupInterviewTimeslots.Count > 0)
+                {
+                    var si = signupInterviewTimeslots
+                        .Select(x => x.SignupInterviewerId)
+                        .Distinct()
+                        .ToList();
+
+                    model.SignupInterviewerId1 = si[0];
+
+                    if(si.Count == 2)
+                    {
+                        model.SignupInterviewerId2 = si[1];
+                    }
+                }
+
                 var timeRanges = new ControlBreakInterviewer(_userManager);
                 var groupedEvents = await timeRanges.ToTimeRanges(signupInterviewTimeslots);
 

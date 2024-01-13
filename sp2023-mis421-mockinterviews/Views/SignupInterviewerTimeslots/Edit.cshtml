@@ -14,14 +14,32 @@
             <input type="hidden" asp-for="SignupInterviewer.InterviewerId" />
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div id="center-everything">
-                <label asp-for="SignupInterviewer.InPerson" class="control-label">Will they be in person or online?</label>
+                <label asp-for="SignupInterviewer.InPerson" class="control-label">Will you be in person or online?</label>
                 <br />
                 <div class="form-check form-check-inline">
-                    <input id="InPerson" class="form-check-input" type="checkbox" name="SignupInterviewer.InPerson" value="true" data-val="true" data-val-required="Please select at least one" checked="@Model.SignupInterviewer.InPerson">
+                    <input 
+                        id="InPerson" 
+                        class="form-check-input" 
+                        type="radio" 
+                        name="SignupInterviewer.InPerson" 
+                        value="true"
+                        checked="@Model.SignupInterviewer.InPerson"
+                        data-val="true" 
+                        data-val-required="Please select at least one" 
+                    >
                     <label class="form-check-label" for="InPerson">In Person</label>
                 </div>
                 <div class="form-check form-check-inline">
-                    <input id="IsVirtual" class="form-check-input" type="checkbox" name="SignupInterviewer.IsVirtual" value="true" data-val="true" data-val-required="Please select at least one" checked="@Model.SignupInterviewer.IsVirtual">
+                    <input 
+                        id="InPerson" 
+                        class="form-check-input" 
+                        type="radio" 
+                        name="SignupInterviewer.InPerson" 
+                        value="false"
+                        checked="@Model.SignupInterviewer.IsVirtual"
+                        data-val="true" 
+                        data-val-required="Please select at least one"                         
+                    >
                     <label class="form-check-label" for="IsVirtual">Virtual</label>
                 </div>
                 <div>
@@ -32,14 +50,28 @@
 
             <div id="center-everything">
                 <div id="lunch-question" style="display: none;">
-                    <label asp-for="SignupInterviewer.Lunch" class="control-label">Do they want lunch?</label>
+                    <label asp-for="SignupInterviewer.Lunch" class="control-label">Do you want lunch?</label>
                     <br />
                     <div class="form-check form-check-inline">
-                        <input id="LunchTrue" class="form-check-input" type="radio" name="Lunch" value="true" data-val="false" checked="@Model.SignupInterviewer.Lunch">
+                        <input 
+                            id="LunchTrue" 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="Lunch" 
+                            value="true" 
+                            data-val="false" 
+                            checked="@Model.SignupInterviewer.Lunch">
                         <label class="form-check-label" for="LunchTrue">Yes</label>
                     </div>
                     <div class="form-check form-check-inline">
-                        <input id="LunchFalse" class="form-check-input" type="radio" name="Lunch" value="false" data-val="false" checked="@Model.SignupInterviewer.!Lunch">
+                        <input 
+                            id="LunchFalse" 
+                            class="form-check-input" 
+                            type="radio" 
+                            name="Lunch" 
+                            value="false" 
+                            data-val="false" 
+                            checked="@Model.SignupInterviewer.!Lunch">
                         <label class="form-check-label" for="LunchFalse">No</label>
                     </div>
                     <div>
@@ -53,17 +85,41 @@
                 <label class="control-label">What types of interviews would you be comfortable giving?</label>
                 <br />
                 <div class="form-check form-check-inline">
-                    <input id="IsTechnical" class="form-check-input" type="checkbox" name="SignupInterviewer.IsTechnical" value="true" data-val="true" data-val-required="Please select at least one" checked="@Model.SignupInterviewer.IsTechnical">
+                    <input 
+                        id="IsTechnical" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsTechnical" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one" 
+                        checked="@Model.SignupInterviewer.IsTechnical">
                     <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
                 </div>
                 <br />
                 <div class="form-check form-check-inline">
-                    <input id="IsBehavioral" class="form-check-input" type="checkbox" name="SignupInterviewer.IsBehavioral" value="true" data-val="true" data-val-required="Please select at least one" checked="@Model.SignupInterviewer.IsBehavioral">
+                    <input 
+                        id="IsBehavioral" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsBehavioral" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one" 
+                        checked="@Model.SignupInterviewer.IsBehavioral">
                     <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
                 </div>
                 <br />
                 <div class="form-check form-check-inline">
-                    <input id="IsCase" class="form-check-input" type="checkbox" name="SignupInterviewer.IsCase" value="true" data-val="true" data-val-required="Please select at least one" checked="@Model.SignupInterviewer.IsCase">
+                    <input 
+                        id="IsCase" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsCase" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one" 
+                        checked="@Model.SignupInterviewer.IsCase">
                     <label for="IsCase" class="form-check-label">Case Interviews</label>
                 </div>
                 <div>
@@ -74,13 +130,19 @@
             <br /><br />
             <div class="row" id="center-everything">
                 <div class="col-md-6">
-                    <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds1">Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
+                    <button 
+                        type="button" 
+                        class="selectAllButton btn btn-primary" 
+                        data-target="SelectedEventIds1">Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
                 </div>
                 <br />
                 @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                 {
                     <div class="col-md-6">
-                        <button type="button" class="selectAllButton btn btn-primary" data-target="SelectedEventIds2">Select Day @(Model.EventDates.IndexOf(Model.EventDates[^1]) + 1)</button>
+                        <button 
+                            type="button" 
+                            class="selectAllButton btn btn-primary" 
+                            data-target="SelectedEventIds2">Select Day @(Model.EventDates.IndexOf(Model.EventDates[^1]) + 1)</button>
                     </div>
                 }
                 <br />
@@ -174,11 +236,20 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            var checkbox = document.getElementById('InPerson');
+            var checkbox1 = document.querySelector("#InPerson[value='true']");
+            var checkbox2 = document.querySelector("#InPerson[value='false']");
+            var checkbox2Label = document.getElementById('annoyingLabel');
             var divToToggle = document.getElementById('lunch-question'); // Replace 'divToToggle' with the actual ID of your target div
 
-            checkbox.addEventListener('click', function () {
-                divToToggle.style.display = checkbox.checked ? 'block' : 'none';
+            checkbox1.addEventListener('click', function () {
+                divToToggle.style.display = 'block';
+            });
+            checkbox2.addEventListener('click', function () {
+                divToToggle.style.display = 'none';
+            });
+            checkbox2Label.addEventListener('click', function () {
+                checkbox2.checked = !checkbox2.checked;
+                divToToggle.style.display = 'none';
             });
         });
     </script>

@@ -56,6 +56,23 @@ else
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="exampleModalLongTitle">Interview Scheduled!</h3>
+            </div>
+            <div class="modal-body" style="color:black;">
+                <p id="successText"></p>
+            </div>
+            <div class="modal-footer">
+                <button id="hideModalButton" type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <hr />
 <h4 id="testing">Ongoing Interviews</h4>
 <table class="table">
@@ -421,7 +438,6 @@ else
 
                 // Fetch form data
                 let formData = new FormData(this);
-
                 fetch('/InterviewEvents/EditInline', {
                     method: 'POST',
                     body: formData
@@ -432,6 +448,19 @@ else
                         } else {
                             console.error('Form submission failed');
                         }
+
+                        return response.json();
+                    })
+                    .then(data => {
+                        console.log(data);
+                        // Update the modal content with fetched data
+                        const successMessage = `Successfully submitted! <b>${data.studentName}</b> has a <b>${data.interviewType}</b> interview with <b><u>${data.interviewerName}</u></b> in <b><u>${data.location}</u></b>.`;
+                        document.getElementById('successText').innerHTML = successMessage;
+
+                        // Show the modal
+                        let modal = document.getElementById('exampleModalCenter');
+                        let modalObject = $(modal);
+                        $(modalObject).modal('show');
                     })
                     .catch(error => {
                         console.error('Error:', error);
@@ -445,6 +474,13 @@ else
         document.getElementById('hide-button').addEventListener('click', function () {
             document.getElementById('editForm').reset();
             document.getElementById('edit-form-div').style.display = 'none';
+        });
+
+        // Event listener for "Done" button in the modal
+        document.getElementById('hideModalButton').addEventListener('click', function () {
+            let modal = document.getElementById('exampleModalCenter');
+            let modalObject = $(modal);
+            $(modalObject).modal('hide');
         });
 
         $(document).ready(function () {

@@ -16,5 +16,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public string ZoomLink { get; set; }
         public string ZoomLinkVisible { get; set; }
         public string DisruptionBanner { get; set; }
+        public int? SignupInterviewerId1 { get; set; }
+        public int? SignupInterviewerId2 { get; set; }
     }
 }

@@ -25,7 +25,7 @@
             <td>
                 <a asp-controller="SignupInterviewerTimeslots" asp-action="Edit" asp-route-id="@item.Id">Edit Availability</a> |
                 <a asp-action="" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="" asp-route-id="@item.Id">Delete</a>
+                <a asp-controller="SignupInterviewerTimeslots" asp-action="UserDeleteRange" asp-route-id="@item.Id">Delete</a>
             </td>
         </tr>
 }

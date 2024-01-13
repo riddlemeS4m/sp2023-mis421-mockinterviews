@@ -17,6 +17,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public List<int> TimeslotIds { get; set; }
         [Display(Name = "Lunch")]
         public bool? WantsLunch { get; set; }
+        public int? SignupInterviewerId { get; set; }
 
     }
 }
