@@ -122,7 +122,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     await _context.MSTeamsStudentUpload.AddRangeAsync(filteredRecords);
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {
@@ -228,7 +228,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 if (RosterData == null || RosterData.Length == 0)
                 {
-                    return RedirectToAction("Index", "Home");
+                    return BadRequest("Uploaded file was empty.");
                 }
 
                 try
@@ -243,14 +243,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                         while (!parser.EndOfData)
                         {
-                            // Expected format is LastName in column 1, Firstname in column 2, Username in column 3, and Email in column 4
+                            // Expected format is LastName in column 1, Firstname in column 2, Username in column 3, and Email in column 7
                             string[] fields = parser.ReadFields();
 
                             if (fields.Length >= 3)
                             {
                                 var record = new MSTeamsStudentUpload
                                 {
-                                    Email = fields[3],
+                                    Email = fields[6],
                                     Name = fields[1] + " " + fields[0],
                                     In221 = true
                                 };
@@ -278,7 +278,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                     await _context.SaveChangesAsync();
 
-                    return RedirectToAction("Index", "Home");
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (Exception ex)
                 {

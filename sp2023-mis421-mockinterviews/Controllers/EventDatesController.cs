@@ -71,16 +71,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var uniqueStudentCount = await _context.InterviewEvent
+                .Where(x => x.Timeslot.EventDate.IsActive)
                 .Select(e => e.StudentId)
                 .Distinct()
                 .CountAsync();
 
             var uniqueInterviewerCount = await _context.SignupInterviewerTimeslot
+                .Where(s => s.Timeslot.EventDate.IsActive)
                 .Select(s => s.SignupInterviewer.InterviewerId)
                 .Distinct()
                 .CountAsync();
 
             var uniqueVolunteerCount = await _context.VolunteerEvent
+                .Where(v => v.Timeslot.EventDate.IsActive)
                 .Select(v => v.StudentId)
                 .Distinct()
                 .CountAsync();

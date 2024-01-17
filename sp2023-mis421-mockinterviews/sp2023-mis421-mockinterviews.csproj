@@ -33,7 +33,6 @@
 
   <ItemGroup>
     <None Include="Views\InterviewEvents\Feedback.cshtml" />
-    <None Include="wwwroot\lib\Mock_Interview_Manual.docx" />
   </ItemGroup>
 
   <ItemGroup>

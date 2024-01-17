@@ -44,9 +44,9 @@
             <div class="answer">@faq.Answer</div>
         </div>
     }
-    <hr />
     @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
     {
+        <hr />
         <div>
             <h1>
                 Ask a Question!
@@ -58,9 +58,9 @@
             </h4>
         </div>
     }
-    <hr />
     @if (User.IsInRole(RolesConstants.InterviewerRole))
     {
+        <hr />
         <div>
             <h1>
                 Resources for Interviewers
@@ -72,7 +72,7 @@
                 <input class="btn btn-primary ms-2 ms-lg-3" type="submit" value="Download Mock Interview Manual" />
             }
         </div>
-        <p></p>
+        <br />
         <div style="text-align:center">
             @using (Html.BeginForm("DownloadParking", "FAQs"))
             {
@@ -80,6 +80,5 @@
             }
         </div>
     }
-    <hr />
 </body>
 </html>

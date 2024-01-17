@@ -11,6 +11,7 @@ using SendGrid;
 using SendGrid.Helpers.Mail;
 using Microsoft.AspNetCore.Authorization;
 using sp2023_mis421_mockinterviews.Data.Constants;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -184,6 +185,35 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> CheckInInterviewer(int id)
+        {
+            if (_context.SignupInterviewer == null || id == 0)
+            {
+                return NotFound();
+            }
+
+            var si = await _context.SignupInterviewer.FindAsync(id);
+
+            if(si == null)
+            {                 
+                return NotFound();  
+            }
+
+            try
+            {
+                si.CheckedIn = !si.CheckedIn;
+                _context.Update(si);
+                await _context.SaveChangesAsync();
+
+                //return NoContent();
+                return RedirectToAction(nameof(Index));
+            } 
+            catch
+            {
+                return BadRequest(new InvalidOperationException("Interviewer was unable to be checked in."));
+            }
+        }
         private bool SignupInterviewerExists(int id)
         {
           return (_context.SignupInterviewer?.Any(e => e.Id == id)).GetValueOrDefault();

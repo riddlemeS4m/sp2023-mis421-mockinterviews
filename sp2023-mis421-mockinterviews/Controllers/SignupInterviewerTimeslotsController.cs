@@ -68,7 +68,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(s => s.SignupInterviewer)
                 .Include(s => s.Timeslot)
                 .ThenInclude(s => s.EventDate)
-                .Where(s => s.Timeslot.IsInterviewer && s.Timeslot.EventDate.For221 == For221.n)
+                .Where(s => s.Timeslot.IsInterviewer && 
+                    s.Timeslot.EventDate.For221 == For221.n &&
+                    s.Timeslot.EventDate.IsActive)
                 .ToListAsync();
 
             var groupedSignupInterviewerTimeslots = uniqueSignupInterviewerTimeslots

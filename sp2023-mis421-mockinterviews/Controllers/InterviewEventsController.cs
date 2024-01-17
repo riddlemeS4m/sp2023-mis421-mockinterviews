@@ -103,7 +103,44 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: InterviewEvents
         public async Task<IActionResult> Index()
         {         
-            var interviewers = new List<AvailableInterviewer>();
+            //var interviewers = new List<AvailableInterviewer>();
+            var busyInterviewers = await _context.InterviewEvent
+                .Include(x => x.SignupInterviewerTimeslot)
+                .ThenInclude(x => x.SignupInterviewer)
+                .Where(x => x.Status == StatusConstants.Ongoing)
+                .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            var interviewers = await _context.SignupInterviewer
+                .Where(x => x.CheckedIn && !busyInterviewers.Contains(x.InterviewerId))
+                .Select(x => new AvailableInterviewer
+                {
+                    InterviewerId = x.InterviewerId,
+                    InterviewType = x.InterviewType,
+                })
+                .ToListAsync();
+
+            foreach (var iv in interviewers)
+            {
+                iv.Name = await _userManager.Users
+                    .Where(x => x.Id == iv.InterviewerId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefaultAsync();
+
+                //var date = DateTime.Now.Date;
+                var date = new DateTime(2024, 2, 8);
+
+                iv.Room = await _context.LocationInterviewer
+                    .Include(x => x.Location)
+                    .Include(x => x.EventDate)
+                    .Where(x => x.InterviewerId == iv.InterviewerId &&
+                        x.EventDate.Date == date)
+                    .Select(x => x.Location.Room)
+                    .FirstOrDefaultAsync() ?? "Not Assigned";               
+            }
+
+            interviewers.Sort((x, y) => string.Compare(x.Name, y.Name));
             
             var hoursInAdvanceStr = _context.GlobalConfigVar
                 .Where(x => x.Name == "interview_index_hours")

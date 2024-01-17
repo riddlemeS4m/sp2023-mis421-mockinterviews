@@ -7,28 +7,23 @@
 
 <h1>Assign Interviews</h1>
 
-<div id="center-everything">
-    @if (User.Identity.IsAuthenticated && User.IsInRole(RolesConstants.AdminRole))
-    {
-        <a asp-area="" asp-controller="Home" asp-action="EmailStudents">Send Students Email Reminder</a>
-        <a asp-area="" asp-controller="Home" asp-action="EmailInterviewers"> | Send Interviewers Email Reminder</a>
-    }
-</div>
 
-@*<hr />
+
+<hr />
 <h4>Available Interviewers</h4>
-<br />
 @if(Model.AvailableInterviewers.Count > 0)
 {
-    foreach (var interviewer in Model.AvailableInterviewers)
+    <ul>
+    @foreach (var interviewer in Model.AvailableInterviewers)
     {
-        <ul><strong><u>@interviewer.Name</u></strong> is available to do <strong><u>@interviewer.InterviewType</u></strong> interviews in room <strong><u>@interviewer.Room</u></strong>.</ul>
+        <li id=@interviewer.InterviewerId style="color:black;"><b><u>@interviewer.Name</u></b> is available to do <b><u>@interviewer.InterviewType</u></b> interviews in room <b><u>@interviewer.Room</u></b>.</li>
     }
+    </ul>
 }
 else
 {
-    <ul>No Interviewers Available.</ul>
-}*@
+    <ul>No interviewers are available.</ul>
+}
 
 <div id="edit-form-div" style="display:none;">
     <hr />
@@ -50,7 +45,7 @@ else
                     <select id="InterviewerId" class="form-control" name="InterviewerId" asp-items="@Model.BehavioralInterviewers"></select>
                 </div>
                 <div class="form-group">
-                    <input type="submit" value="Save" class="btn btn-primary"> <button id="hide-button" class="btn btn-primary" type="button">Hide</button>
+                    <input type="submit" value="Save" class="btn btn-primary"> <button id="hide-button" class="btn btn-secondary" type="button">Hide</button>
                 </div>
             </form>
         </div>

@@ -74,7 +74,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
         public ActionResult DownloadManual()
 		{
-			string fileName = "Mock_Interview_Manual.docx";
+			string fileName = "MockInterviewManual_Spring2024.docx";
 			string filePath = "wwwroot/lib/" + fileName;
 
 			byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);

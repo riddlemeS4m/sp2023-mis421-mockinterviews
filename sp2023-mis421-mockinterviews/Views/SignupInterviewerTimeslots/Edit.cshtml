@@ -1,4 +1,5 @@
-﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.SignupInterviewerTimeslotsViewModel
+﻿@using sp2023_mis421_mockinterviews.Data.Constants
+@model sp2023_mis421_mockinterviews.Models.ViewModels.SignupInterviewerTimeslotsViewModel
 
 @{
     ViewData["Title"] = "Edit Interviewer Availability";
@@ -40,7 +41,7 @@
                         data-val="true" 
                         data-val-required="Please select at least one"                         
                     >
-                    <label class="form-check-label" for="IsVirtual">Virtual</label>
+                    <label id="annoyingLabel" class="form-check-label" for="IsVirtual">Virtual</label>
                 </div>
                 <div>
                     <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
@@ -204,7 +205,15 @@
                     <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
                 </div>
                 <div class="form-group" id="center-everything">
-                    <input type="submit" value="Edit Availability" class="btn btn-primary" />
+                    <input type="submit" value="Reschedule" class="btn btn-primary" /> | 
+                    @if(User.IsInRole(RolesConstants.AdminRole))
+                    {
+                        <a class="btn btn-secondary" asp-controller="SignupInterviewers" asp-action="Index">Go Back</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-secondary" asp-controller="Home" asp-action="Index">Go Back</a>
+                    }
                 </div>
             </div>
             <br />
@@ -217,8 +226,9 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
+
+    <!-- Select All Button -->
     <script>
-        // Attach a click event handler to the "Select All" buttons
         var selectAllButtons = document.querySelectorAll('.selectAllButton');
         selectAllButtons.forEach(function (button) {
             button.addEventListener("click", function () {
@@ -234,6 +244,8 @@
             });
         });
     </script>
+
+    <!-- Toggle Lunch Question -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var checkbox1 = document.querySelector("#InPerson[value='true']");
