@@ -6,14 +6,11 @@
 }
 
 <h1>Assign Interviews</h1>
-
-
-
 <hr />
 <h4>Available Interviewers</h4>
 @if(Model.AvailableInterviewers.Count > 0)
 {
-    <ul>
+    <ul id="availableInterviewers">
     @foreach (var interviewer in Model.AvailableInterviewers)
     {
         <li id=@interviewer.InterviewerId style="color:black;"><b><u>@interviewer.Name</u></b> is available to do <b><u>@interviewer.InterviewType</u></b> interviews in room <b><u>@interviewer.Room</u></b>.</li>
@@ -190,7 +187,7 @@ else
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-    <!-- Signal R -->
+    <!-- Signal R - Interview Event Hub -->
     <script>
         var connection = new signalR.HubConnectionBuilder()
             .withUrl("/interviewHub")
@@ -346,6 +343,47 @@ else
         })
     </script>
 
+    <!-- Signal R - Available Interviewers Hub -->
+    <script>
+        var connection = new signalR.HubConnectionBuilder().withUrl("/interviewershub").build();
+
+        connection.start().catch(function (err) {
+            return console.error(err.toString());
+        });
+
+        connection.on("ReceiveAvailableInterviewersUpdate", function (interviewers) {
+            console.log('Received available interviewers:', interviewers);
+            var selectBox = document.getElementById('InterviewerId');
+
+            // Sort the options in the select box alphabetically
+            if(selectBox.options.length !== 0)
+            {
+                populateInterviewerSelectList(document.getElementById('Id').value, 
+                    document.getElementById('Type').value, 
+                    document.getElementById('Status').value);
+            }
+
+            var availableInterviewersView = document.getElementById('availableInterviewers');
+            availableInterviewersView.innerHTML = '';
+
+            // Loop through each interviewer in the array
+            interviewers.forEach(interviewer => {
+                // Create a new list item element
+                var newListItem = document.createElement('li');
+                newListItem.setAttribute('id', interviewer.id);
+                newListItem.innerHTML = "<b><u>" + interviewer.name +
+                    "</u></b> is available to do <b><u>" + interviewer.interviewType +
+                    "</u></b> interviews in room <b><u>" + interviewer.room +
+                    "</u></b>.";
+                newListItem.setAttribute('style', 'color:black;')
+
+                // Add the new list item to the unordered list
+                availableInterviewersView.appendChild(newListItem);
+                console.log('Appended interviewer:', interviewer)
+            });        
+        });
+    </script>
+
     <!-- Handle Edit Form -->
     <script>
         document.addEventListener('DOMContentLoaded', function () {
@@ -437,31 +475,32 @@ else
                     method: 'POST',
                     body: formData
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            console.log('Form submitted successfully');
-                        } else {
-                            console.error('Form submission failed');
-                        }
+                .then(response => {
+                    if (response.ok) {
+                        console.log('Form submitted successfully');
+                    } else {
+                        console.error('Form submission failed');
+                    }
 
-                        return response.json();
-                    })
-                    .then(data => {
-                        console.log(data);
-                        // Update the modal content with fetched data
-                        const successMessage = `Successfully submitted! <b>${data.studentName}</b> has a <b>${data.interviewType}</b> interview with <b><u>${data.interviewerName}</u></b> in <b><u>${data.location}</u></b>.`;
-                        document.getElementById('successText').innerHTML = successMessage;
+                    return response.json();
+                })
+                .then(data => {
+                    console.log(data);
 
-                        // Show the modal
-                        let modal = document.getElementById('exampleModalCenter');
-                        let modalObject = $(modal);
-                        $(modalObject).modal('show');
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                    });
+                    document.getElementById('edit-form-div').style.display = 'none';
 
-                document.getElementById('edit-form-div').style.display = 'none';
+                    // Update the modal content with fetched data
+                    const successMessage = `Successfully submitted! <b>${data.studentName}</b> has a <b>${data.interviewType}</b> interview with <b><u>${data.interviewerName}</u></b> in <b><u>${data.location}</u></b>.`;
+                    document.getElementById('successText').innerHTML = successMessage;
+
+                    // Show the modal
+                    let modal = document.getElementById('exampleModalCenter');
+                    let modalObject = $(modal);
+                    $(modalObject).modal('show');
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             });
         });
 

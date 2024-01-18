@@ -12,19 +12,29 @@ using SendGrid.Helpers.Mail;
 using Microsoft.AspNetCore.Authorization;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.AspNetCore.Identity;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
+        private readonly IHubContext<AvailableInterviewersHub> _hubContext;
 
         public SignupInterviewersController(MockInterviewDataDbContext context,
-            ISendGridClient sendGridClient)
+            ISendGridClient sendGridClient,
+            IHubContext<AvailableInterviewersHub> hubContext,
+            UserManager<ApplicationUser> userManager)
         {
             _context = context;
             _sendGridClient = sendGridClient;
+            _hubContext = hubContext;
+            _userManager = userManager;
         }
 
         // GET: SignupInterviewers
@@ -206,6 +216,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 _context.Update(si);
                 await _context.SaveChangesAsync();
 
+                await UpdateHub();
+
                 //return NoContent();
                 return RedirectToAction(nameof(Index));
             } 
@@ -217,6 +229,51 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private bool SignupInterviewerExists(int id)
         {
           return (_context.SignupInterviewer?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private async Task UpdateHub()
+        {
+            var busyInterviewers = await _context.InterviewEvent
+                .Include(x => x.SignupInterviewerTimeslot)
+                .ThenInclude(x => x.SignupInterviewer)
+                .Where(x => x.Status == StatusConstants.Ongoing)
+                .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            var interviewers = await _context.SignupInterviewer
+                .Where(x => x.CheckedIn && !busyInterviewers.Contains(x.InterviewerId))
+                .Select(x => new AvailableInterviewer
+                {
+                    InterviewerId = x.InterviewerId,
+                    InterviewType = x.InterviewType,
+                })
+            .ToListAsync();
+
+            foreach (var iv in interviewers)
+            {
+                iv.Name = await _userManager.Users
+                    .Where(x => x.Id == iv.InterviewerId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefaultAsync();
+
+                var date = DateTime.Now.Date;
+                //var date = new DateTime(2024, 2, 8);
+
+                iv.Room = await _context.LocationInterviewer
+                    .Include(x => x.Location)
+                    .Include(x => x.EventDate)
+                    .Where(x => x.InterviewerId == iv.InterviewerId &&
+                        x.EventDate.Date == date)
+                    .Select(x => x.Location.Room)
+                    .FirstOrDefaultAsync() ?? "Not Assigned";
+            }
+
+            interviewers.Sort((x, y) => string.Compare(x.Name, y.Name));
+
+            Console.WriteLine("Requesting all clients to update their available interviewers lists...");
+            await _hubContext.Clients.All.SendAsync("ReceiveAvailableInterviewersUpdate", interviewers);
+            Console.WriteLine("Requested.");
         }
     }
 }

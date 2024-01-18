@@ -718,12 +718,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return View(vm);
             }
 
-            if (!signupInterviewer.IsVirtual && !signupInterviewer.InPerson)
-            {
-                ModelState.AddModelError("SignupInterviewer.InPerson", "Please select at least one checkbox");
-                return View(vm);
-            }
-
             // Check whether at least one timeslot is selected
             if (SelectedEventIds == null || SelectedEventIds.Length == 0)
             {

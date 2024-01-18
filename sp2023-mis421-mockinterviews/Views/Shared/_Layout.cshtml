@@ -51,7 +51,14 @@
                         <img loading="preload" decoding="async" class="img-fluid" width="160" src="~/images/UAMISLogo.png" alt="UA MIS Mock Interviews">
                     </a>
                 </div>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button 
+                    class="navbar-toggler" 
+                    type="button" 
+                    data-bs-toggle="collapse" 
+                    data-bs-target="#navbarSupportedContent" 
+                    aria-controls="navbarSupportedContent" 
+                    aria-expanded="false" 
+                    aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -64,7 +71,7 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sign-Up</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="Create">Students</a>
                                     </li>
@@ -87,7 +94,7 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Sign-Up</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="Create">Students</a>
                                     </li>
@@ -102,9 +109,12 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Assign</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="Index">Assign Interviews</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item " asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interviewer Check-In</a>
                                     </li>
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="LocationInterviewers" asp-action="Index">Assign Rooms</a>
@@ -117,10 +127,8 @@
                         {
                             <li class="nav-item dropdown"> 
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Event</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
-                                     <li>
-                                         <a class="dropdown-item "asp-area="" asp-controller="SignupInterviewers" asp-action="Index">Interviewers</a>
-                                     </li>
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                     
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="VolunteerEvents" asp-action="Index">Volunteers</a>
                                     </li>
@@ -145,7 +153,7 @@
                         {
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Roster</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="MSTeamsStudentUploads" asp-action="Index">Program Roster</a>
                                     </li>
@@ -171,7 +179,7 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Reports</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="InterviewEvents" asp-action="GetCompletedInterviews">Completed Interviews</a>
                                     </li>
@@ -194,7 +202,7 @@
                             </li>
                             <li class="nav-item dropdown">
                                 <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">Resources</a>
-                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown" id="center-everything">
+                                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                                     <li>
                                         <a class="dropdown-item " asp-area="" asp-controller="FAQs" asp-action="Resources">Resources</a>
                                     </li>

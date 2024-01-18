@@ -85,16 +85,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
         private readonly IHubContext<AssignInterviewsHub> _hubContext;
+        private readonly IHubContext<AvailableInterviewersHub> _hubContextInterviewer;
 
         public InterviewEventsController(MockInterviewDataDbContext context, 
             UserManager<ApplicationUser> userManager, 
             ISendGridClient sendGridClient,
-            IHubContext<AssignInterviewsHub> hubContext)
+            IHubContext<AssignInterviewsHub> hubContext,
+            IHubContext<AvailableInterviewersHub> hubContextInterviewer)
         {
             _context = context;
             _userManager = userManager;
             _sendGridClient = sendGridClient;
             _hubContext = hubContext;
+            _hubContextInterviewer = hubContextInterviewer;
         }
 	    // adding a dummy comment bc I feel like it
         //--Dalton Wright, Fall 2023
@@ -128,8 +131,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Select(x => x.FirstName + " " + x.LastName)
                     .FirstOrDefaultAsync();
 
-                //var date = DateTime.Now.Date;
-                var date = new DateTime(2024, 2, 8);
+                var date = DateTime.Now.Date;
+                //var date = new DateTime(2024, 2, 8);
 
                 iv.Room = await _context.LocationInterviewer
                     .Include(x => x.Location)
@@ -993,6 +996,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 if (User.IsInRole(RolesConstants.AdminRole))
                 {
                     await UpdateHub(id);
+                    await UpdateHub();
 
                     return RedirectToAction(nameof(Index));
                 }
@@ -1204,6 +1208,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var date = $"{newInterviewEvent.Timeslot.EventDate.Date:M/d/yyyy}";
 
                 await _hubContext.Clients.All.SendAsync("ReceiveInterviewEventUpdate", newInterviewEvent, studentname, interviewername, time, date);
+                await UpdateHub();
 
                 return RedirectToAction(nameof(Index));
             }
@@ -1384,6 +1389,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Where(x =>
                     x.Timeslot.EventDate.IsActive &&
                     x.Timeslot.EventDate.Date == ie.Timeslot.EventDate.Date &&
+                    x.SignupInterviewer.CheckedIn &&
                     !_context.InterviewEvent
                         .Where(i => i.Status == "Ongoing")
                         .Select(i => i.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
@@ -1633,7 +1639,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             Console.WriteLine($"Id: {Id}, Status: {Status}, InterviewerId: {InterviewerId}, Type: {Type}");
 
-            if (Id == null || Status == null || Type == null)
+            if (Id == 0 || Status == null || Type == null)
             {
                 return BadRequest("Interview not found.");
             }
@@ -1712,6 +1718,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
 
                 await UpdateHub(Id);
+                await UpdateHub();
 
                 var ie = await _context.InterviewEvent
                     .Include(x => x.SignupInterviewerTimeslot)
@@ -1767,7 +1774,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<ActionResult<AVM>> GetAvailableInterviewers(int id)
         {
-            if (id == null || !_context.InterviewEvent.Any(x => x.Id == id))
+            if (id == 0 || !_context.InterviewEvent.Any(x => x.Id == id))
             {
                 return BadRequest("Invalid ID or Interview Event not found.");
             }
@@ -1971,6 +1978,51 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             Console.WriteLine("Requesting all connected clients to update.");
             await _hubContext.Clients.All.SendAsync("ReceiveInterviewEventUpdate", newInterviewEvent, studentname, interviewername, time, date);
+            Console.WriteLine("Requested.");
+        }
+
+        private async Task UpdateHub()
+        {
+            var busyInterviewers = await _context.InterviewEvent
+                .Include(x => x.SignupInterviewerTimeslot)
+                .ThenInclude(x => x.SignupInterviewer)
+                .Where(x => x.Status == StatusConstants.Ongoing)
+                .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            var interviewers = await _context.SignupInterviewer
+                .Where(x => x.CheckedIn && !busyInterviewers.Contains(x.InterviewerId))
+                .Select(x => new AvailableInterviewer
+                {
+                    InterviewerId = x.InterviewerId,
+                    InterviewType = x.InterviewType,
+                })
+            .ToListAsync();
+
+            foreach (var iv in interviewers)
+            {
+                iv.Name = await _userManager.Users
+                    .Where(x => x.Id == iv.InterviewerId)
+                    .Select(x => x.FirstName + " " + x.LastName)
+                    .FirstOrDefaultAsync();
+
+                var date = DateTime.Now.Date;
+                //var date = new DateTime(2024, 2, 8);
+
+                iv.Room = await _context.LocationInterviewer
+                    .Include(x => x.Location)
+                    .Include(x => x.EventDate)
+                    .Where(x => x.InterviewerId == iv.InterviewerId &&
+                        x.EventDate.Date == date)
+                    .Select(x => x.Location.Room)
+                    .FirstOrDefaultAsync() ?? "Not Assigned";
+            }
+
+            interviewers.Sort((x, y) => string.Compare(x.Name, y.Name));
+
+            Console.WriteLine("Requesting all clients to update their available interviewers lists...");
+            await _hubContextInterviewer.Clients.All.SendAsync("ReceiveAvailableInterviewersUpdate", interviewers);
             Console.WriteLine("Requested.");
         }
     }

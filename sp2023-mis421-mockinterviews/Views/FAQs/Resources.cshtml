@@ -37,6 +37,19 @@
     </p>
     <hr />
     <h1>FAQs</h1>
+    @*<div class="wrapper">
+        <div class="container">
+            <div class="row">
+            @foreach (var faq in Model)
+            {
+                <div class="faq col-md-6">
+                    <div class="question">@faq.Question</div>
+                    <div class="answer">@faq.Answer</div>
+                </div>
+            }
+            </div>
+        </div>
+    </div>*@
     @foreach (var faq in Model)
     {
         <div class="faq">
@@ -67,17 +80,7 @@
             </h1>
         </div>
         <div style="text-align:center">
-            @using (Html.BeginForm("DownloadManual", "FAQs"))
-            {
-                <input class="btn btn-primary ms-2 ms-lg-3" type="submit" value="Download Mock Interview Manual" />
-            }
-        </div>
-        <br />
-        <div style="text-align:center">
-            @using (Html.BeginForm("DownloadParking", "FAQs"))
-            {
-                <input class="btn btn-primary ms-2 ms-lg-3" type="submit" value="Download Parking Pass" />
-            }
+            <a class="btn btn-primary" asp-controller="FAQs" asp-action="DownloadParking">Download Mock Interview Manual</a> | <a class="btn btn-primary" asp-controller="FAQs" asp-action="DownloadParking">Download Parking Pass</a>
         </div>
     }
 </body>

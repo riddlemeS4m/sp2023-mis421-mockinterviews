@@ -134,6 +134,7 @@ namespace sp2023_mis421_mockinterviews
             app.UseAuthorization();
 
             app.MapHub<AssignInterviewsHub>("/interviewhub");
+            app.MapHub<AvailableInterviewersHub>("/interviewershub");
 
             app.MapControllerRoute(
                 name: "default",
