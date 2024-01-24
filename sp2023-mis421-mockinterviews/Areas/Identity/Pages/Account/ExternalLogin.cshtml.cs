@@ -158,7 +158,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 ProviderDisplayName = info.ProviderDisplayName;
                 if (info.Principal.HasClaim(c => c.Type == ClaimTypes.Email))
                 {
-                    IsStudent = info.Principal.FindFirstValue(ClaimTypes.Email).EndsWith("@crimson.ua.edu", StringComparison.OrdinalIgnoreCase);
+                    IsStudent = info.Principal.FindFirstValue(ClaimTypes.Email).Contains("crimson.ua.edu", StringComparison.OrdinalIgnoreCase);
                     if (IsStudent)
                     {
                         Input = new InputModel
