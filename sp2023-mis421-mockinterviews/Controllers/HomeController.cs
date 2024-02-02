@@ -44,6 +44,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if(User.Identity.IsAuthenticated)
             {
                 model.Name = $"{userFull.FirstName} {userFull.LastName}";
+
+                model.ZoomLink = await GetZoomLink();
+                model.ZoomLinkVisible = await GetZoomLinkVisible();
+                model.DisruptionBanner = await GetDisruptionBanner();
             }
 
             model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
@@ -229,15 +233,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            model.ZoomLink = await GetZoomLink();
-            model.ZoomLinkVisible = await GetZoomLinkVisible();
-            model.DisruptionBanner = await GetDisruptionBanner();
-
             return View(model);
         }
 
         private async Task<string> GetZoomLink()
         {
+            Console.WriteLine("GetZoomLink");
             var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link");
 
             try
@@ -252,6 +253,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<string> GetDisruptionBanner()
         {
+            Console.WriteLine("Get Disruption Banner");
             var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
 
             try
@@ -270,6 +272,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<string> GetZoomLinkVisible()
         {
+            Console.WriteLine("Get Zoom Link Visible");
             var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
 
             try

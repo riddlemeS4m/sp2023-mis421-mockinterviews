@@ -141,7 +141,7 @@ namespace sp2023_mis421_mockinterviews
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            //look at this later
+            //look at this later, apparently it's being run every five seconds lol
             using (var scope = app.Services.CreateScope())
             {
                 var newservices = scope.ServiceProvider;
