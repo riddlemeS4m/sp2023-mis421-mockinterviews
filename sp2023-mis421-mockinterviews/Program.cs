@@ -55,7 +55,8 @@ namespace sp2023_mis421_mockinterviews
             }
 
             services.AddDbContext<UserDataDbContext>(options =>
-                options.UseSqlServer(userDataConnectionString));
+                options.UseSqlServer(userDataConnectionString),
+                ServiceLifetime.Scoped);
 
             //when updating the userdb, run the following commands...
             //1. create the entity framework migration
@@ -67,7 +68,8 @@ namespace sp2023_mis421_mockinterviews
             //this is to account for using two different database sets for the two different environments
 
             services.AddDbContext<MockInterviewDataDbContext>(options =>
-                options.UseSqlServer(mockInterviewDataConnectionString));
+                options.UseSqlServer(mockInterviewDataConnectionString),
+                ServiceLifetime.Scoped);
 
             //when updating the userdb, run the following commands...
             //1. create the entity framework migration
@@ -141,9 +143,10 @@ namespace sp2023_mis421_mockinterviews
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
 
-            //look at this later, apparently it's being run every five seconds lol
+            //look at this later
             using (var scope = app.Services.CreateScope())
             {
+                Console.WriteLine("Checking for required config vars...");
                 var newservices = scope.ServiceProvider;
                 var loggerFactory = newservices.GetRequiredService<ILoggerFactory>();
 

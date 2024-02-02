@@ -37,8 +37,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Index()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userFull = await _userManager.FindByIdAsync(userId);
+            //string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = "ebbe7f6a-9d28-4686-9e59-55f5bfe70a95";
+            //var userFull = await _userManager.FindByIdAsync(userId);
+            var userFull = new { FirstName = "Sam", LastName = "Riddle" };
 
             IndexViewModel model = new();
             if(User.Identity.IsAuthenticated)
