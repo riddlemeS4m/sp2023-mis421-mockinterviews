@@ -37,6 +37,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Index()
         {
+            Console.WriteLine("Calling the index method on the home controller...");
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userFull = await _userManager.FindByIdAsync(userId);
 
