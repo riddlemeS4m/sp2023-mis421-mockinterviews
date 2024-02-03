@@ -1,10 +1,4 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
-}
-
-<div>
+﻿<div>
     Please wait while we attempt to log you in...
 </div>
 
@@ -30,8 +24,12 @@
     }
 </script>*@
 
-<script>
-    window.onload = function () {
-        document.forms['external-login'].submit()
-    }
-</script>
+@section Scripts {
+    <script>
+        window.onload = function () {
+            console.log('submitting form...')
+            document.forms['external-login'].submit()
+            console.log('form submitted!')
+        }
+    </script>
+}

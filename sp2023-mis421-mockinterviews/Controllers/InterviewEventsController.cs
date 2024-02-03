@@ -1870,6 +1870,105 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(eventslist);
         }
 
+        [Authorize(Roles = RolesConstants.StudentRole)]
+        public async Task<IActionResult> StudentSelfCheckIn()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var ie = await _context.InterviewEvent
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.StudentId == userId && 
+                    x.Timeslot.EventDate.IsActive &&
+                    x.Status == StatusConstants.Default)
+                .FirstOrDefaultAsync();
+
+            var vm = new SelfCheckInViewModel()
+            {
+                IsCheckedIn = false,
+                CheckInMessage = "You couldn't be checked in automatically. Please alert event staff."
+            };
+
+            if (ie == null)
+            {
+                return View("SelfCheckIn", vm);
+            }
+
+            vm.IsCheckedIn = true;
+            vm.CheckInMessage = "You have been checked in automatically! Please take a seat until event staff calls you.";
+
+            ie.Status = StatusConstants.CheckedIn;
+            ie.CheckInTime = DateTime.Now;
+            _context.Update(ie);
+            await _context.SaveChangesAsync();
+
+            await UpdateHub(ie.Id);
+
+            return View("SelfCheckIn", vm);
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> InterviewerSelfCheckIn()
+        {
+            var sits = await _context.SignupInterviewerTimeslot
+                .Include(x => x.Timeslot)
+                .ThenInclude(x => x.EventDate)
+                .Where(x => x.Timeslot.EventDate.IsActive)
+                .Select(x => x.SignupInterviewerId)
+                .Distinct()
+                .ToListAsync();
+
+            var interviewers = await _context.SignupInterviewer
+                .Where(x => sits.Contains(x.Id))
+                .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            var vm = new InterviewerCheckInViewModel
+            {
+                Interviewers = interviewers
+            };
+
+            return View("InterviewerCheckIn", vm);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> InterviewerSelfCheckIn(string InterviewerId)
+        {
+            string id = InterviewerId;
+
+            if (id == null || id == "0" || id == "")
+            {
+                return BadRequest("No interviewer was selected.");
+            }
+
+            int newId = 0;
+            try
+            {
+                newId = int.Parse(id);
+            }
+            catch
+            {
+                return BadRequest("SignupInterviewer ID was invalid.");
+            }
+
+            var interviewer = await _context.SignupInterviewer
+                .Where(x => x.Id == newId)
+                .FirstOrDefaultAsync();
+
+            if(interviewer == null)
+            {
+                return BadRequest("Interviewer not signed up.");
+            }
+
+            interviewer.CheckedIn = !interviewer.CheckedIn;
+
+            _context.Update(interviewer);
+            await _context.SaveChangesAsync();
+            await UpdateHub();
+      
+            return RedirectToAction("Index","SignupInterviewers");
+        }
         private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
         {
             Console.WriteLine(date);

@@ -63,13 +63,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (ModelState.IsValid)
             {
-                if(!location.InPerson)
-                {
-                    location.IsVirtual = true;
-                }
                 _context.Add(location);
                 await _context.SaveChangesAsync();
-                return RedirectToAction("Index", "Locations");
+                return RedirectToAction(nameof(Index));
             }
             return View(location);
         }

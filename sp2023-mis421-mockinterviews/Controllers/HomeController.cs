@@ -13,6 +13,7 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
+using Microsoft.AspNetCore.Authorization;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -368,9 +369,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize]
         public async Task<IActionResult> AttemptLogin()
         {
-            return View("LandingPage");
+            //if (User.Identity.IsAuthenticated)
+            //{
+            return RedirectToAction("Index", "Home");
+            //}
+            //else
+            //{
+            //    return View("LandingPage");
+            //}
         }
     }
 }
