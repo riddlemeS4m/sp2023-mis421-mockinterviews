@@ -41,14 +41,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userFull = await _userManager.FindByIdAsync(userId);
 
-            IndexViewModel model = new();
-            if(User.Identity.IsAuthenticated)
+            IndexViewModel model = new()
+            {
+                DisruptionBanner = await GetDisruptionBanner()
+            };
+
+            if (User.Identity.IsAuthenticated)
             {
                 model.Name = $"{userFull.FirstName} {userFull.LastName}";
 
                 model.ZoomLink = await GetZoomLink();
                 model.ZoomLinkVisible = await GetZoomLinkVisible();
-                model.DisruptionBanner = await GetDisruptionBanner();
             }
 
             model.VolunteerEventViewModels = new List<VolunteerEventViewModel>();
