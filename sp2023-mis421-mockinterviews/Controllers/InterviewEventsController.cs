@@ -138,7 +138,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(x => x.Location)
                     .Include(x => x.EventDate)
                     .Where(x => x.InterviewerId == iv.InterviewerId &&
-                        x.EventDate.Date == date)
+                        x.EventDate.Date.Date == date)
                     .Select(x => x.Location.Room)
                     .FirstOrDefaultAsync() ?? "Not Assigned";               
             }
@@ -1925,7 +1925,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var vm = new InterviewerCheckInViewModel
             {
-                Interviewers = interviewers
+                Interviewers = interviewers,
+                CheckedIn = false
             };
 
             return View("InterviewerCheckIn", vm);
@@ -1965,9 +1966,58 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             _context.Update(interviewer);
             await _context.SaveChangesAsync();
+
+            var sits = await _context.SignupInterviewerTimeslot
+                    .Include(x => x.Timeslot)
+                    .ThenInclude(x => x.EventDate)
+                    .Where(x => x.Timeslot.EventDate.IsActive)
+                    .Select(x => x.SignupInterviewerId)
+                    .Distinct()
+                    .ToListAsync();
+
+            var interviewers = await _context.SignupInterviewer
+                .Where(x => sits.Contains(x.Id))
+                .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
+                .OrderBy(x => x.Text)
+                .ToListAsync();
+
+            var room = "";
+
+            if (interviewer.CheckedIn)
+            {
+                string interviewerId = interviewer.InterviewerId;
+
+                var date = DateTime.Now.Date;
+                //var date = new DateTime(2024, 2, 3);
+
+                var li = await _context.LocationInterviewer
+                    .Include(x => x.Location)
+                    .Include(x => x.EventDate)
+                    .Where(x => x.InterviewerId == interviewerId &&
+                        x.EventDate.Date.Date == date)
+                    .FirstOrDefaultAsync();
+
+                if(li != null)
+                {
+                    room = li.Location.Room;
+                }
+                else
+                {
+                    room = "Not Assigned";
+                }
+            }
+
+            var vm = new InterviewerCheckInViewModel
+            {
+                Interviewers = interviewers,
+                CheckedIn = interviewer.CheckedIn,
+                Name = interviewer.FirstName + " " + interviewer.LastName,
+                Room = room
+            };
+
             await UpdateHub();
-      
-            return RedirectToAction("Index","SignupInterviewers");
+
+            return View("InterviewerCheckIn",vm);
         }
         private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
         {
