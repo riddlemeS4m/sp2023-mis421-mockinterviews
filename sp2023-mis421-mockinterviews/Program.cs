@@ -102,10 +102,7 @@ namespace sp2023_mis421_mockinterviews
             services.AddRazorPages();
 
 
-            services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = MicrosoftAccountDefaults.AuthenticationScheme;
-            }).AddMicrosoftAccount(microsoftOptions =>
+            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
             {
                 microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Azure AD Client ID not found.");
                 microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
