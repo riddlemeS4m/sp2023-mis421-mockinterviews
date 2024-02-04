@@ -369,7 +369,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        [Authorize]
         public async Task<IActionResult> AttemptLogin()
         {
             if (User.Identity.IsAuthenticated)
