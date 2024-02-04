@@ -1,0 +1,29 @@
+﻿<div>
+    Please wait while we attempt to log you out...
+</div>
+
+
+<form id="external-logout-form" name="external-logout" class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Page("/", new { area = "" })" method="post">
+    <input type="hidden"/>
+</form>
+
+<div onload="attemptLogout()">
+</div>
+
+@*<script>
+    function attemptLogin() {
+        console.log('made it')
+        var form = document.getElementById("external-login-form");
+        form.submit();
+    }
+</script>*@
+
+@section Scripts {
+    <script>
+        window.onload = function () {
+            console.log('submitting form...')
+            document.forms['external-logout'].submit()
+            console.log('form submitted!')
+        }
+    </script>
+}

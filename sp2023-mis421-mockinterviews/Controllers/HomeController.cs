@@ -380,5 +380,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return View("LandingPage");
             }
         }
+
+        public async Task<IActionResult> AttemptLogout()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return View("LogoutPage");
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
     }
 }
