@@ -1870,66 +1870,76 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return View(eventslist);
         }
 
-        [Authorize(Roles = RolesConstants.StudentRole)]
+        [Authorize]
         public async Task<IActionResult> StudentSelfCheckIn()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var ie = await _context.InterviewEvent
-                .Include(x => x.Timeslot)
-                .ThenInclude(x => x.EventDate)
-                .Where(x => x.StudentId == userId && 
-                    x.Timeslot.EventDate.IsActive &&
-                    x.Status == StatusConstants.Default)
-                .FirstOrDefaultAsync();
-
-            var vm = new SelfCheckInViewModel()
+            if(User.IsInRole (RolesConstants.StudentRole))
             {
-                IsCheckedIn = false,
-                CheckInMessage = "You couldn't be checked in automatically. Please alert event staff."
-            };
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                var ie = await _context.InterviewEvent
+                    .Include(x => x.Timeslot)
+                    .ThenInclude(x => x.EventDate)
+                    .Where(x => x.StudentId == userId &&
+                        x.Timeslot.EventDate.IsActive &&
+                        x.Status == StatusConstants.Default)
+                    .FirstOrDefaultAsync();
 
-            if (ie == null)
-            {
+                var vm = new SelfCheckInViewModel()
+                {
+                    IsCheckedIn = false,
+                    CheckInMessage = "You couldn't be checked in automatically. Please alert event staff."
+                };
+
+                if (ie == null)
+                {
+                    return View("SelfCheckIn", vm);
+                }
+
+                vm.IsCheckedIn = true;
+                vm.CheckInMessage = "You have been checked in automatically! Please take a seat until event staff calls you.";
+
+                ie.Status = StatusConstants.CheckedIn;
+                ie.CheckInTime = DateTime.Now;
+                _context.Update(ie);
+                await _context.SaveChangesAsync();
+
+                await UpdateHub(ie.Id);
+
                 return View("SelfCheckIn", vm);
             }
 
-            vm.IsCheckedIn = true;
-            vm.CheckInMessage = "You have been checked in automatically! Please take a seat until event staff calls you.";
-
-            ie.Status = StatusConstants.CheckedIn;
-            ie.CheckInTime = DateTime.Now;
-            _context.Update(ie);
-            await _context.SaveChangesAsync();
-
-            await UpdateHub(ie.Id);
-
-            return View("SelfCheckIn", vm);
+            return RedirectToAction("Index", "Home");
         }
 
-        [Authorize(Roles = RolesConstants.AdminRole)]
+        [Authorize]
         public async Task<IActionResult> InterviewerSelfCheckIn()
         {
-            var sits = await _context.SignupInterviewerTimeslot
-                .Include(x => x.Timeslot)
-                .ThenInclude(x => x.EventDate)
-                .Where(x => x.Timeslot.EventDate.IsActive)
-                .Select(x => x.SignupInterviewerId)
-                .Distinct()
-                .ToListAsync();
-
-            var interviewers = await _context.SignupInterviewer
-                .Where(x => sits.Contains(x.Id))
-                .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
-                .OrderBy(x => x.Text)
-                .ToListAsync();
-
-            var vm = new InterviewerCheckInViewModel
+            if(User.IsInRole(RolesConstants.AdminRole))
             {
-                Interviewers = interviewers,
-                CheckedIn = false
-            };
+                var sits = await _context.SignupInterviewerTimeslot
+                                .Include(x => x.Timeslot)
+                                .ThenInclude(x => x.EventDate)
+                                .Where(x => x.Timeslot.EventDate.IsActive)
+                                .Select(x => x.SignupInterviewerId)
+                                .Distinct()
+                                .ToListAsync();
 
-            return View("InterviewerCheckIn", vm);
+                var interviewers = await _context.SignupInterviewer
+                    .Where(x => sits.Contains(x.Id))
+                    .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
+                    .OrderBy(x => x.Text)
+                    .ToListAsync();
+
+                var vm = new InterviewerCheckInViewModel
+                {
+                    Interviewers = interviewers,
+                    CheckedIn = false
+                };
+
+                return View("InterviewerCheckIn", vm);
+            }
+
+            return RedirectToAction("Index", "Home");
         }
 
         [HttpPost]
