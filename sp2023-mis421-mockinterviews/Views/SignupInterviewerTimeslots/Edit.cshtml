@@ -3,6 +3,8 @@
 
 @{
     ViewData["Title"] = "Edit Interviewer Availability";
+    var noOfDays = Model.EventDates.Count();
+    string result = Math.Floor(12.0 / noOfDays).ToString();
 }
 
 <h1>Editing Availability for @Model.SignupInterviewer.FirstName @Model.SignupInterviewer.LastName</h1>
@@ -130,14 +132,20 @@
 
             <br /><br />
             <div class="row" id="center-everything">
-                <div class="col-md-6">
-                    <button 
-                        type="button" 
-                        class="selectAllButton btn btn-primary" 
-                        data-target="SelectedEventIds1">Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
-                </div>
-                <br />
-                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                @for (int i = 0; i < noOfDays; i++)
+                {
+                    <div class="@("col-md-" + result)">
+                        <button type="button"
+                                class="selectAllButton btn btn-primary"
+                                data-target="@("SelectedEventIds" + (i + 1))">
+                            Select Day @(i + 1)
+                        </button>
+                    </div>
+                    <br />
+                }
+
+                
+                @*@if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                 {
                     <div class="col-md-6">
                         <button 
@@ -146,35 +154,38 @@
                             data-target="SelectedEventIds2">Select Day @(Model.EventDates.IndexOf(Model.EventDates[^1]) + 1)</button>
                     </div>
                 }
-                <br />
+                <br />*@
             </div>
             <br />
 
             <div class="row" id="center-everything">
-                <div class="col-md-6">
-                    <h3>@Model.Timeslots[0].EventDate.EventName</h3>
-                    <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
-                    @foreach (var timeslot in Model.Timeslots)
-                    {
-                        if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
+                @for(int i = 0; i < noOfDays; i++)
+                {
+                    <div class="@("col-md-"+result)">
+                        <h3>@Model.EventDates[i].EventName</h3>
+                        <h4 class="date-column">@Model.EventDates[i].Date</h4>
+                        @foreach (var timeslot in Model.Timeslots)
                         {
-                            <div>
-                                <input 
-                                    type="checkbox" 
-                                    class="form-check-input" 
-                                    id="@timeslot.Id" 
-                                    name="SelectedEventIds1" 
-                                    value="@timeslot.Id" 
-                                    data-val="true" 
-                                    data-val-required="Please select at least one timeslot" 
-                                    checked="@Model.EventDateDictionary[timeslot.Id]">
-                                <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
-                                <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
-                            </div>
+                            if (timeslot.EventDateId == Model.EventDates[i].Id)
+                            {
+                                <div>
+                                    <input type="checkbox"
+                                           class="form-check-input"
+                                           id="@timeslot.Id"
+                                           name="@("SelectedEventIds"+(i+1).ToString())"
+                                           value="@timeslot.Id"
+                                           data-val="true"
+                                           data-val-required="Please select at least one timeslot"
+                                           checked="@Model.EventDateDictionary[timeslot.Id]">
+                                    <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
+                                    <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
+                                </div>
+                            }
                         }
-                    }
-                </div>
-                @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    </div>
+                }
+                
+                @*@if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
                 {
                     <div class="col-md-6">
                         <h3>@Model.Timeslots[^1].EventDate.EventName</h3>
@@ -199,8 +210,8 @@
                             }
                         }
                     </div>
-                }
-                <br />
+                }*@
+                <br /><br />
                 <div>
                     <span asp-validation-for="SelectedEventIds" class="text-danger"></span>
                 </div>

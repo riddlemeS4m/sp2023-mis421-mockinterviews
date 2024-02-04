@@ -445,10 +445,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole + "," + RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int[] SelectedEventIds1, int[] SelectedEventIds2, 
+        public async Task<IActionResult> Edit(int[] SelectedEventIds1, int[] SelectedEventIds2, int[] SelectedEventIds3, int[] SelectedEventIds4,
             [Bind("Id,InterviewerId,IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch)
         {
-            if((SelectedEventIds1 == null && SelectedEventIds2 == null) || signupInterviewer == null || Lunch == null)
+            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null || Lunch == null)
             {
                 return NotFound();
             }
@@ -458,7 +458,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return BadRequest(new ForbiddenException());
             }
 
-            int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray();
+            int[] SelectedEventIds = SelectedEventIds1
+                .Concat(SelectedEventIds2)
+                .Concat(SelectedEventIds3)
+                .Concat(SelectedEventIds4)
+                .ToArray();
             var user = await _userManager.FindByIdAsync(signupInterviewer.InterviewerId);
             var theirClass = GetClass(User.IsInRole(RolesConstants.StudentRole));
             var timeslots = await _context.Timeslot
@@ -648,9 +652,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         [HttpPost]
         [Authorize(Roles = RolesConstants.AdminRole)]
-        public async Task<IActionResult> CreateForInterviewer(int[] SelectedEventIds1, int[] SelectedEventIds2, [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch, string InterviewerId)
+        public async Task<IActionResult> CreateForInterviewer(int[] SelectedEventIds1, int[] SelectedEventIds2, int[] SelectedEventIds3, int[] SelectedEventIds4,
+            [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch, string InterviewerId)
         {
-            if((SelectedEventIds1 == null && SelectedEventIds2 == null) || signupInterviewer == null || Lunch == null)
+            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null || Lunch == null)
             {
                 return NotFound();
             }
@@ -660,7 +665,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 throw new Exception("Interviewer Id was not provided.");
             }
 
-            int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray();
+            int[] SelectedEventIds = SelectedEventIds1
+                .Concat(SelectedEventIds2)
+                .Concat(SelectedEventIds3)
+                .Concat(SelectedEventIds4)
+                .ToArray();
 
             var timeslots = await _context.Timeslot
                    .Where(x => x.IsInterviewer)
