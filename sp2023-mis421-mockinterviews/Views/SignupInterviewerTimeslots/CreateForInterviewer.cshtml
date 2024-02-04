@@ -126,8 +126,7 @@
                                            name="@("SelectedEventIds"+(i+1).ToString())"
                                            value="@timeslot.Id"
                                            data-val="true"
-                                           data-val-required="Please select at least one timeslot"
-                                           checked="@Model.EventDateDictionary[timeslot.Id]">
+                                           data-val-required="Please select at least one timeslot">
                                     <input type="hidden" name="Timeslots[@timeslot.Id]" value="@timeslot.Id">
                                     <label class="time-column" for="@timeslot.Id">@timeslot.Time</label>
                                 </div>
