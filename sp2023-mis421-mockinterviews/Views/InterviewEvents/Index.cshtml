@@ -561,7 +561,8 @@ else
                 console.log(`Start time: ${startTimeString}`);
 
                 setInterval(function () {
-                    var currentTime = new Date().getTime();
+                    var currentTime = new Date();
+                    currentTime.setHours(currentTime.getHours() + 6);
                     var elapsedTime = currentTime - startTime;
 
                     var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
