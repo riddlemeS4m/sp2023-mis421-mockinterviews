@@ -127,7 +127,6 @@ namespace sp2023_mis421_mockinterviews
                 app.UseHsts();
 
                 app.UseWebSockets();
-                app.UseSession();
             }
 
             // app.UseHttpsRedirection();
