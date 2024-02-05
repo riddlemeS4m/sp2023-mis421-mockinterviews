@@ -125,9 +125,12 @@ namespace sp2023_mis421_mockinterviews
             {
                 app.UseForwardedHeaders();
                 app.UseHsts();
+
+                app.UseWebSockets();
+                app.UseSession();
             }
 
-           // app.UseHttpsRedirection();
+            // app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
