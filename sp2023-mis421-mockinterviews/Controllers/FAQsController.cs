@@ -84,7 +84,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
         public ActionResult DownloadParking()
         {
-            string fileName = "Guest_Parking.pdf";
+            string fileName = "GuestParking_Spring2024.pdf";
             string filePath = "wwwroot/lib/" + fileName;
 
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
