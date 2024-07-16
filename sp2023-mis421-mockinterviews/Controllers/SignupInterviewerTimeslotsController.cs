@@ -159,55 +159,67 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         // GET: SignupInterviewerTimeslots/Create
-        [Authorize(Roles = RolesConstants.InterviewerRole)]
+        //[Authorize(Roles = RolesConstants.InterviewerRole)]
+        [AllowAnonymous]
         public async Task<IActionResult> Create()
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var user = await _userManager.Users
-                .Where(x => x.Id == userId)
-                .Select(x => new { x.FirstName, x.LastName })
-                .FirstOrDefaultAsync();
+
+            var company = "";
+            var email = "";
+            var firstName = "";
+            var lastName = "";
 
             var timeslots = new List<Timeslot>();
-            //if the user is also in a student role, then they should only be able to interview 221 students
-            if (User.IsInRole(RolesConstants.StudentRole))
-            {
-                 timeslots = await _context.Timeslot
-                    .Where(x => x.IsInterviewer )
-                    .Include(y => y.EventDate)
-                    .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                    .Where(x => x.EventDate.For221 != For221.n && x.EventDate.IsActive)
-                    .ToListAsync();
-            }
-            else
+
+            if(string.IsNullOrEmpty(userId))
             {
                 timeslots = await _context.Timeslot
                     .Where(x => x.IsInterviewer)
                     .Include(y => y.EventDate)
-                    .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId))
-                    .Where(x => x.EventDate.For221 != For221.y && x.EventDate.IsActive)
+                    .Where(x => x.EventDate.IsActive && x.EventDate.For221 != For221.y)
+                    .ToListAsync();                
+            }
+            else
+            {
+                var theirClass = GetClass(User.IsInRole(RolesConstants.StudentRole));
+                timeslots = await _context.Timeslot
+                    .Where(x => x.IsInterviewer)
+                    .Include(y => y.EventDate)
+                    .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
+                        x.EventDate.IsActive &&
+                        x.EventDate.For221 != theirClass)
                     .ToListAsync();
+
+                var user = await _userManager.FindByIdAsync(userId);
+                company = user.Company;
+                email = user.Email;
+                firstName = user.FirstName;
+                lastName = user.LastName;
             }
 
-            var eventdates = await _context.EventDate
-                .Where(x => x.IsActive)
-                .ToListAsync();
+            var dates = await _context.EventDate
+                    .Where(x => x.IsActive)
+                    .ToListAsync();
+
+            
 
             SignupInterviewerTimeslotsViewModel volunteerEventsViewModel = new()
             {
                 Timeslots = timeslots,
                 SignupInterviewer = new SignupInterviewer
                 { 
-                    InterviewerId = userId,
-                    FirstName = user.FirstName,
-                    LastName = user.LastName,
                     IsBehavioral = false,
                     IsTechnical = false,
                     IsCase = false,
                     IsVirtual = false,
                     InPerson = false
                 },
-                EventDates = eventdates
+                EventDates = dates,
+                Company = company,
+                Email = email,
+                FirstName = firstName,
+                LastName = lastName
             };
 
             if (timeslots.Count == 0)
@@ -225,32 +237,21 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // POST: SignupInterviewerTimeslots/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [Authorize(Roles = RolesConstants.InterviewerRole)]
+        //[Authorize(Roles = RolesConstants.InterviewerRole)]
+        [AllowAnonymous]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(int[] SelectedEventIds1, int[] SelectedEventIds2, 
-            [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch )
+            [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] SignupInterviewer signupInterviewer, bool Lunch,
+            string Email, string Company, string FirstName, string LastName)
         {
             int[] SelectedEventIds = SelectedEventIds1.Concat(SelectedEventIds2).ToArray();
 
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var userName = await _userManager.Users
-                .Where(u => u.Id == userId)
-                .Select(u => new { u.FirstName, u.LastName, u.Email })
-                .FirstOrDefaultAsync();
-            var theirClass = GetClass(User.IsInRole(RolesConstants.StudentRole));
             var timeslots = await _context.Timeslot
                 .Where(x => x.IsInterviewer)
                 .Include(y => y.EventDate)
-                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
-                    x.EventDate.IsActive &&
-                    x.EventDate.For221 != theirClass)
+                .Where(x => x.EventDate.IsActive && x.EventDate.For221 != For221.y)
                 .ToListAsync();
-            var dates = timeslots
-                .Where(x => x.EventDate.For221 != theirClass && SelectedEventIds.Contains(x.Id))
-                .Select(t => t.EventDate.Id)
-                .Distinct()
-                .ToList();
 
             //prepare vm in case of errors
             SignupInterviewerTimeslotsViewModel vm = new()
@@ -258,9 +259,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 Timeslots = timeslots,
                 SignupInterviewer = new SignupInterviewer
                 {
-                    InterviewerId = userId,
-                    FirstName = userName.FirstName,
-                    LastName = userName.LastName,
                     IsBehavioral = false,
                     IsTechnical = false,
                     IsCase = false,
@@ -271,6 +269,30 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Where(x => x.IsActive)
                     .ToListAsync()
             };
+
+            if (string.IsNullOrEmpty(FirstName))
+            {
+                ModelState.AddModelError("FirstName", "First Name is required.");
+                return View(vm);
+            }
+
+            if (string.IsNullOrEmpty(LastName))
+            {
+                ModelState.AddModelError("LastName", "Last Name is required.");
+                return View(vm);
+            }
+
+            if (string.IsNullOrEmpty(Email))
+            {
+                ModelState.AddModelError("Email", "Email is required.");
+                return View(vm);
+            }
+
+            if (string.IsNullOrEmpty(Company))
+            {
+                ModelState.AddModelError("Company", "Company is required.");
+                return View(vm);
+            }
 
             // Check whether at least one interview type is selected
             if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral && !signupInterviewer.IsCase)
@@ -285,6 +307,41 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 ModelState.AddModelError("SelectedEventIds", "Please select at least one timeslot");
                 return View(vm);
             }
+
+            var user = await _userManager.FindByEmailAsync(Email);
+            if (user == null)
+            {
+                user = new ApplicationUser { FirstName = FirstName, LastName = LastName, Email = Email, UserName = Email, Company = Company };
+                var result = await _userManager.CreateAsync(user, $"{FirstName}Fall2024!");
+
+                user = await _userManager.FindByEmailAsync(Email) ?? throw new Exception($"User with email {Email} was not successfully created.");
+                var roleResult = await _userManager.AddToRoleAsync(user, RolesConstants.InterviewerRole);
+            }
+
+            if (user.Company == null)
+            {
+                user.Company = Company;
+                await _userManager.UpdateAsync(user);
+            }
+
+            string userId = user.Id;
+            var userName = await _userManager.Users
+                .Where(u => u.Id == userId)
+                .Select(u => new { u.FirstName, u.LastName, u.Email })
+                .FirstOrDefaultAsync();
+            var theirClass = GetClass(User.IsInRole(RolesConstants.StudentRole));
+            timeslots = await _context.Timeslot
+                .Where(x => x.IsInterviewer)
+                .Include(y => y.EventDate)
+                .Where(x => !_context.SignupInterviewerTimeslot.Any(y => y.TimeslotId == x.Id && y.SignupInterviewer.InterviewerId == userId) &&
+                    x.EventDate.IsActive &&
+                    x.EventDate.For221 != theirClass)
+                .ToListAsync();
+            var dates = timeslots
+                .Where(x => x.EventDate.For221 != theirClass && SelectedEventIds.Contains(x.Id))
+                .Select(t => t.EventDate.Id)
+                .Distinct()
+                .ToList();
 
             //does the interview already have an existing signup?
             var existingSignupInterviewer = await _context.SignupInterviewer.FirstOrDefaultAsync(si =>

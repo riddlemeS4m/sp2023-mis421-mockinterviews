@@ -7,7 +7,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
     //probably should have a seed directory
     public class TimeslotSeed
     {
-        public const int MaxSignups = 0;
+        public static int MaxSignups { get; set; } = 0;
         public static readonly string[] Times = { "8:00 AM",
             "8:30 AM",
             "9:00 AM",
@@ -29,7 +29,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
         };
 
         public static readonly bool[] Student = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
-        public static readonly bool[] Interviewer = { false, false, true, true, true, true, true, true, false, false, true, true, true, true, true, true, false, false };
+        public static readonly bool[] Interviewer = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
 
         public static List<Timeslot> SeedTimeslots(List<EventDate> dates)
         {

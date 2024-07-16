@@ -12,6 +12,10 @@ using System.Configuration;
 using Microsoft.AspNetCore.HttpOverrides;
 using System.Net;
 using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
+using Google.Apis.Drive.v3;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
+using sp2023_mis421_mockinterviews.Services;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -41,25 +45,28 @@ namespace sp2023_mis421_mockinterviews
 
             string userDataConnectionString;
             string mockInterviewDataConnectionString;
-            string adminPwd = "";
-            //adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
+            string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
+
+            string siteContentFolderId = configuration["GoogleDriveFolders:SiteContent"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:SiteContent' not stored yet.");
+            string resumesFolderId = configuration["GoogleDriveFolders:Resumes"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Resumes' not stored yet.");
+            string pfpsFolderId = configuration["GoogleDriveFolders:PFPs"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:PFPs' not stored yet.");
 
             if (environment == Environments.Development)
             {
-                userDataConnectionString = configuration["UsersLocalConnection"] ?? throw new InvalidOperationException("Connection string 'UsersLocalConnection' not found.");
-                mockInterviewDataConnectionString = configuration["SignupsLocalConnection"] ?? throw new InvalidOperationException("Connection string 'SignupsLocalConnection' not found.");
+                userDataConnectionString = configuration["ConnectionStrings:Development:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Development:Users' not found.");
+                mockInterviewDataConnectionString = configuration["ConnectionStrings:Development:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Development:Signups' not found.");
             }
             else
             {
-                userDataConnectionString = configuration["UserDataConnection"] ?? throw new InvalidOperationException("Connection string 'UserDataConnection' not found.");
-                mockInterviewDataConnectionString = configuration["MockInterviewDataConnection"] ?? throw new InvalidOperationException("Connection string 'MockInterviewDataConnection' not found.");
+                userDataConnectionString = configuration["ConnectionStrings:Production:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Production:Users' not found.");
+                mockInterviewDataConnectionString = configuration["ConnectionStrings:Production:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Production:Signups' not found.");
             }
 
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(userDataConnectionString),
                 ServiceLifetime.Scoped);
 
-            //when updating the userdb, run the following commands...
+            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent commands in the terminal)
             //1. create the entity framework migration
             //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
             //2. specify database environment which you want to update
@@ -72,7 +79,7 @@ namespace sp2023_mis421_mockinterviews
                 options.UseSqlServer(mockInterviewDataConnectionString),
                 ServiceLifetime.Scoped);
 
-            //when updating the userdb, run the following commands...
+            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent commands in the terminal)
             //1. create the entity framework migration
             //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
             //2. specify database environment which you want to update
@@ -83,6 +90,27 @@ namespace sp2023_mis421_mockinterviews
 
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
+
+            var googleCredentialSection = configuration.GetSection("GoogleCredential");
+            services.AddSingleton<DriveService>(_ => {
+                string applicationName = "Mock Interviews App ASP.Net Core MVC";
+                string json = GoogleDriveService.SerializeCredentials(googleCredentialSection);
+
+                GoogleCredential credential;
+                using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
+                {
+                    credential = GoogleCredential.FromStream(stream).CreateScoped(new[]
+                    {
+                        DriveService.Scope.DriveFile
+                    });
+                }
+
+                return new DriveService(new BaseClientService.Initializer()
+                {
+                    HttpClientInitializer = credential,
+                    ApplicationName = applicationName
+                });
+            });
 
             services.AddSignalR();
 
@@ -167,16 +195,20 @@ namespace sp2023_mis421_mockinterviews
                     var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
                     var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
+                    var driveService = newservices.GetRequiredService<DriveService>();
+
+                    var googleDriveUtility = new GoogleDriveService(driveService);
 
                     UserDbContextSeed.SeedRolesAsync(roleManager).Wait();
                     UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd).Wait();
                     MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
                     MockInterviewDbContextSeed.SeedGlobalConfigVars(timeslotcontext).Wait();
+                    googleDriveUtility.Test(siteContentFolderId).Wait();
                 }
                 catch (Exception ex)
                 {
                     var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "An error occurred seeding the DB.");
+                    logger.LogError(ex, "Startup checks failed.");
                 }
             }
             app.MapGet("/Home", () => "");

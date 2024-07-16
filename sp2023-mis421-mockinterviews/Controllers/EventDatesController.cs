@@ -130,7 +130,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,EventName,For221")] EventDate eventDate)
+        public async Task<IActionResult> Create([Bind("Id,Date,EventName,For221,IsActive")] EventDate eventDate, int MaxSignUps)
         {
             if (ModelState.IsValid)
             {
@@ -159,6 +159,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     eventDate
                 };
+
+                TimeslotSeed.MaxSignups = MaxSignUps;
                 var timeslots = TimeslotSeed.SeedTimeslots(dates);
 
                 foreach (Timeslot timeslot in timeslots)

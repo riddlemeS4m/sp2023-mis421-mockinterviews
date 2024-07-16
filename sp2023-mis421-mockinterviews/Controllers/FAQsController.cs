@@ -31,7 +31,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
-        public FAQsController(MockInterviewDataDbContext context, UserManager<ApplicationUser> userManager, ISendGridClient sendGridClient)
+        public FAQsController(MockInterviewDataDbContext context, 
+            UserManager<ApplicationUser> userManager, 
+            ISendGridClient sendGridClient)
         {
             _context = context;
             _userManager = userManager;
