@@ -15,7 +15,8 @@ using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
 using Google.Apis.Drive.v3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
-using sp2023_mis421_mockinterviews.Services;
+using sp2023_mis421_mockinterviews.Services.GoogleDrive;
+using sp2023_mis421_mockinterviews.Interfaces;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -66,7 +67,7 @@ namespace sp2023_mis421_mockinterviews
                 options.UseSqlServer(userDataConnectionString),
                 ServiceLifetime.Scoped);
 
-            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent commands in the terminal)
+            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
             //1. create the entity framework migration
             //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
             //2. specify database environment which you want to update
@@ -79,7 +80,7 @@ namespace sp2023_mis421_mockinterviews
                 options.UseSqlServer(mockInterviewDataConnectionString),
                 ServiceLifetime.Scoped);
 
-            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent commands in the terminal)
+            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
             //1. create the entity framework migration
             //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
             //2. specify database environment which you want to update
@@ -92,9 +93,9 @@ namespace sp2023_mis421_mockinterviews
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
 
             var googleCredentialSection = configuration.GetSection("GoogleCredential");
-            services.AddSingleton<DriveService>(_ => {
+            services.AddSingleton(_ => {
                 string applicationName = "Mock Interviews App ASP.Net Core MVC";
-                string json = GoogleDriveService.SerializeCredentials(googleCredentialSection);
+                string json = GoogleDriveUtility.SerializeCredentials(googleCredentialSection);
 
                 GoogleCredential credential;
                 using (var stream = new MemoryStream(System.Text.Encoding.UTF8.GetBytes(json)))
@@ -110,6 +111,24 @@ namespace sp2023_mis421_mockinterviews
                     HttpClientInitializer = credential,
                     ApplicationName = applicationName
                 });
+            });
+
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                return new GoogleDriveSiteContentService(siteContentFolderId, driveService);
+            });
+
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                return new GoogleDriveResumeService(resumesFolderId, driveService);
+            });
+
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                return new GoogleDrivePfpService(pfpsFolderId, driveService);
             });
 
             services.AddSignalR();
@@ -192,18 +211,18 @@ namespace sp2023_mis421_mockinterviews
 
                 try
                 {
-                    var timeslotcontext = newservices.GetRequiredService<MockInterviewDataDbContext>();
+                    var dbContext = newservices.GetRequiredService<MockInterviewDataDbContext>();
                     var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
-                    var driveService = newservices.GetRequiredService<DriveService>();
-
-                    var googleDriveUtility = new GoogleDriveService(driveService);
+                    var driveService = newservices.GetRequiredService<GoogleDriveSiteContentService>();
 
                     UserDbContextSeed.SeedRolesAsync(roleManager).Wait();
                     UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd).Wait();
-                    MockInterviewDbContextSeed.SeedTimeslots(timeslotcontext).Wait();
-                    MockInterviewDbContextSeed.SeedGlobalConfigVars(timeslotcontext).Wait();
-                    googleDriveUtility.Test(siteContentFolderId).Wait();
+                    MockInterviewDbContextSeed.SeedTimeslots(dbContext).Wait();
+                    MockInterviewDbContextSeed.SeedGlobalConfigVars(dbContext).Wait();
+
+                    var testGoogleDrive = new GoogleDriveServiceSeed(driveService, dbContext);
+                    testGoogleDrive.Test().Wait();
                 }
                 catch (Exception ex)
                 {

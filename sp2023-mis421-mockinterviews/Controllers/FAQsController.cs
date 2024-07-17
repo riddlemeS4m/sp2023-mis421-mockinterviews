@@ -23,6 +23,8 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -31,13 +33,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
+        private readonly ILogger<FAQsController> _logger;
+        private readonly GoogleDriveSiteContentService _driveService;
         public FAQsController(MockInterviewDataDbContext context, 
             UserManager<ApplicationUser> userManager, 
-            ISendGridClient sendGridClient)
+            ISendGridClient sendGridClient,
+            ILogger<FAQsController> logger,
+            GoogleDriveSiteContentService googleDriveSiteContentService)
         {
             _context = context;
             _userManager = userManager;
             _sendGridClient = sendGridClient;
+            _logger = logger;
+            _driveService = googleDriveSiteContentService;
         }
 
         // GET: FAQs
@@ -73,24 +81,69 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             return View(fAQs);
         }
-        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
-        public ActionResult DownloadManual()
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DownloadManual()
 		{
-			string fileName = "MockInterviewManual_Spring2024.docx";
-			string filePath = "wwwroot/lib/" + fileName;
+            try
+            {
+                var fileId = await _context.GlobalConfigVar
+                                .Where(x => x.Name == GoogleDriveServiceSeed.ManualConfigVar)
+                                .Select(x => x.Value)
+                                .FirstOrDefaultAsync();
 
-			byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-			return File(fileBytes, "application/vnd.openxmlformats-officedocument.wordprocessingml.document", fileName);
-		}
+                if (string.IsNullOrEmpty(fileId))
+                {
+                    return NotFound("File id not found.");
+                }
 
-        [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
-        public ActionResult DownloadParking()
+                (Google.Apis.Drive.v3.Data.File fileMetadata, MemoryStream fileContent) = await _driveService.GetOneFile(fileId, true);
+
+                if (fileMetadata == null || fileContent == null)
+                {
+                    return NotFound("File not found in remote storage.");
+                }
+
+                fileContent.Position = 0;
+
+                return File(fileContent, GoogleDriveUtility.GetMimeType(fileMetadata.Name), fileMetadata.Name);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest($"The server sent this message: {ex.Message}");
+            }
+        }
+
+        [AllowAnonymous]
+        public async Task<ActionResult> DownloadParking()
         {
-            string fileName = "GuestParking_Spring2024.pdf";
-            string filePath = "wwwroot/lib/" + fileName;
+            try
+            {
+                var fileId = await _context.GlobalConfigVar
+                .Where(x => x.Name == GoogleDriveServiceSeed.ParkingPassConfigVar)
+                .Select(x => x.Value)
+                .FirstOrDefaultAsync();
 
-            byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return File(fileBytes, "application/pdf", fileName);
+                if (string.IsNullOrEmpty(fileId))
+                {
+                    return NotFound("File id not found.");
+                }
+
+                (Google.Apis.Drive.v3.Data.File fileMetadata, MemoryStream fileContent) = await _driveService.GetOneFile(fileId, true);
+
+                if (fileMetadata == null || fileContent == null)
+                {
+                    return NotFound("File not found in remote storage.");
+                }
+
+                fileContent.Position = 0;
+
+                return File(fileContent, GoogleDriveUtility.GetMimeType(fileMetadata.Name), fileMetadata.Name);
+            }
+            catch(Exception ex)
+            {
+                return BadRequest($"The server sent this message: {ex.Message}");
+            }
         }
 
         // GET: FAQs/Create
@@ -217,6 +270,81 @@ namespace sp2023_mis421_mockinterviews.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
+
+        [HttpGet]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public IActionResult UpdateSiteContent()
+        {
+            var model = new UploadSiteContentViewModel();
+
+            return View("UpdateSiteContent", model);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> UpdateSiteContent(IFormFile Manual, IFormFile ParkingPass)
+        {
+            if (Manual == null && ParkingPass == null)
+            {
+                var vm = new UploadSiteContentViewModel();
+                ModelState.AddModelError("Manual", "Please select at least one file.");
+                ModelState.AddModelError("ParkingPass", "Please select at least one file.");
+                return View("UpdateSiteContent", vm);
+            }
+
+            try
+            {
+                if (Manual != null)
+                {
+                    var configVar = await _context.GlobalConfigVar
+                        .Where(x => x.Name == GoogleDriveServiceSeed.ManualConfigVar)
+                        .FirstOrDefaultAsync();
+
+                    if (configVar == null)
+                    {
+                        return NotFound("File id not found.");
+                    }
+
+                    await _driveService.DeleteFile(configVar.Value);
+
+                    _context.Remove(configVar);
+                    await _context.SaveChangesAsync();
+
+                    await _driveService.UploadFile(Manual);
+
+                }
+
+                if (ParkingPass != null)
+                {
+                    var configVar = await _context.GlobalConfigVar
+                        .Where(x => x.Name == GoogleDriveServiceSeed.ParkingPassConfigVar)
+                        .FirstOrDefaultAsync();
+
+                    if (configVar == null)
+                    {
+                        return NotFound("File id not found.");
+                    }
+
+                    await _driveService.DeleteFile(configVar.Value);
+
+                    _context.Remove(configVar);
+                    await _context.SaveChangesAsync();
+
+                    await _driveService.UploadFile(ParkingPass);
+                }
+
+                var googleDriveSeed = new GoogleDriveServiceSeed(_driveService, _context);
+                await googleDriveSeed.Test();
+
+                return RedirectToAction("Index", "FAQs");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         private bool FAQsExists(int id)
         {
           return (_context.FAQs?.Any(e => e.Id == id)).GetValueOrDefault();
