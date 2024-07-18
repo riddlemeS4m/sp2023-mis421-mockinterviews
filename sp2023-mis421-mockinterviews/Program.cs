@@ -1,22 +1,15 @@
-using EllipticCurve;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
+using Google.Apis.Drive.v3;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Services;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Models.UserDb;
-using System.Configuration;
-using Microsoft.AspNetCore.HttpOverrides;
-using System.Net;
-using Microsoft.AspNetCore.Authentication.MicrosoftAccount;
-using Google.Apis.Drive.v3;
-using Google.Apis.Auth.OAuth2;
-using Google.Apis.Services;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
-using sp2023_mis421_mockinterviews.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -89,6 +82,8 @@ namespace sp2023_mis421_mockinterviews
             //update-database -context mockinterviewdatadbcontext -startupproject sp2023-mis421-mockinterviews
             //this is to account for using two different database sets for the two different environments
 
+            services.AddMemoryCache();
+
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
 
@@ -128,7 +123,8 @@ namespace sp2023_mis421_mockinterviews
             services.AddScoped(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
-                return new GoogleDrivePfpService(pfpsFolderId, driveService);
+                var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
+                return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
             });
 
             services.AddSignalR();

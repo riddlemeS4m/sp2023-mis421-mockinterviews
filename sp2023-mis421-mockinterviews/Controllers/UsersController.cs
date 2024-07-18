@@ -8,6 +8,7 @@ using sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 using System.Net.Mime;
 
 namespace sp2023_mis421_mockinterviews.Controllers
@@ -21,9 +22,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        public UsersController(UserManager<ApplicationUser> userManager)
+        private readonly GoogleDriveResumeService _driveResumeService;
+        private readonly GoogleDrivePfpService _drivePfpService;
+        public UsersController(UserManager<ApplicationUser> userManager,
+            GoogleDriveResumeService driveResumeService,
+            GoogleDrivePfpService drivePfpService)
         {
             _userManager = userManager;
+            _driveResumeService = driveResumeService;
+            _drivePfpService = drivePfpService;
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]
@@ -37,10 +44,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole)]
         public async Task<IActionResult> ExternalUserProfileView(string userId)
         {
-            // Retrieve the current user's information from the database
             var user = await _userManager.FindByIdAsync(userId);
 
-            // Create a view model with the user's data
             var viewModel = new ExternalUserProfileViewModel
             {
                 Id = user.Id,
@@ -49,13 +54,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 Class = ClassConstants.GetClassText((Classes)user.Class)
             };
 
-            // Return the ProfileView with the view model
             return View(viewModel);
         }
 
         //[HttpGet]
         //[Route("Users/DownloadResume/{userId}")]
-        [Authorize(Roles = RolesConstants.InterviewerRole + "," + RolesConstants.AdminRole + "," + RolesConstants.StudentRole)]
+        [AllowAnonymous]
         public async Task<IActionResult> DownloadResume(string userId)
         {
             var user = await _userManager.FindByIdAsync(userId);
@@ -65,7 +69,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var resume = user.Resume;
-            if (resume == null)
+            if (string.IsNullOrEmpty(resume))
             {
                 return NotFound();
             }
@@ -77,7 +81,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
             };
 
             Response.Headers.Add("Content-Disposition", contentDisposition.ToString());
-            return File(resume, "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
+
+            (Google.Apis.Drive.v3.Data.File file, MemoryStream stream) = await _driveResumeService.GetOneFile(resume, true);
+            
+            stream.Position = 0;
+
+            return File(stream.ToArray(), file.MimeType);
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]
@@ -126,7 +135,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { FirstName = model.FirstName, LastName = model.LastName, Email = model.Email, UserName = model.Email };
+                var user = new ApplicationUser 
+                { 
+                    FirstName = model.FirstName, 
+                    LastName = model.LastName, 
+                    Email = model.Email, 
+                    UserName = model.Email 
+                };
                 var result = await _userManager.CreateAsync(user, $"{model.FirstName}Spring2024!");
 
                 if (result.Succeeded)
@@ -164,6 +179,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             // If model state is not valid or user creation fails, return to the creation page with errors
             return View(model);
+        }
+
+        [HttpGet]
+        [Route("Image/Proxy/{fileId}")]
+        public async Task<IActionResult> ProxyImage(string fileId)
+        {
+            try
+            {
+                (Google.Apis.Drive.v3.Data.File file, MemoryStream stream) = await _drivePfpService.GetOneFile(fileId, true);
+                stream.Position = 0;
+
+                // Set HTTP cache headers
+                Response.Headers["Cache-Control"] = "public,max-age=3600"; // Adjust the cache duration as needed
+
+                return File(stream, file.MimeType);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occurred: {ex.Message}");
+            }
         }
     }
 }

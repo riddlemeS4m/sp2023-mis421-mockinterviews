@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
@@ -12,13 +13,19 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly GoogleDriveResumeService _driveResumeService;
+        private readonly GoogleDrivePfpService _drivePfpService;
 
         public UserProfileViewModel(
             UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            SignInManager<ApplicationUser> signInManager,
+            GoogleDriveResumeService driveResumeService,
+            GoogleDrivePfpService drivePfpService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _driveResumeService = driveResumeService;
+            _drivePfpService = drivePfpService;
         }
 
         /// <summary>
@@ -65,10 +72,14 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             public Classes Class { get; set; }
             [Display(Name = "Company")]
             public string? Company { get; set; }
+            // [Display(Name = "Profile Picture")]
+            // public byte[]? ProfilePicture { get; set; }
+            // [Display(Name = "Resume")]
+            // public byte[]? Resume { get; set; }
             [Display(Name = "Profile Picture")]
-            public byte[]? ProfilePicture { get; set; }
+            public string? ProfilePicture { get; set; }
             [Display(Name = "Resume")]
-            public byte[]? Resume { get; set; }
+            public string? Resume { get; set; }
         }
 
         private async Task LoadAsync(ApplicationUser user)
@@ -123,6 +134,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             }
 
             var company = user.Company;
+
             if (Input.Company != company)
             {
                 user.Company = Input.Company;
@@ -132,16 +144,19 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
             var firstName = user.FirstName;
             var lastName = user.LastName;
             var userClass = user.Class;
+
             if (Input.FirstName != firstName && Input.FirstName != null)
             {
                 user.FirstName = Input.FirstName;
                 await _userManager.UpdateAsync(user);
             }
+
             if (Input.LastName != lastName && Input.LastName != null)
             {
                 user.LastName = Input.LastName;
                 await _userManager.UpdateAsync(user);
             }
+
             if (Input.Class != userClass && Input.Class != null)
             {
                 user.Class = Input.Class;
@@ -154,11 +169,21 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                 var profilePictureFile = Request.Form.Files["profilePicture"];
                 if (profilePictureFile != null)
                 {
-                    using (var dataStream = new MemoryStream())
+                    if(user.ProfilePicture != null)
                     {
-                        await profilePictureFile.CopyToAsync(dataStream);
-                        user.ProfilePicture = dataStream.ToArray();
+                        try
+                        {
+                            await _drivePfpService.DeleteFile(user.ProfilePicture);
+                        }
+                        catch
+                        {
+                            user.ProfilePicture = null;
+                        }
                     }
+
+                    var fileId = await _drivePfpService.UploadFile(profilePictureFile);
+                    user.ProfilePicture = fileId;
+
                     await _userManager.UpdateAsync(user);
                 }
 
@@ -168,16 +193,28 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
                     var resumeFile = Request.Form.Files["resume"];
                     if (resumeFile != null)
                     {
-                        using (var dataStream = new MemoryStream())
+                        if (user.Resume != null)
                         {
-                            await resumeFile.CopyToAsync(dataStream);
-                            user.Resume = dataStream.ToArray();
+                            try
+                            {
+                                await _driveResumeService.DeleteFile(user.Resume);
+                            }
+                            catch 
+                            { 
+                                user.Resume = null; 
+                            }
                         }
+
+                        var fileId = await _driveResumeService.UploadFile(resumeFile);
+                        user.Resume = fileId;
+
                         await _userManager.UpdateAsync(user);
                     }
                 }
             }
+
             var phoneNumber = await _userManager.GetPhoneNumberAsync(user);
+
             if (Input.PhoneNumber != phoneNumber && Input.PhoneNumber != null)
             {
                 var setPhoneResult = await _userManager.SetPhoneNumberAsync(user, Input.PhoneNumber);

@@ -15,7 +15,7 @@ namespace sp2023_mis421_mockinterviews.Models.UserDb
         public Classes Class { get; set; }
         public string? Company { get; set; }
         [Display(Name = "Profile Picture")]
-        public byte[]? ProfilePicture { get; set; }
-        public byte[]? Resume { get; set; }
+        public string? ProfilePicture { get; set; }
+        public string? Resume { get; set; }
     }
 }
