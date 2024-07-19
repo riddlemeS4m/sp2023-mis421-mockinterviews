@@ -22,6 +22,9 @@ jobs:
             echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl stop kestrel-mockinterviews.service
             cd /var/www/sp2023-mis421-mockinterviews/
             git pull
+            dotnet restore
+            dotnet ef database update --context UserDataDbContext
+            dotnet ef database update --context MockInterviewDataDbContext
             dotnet build &&
             echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl start kestrel-mockinterviews.service
 
