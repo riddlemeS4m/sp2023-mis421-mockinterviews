@@ -24,8 +24,8 @@ jobs:
             git pull
             dotnet restore
             cd sp2023-mis421-mockinterviews/
-            dotnet ef database update --context UserDataDbContext
-            dotnet ef database update --context MockInterviewDataDbContext
+            dotnet ef database update --context UserDataDbContext --startupproject /var/www/sp2023-mis421-mockinterviews/
+            dotnet ef database update --context MockInterviewDataDbContext --startupproject /var/www/sp2023-mis421-mockinterviews/
             cd ..
             dotnet build &&
             echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl start kestrel-mockinterviews.service
