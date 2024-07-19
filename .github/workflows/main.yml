@@ -24,7 +24,6 @@ jobs:
             git pull
             dotnet restore
             cd sp2023-mis421-mockinterviews/
-            dotnet tool restore
             dotnet ef database update --context UserDataDbContext
             dotnet ef database update --context MockInterviewDataDbContext
             cd ..
