@@ -273,38 +273,37 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (string.IsNullOrEmpty(FirstName))
             {
                 ModelState.AddModelError("FirstName", "First Name is required.");
-                return View(vm);
             }
 
             if (string.IsNullOrEmpty(LastName))
             {
                 ModelState.AddModelError("LastName", "Last Name is required.");
-                return View(vm);
             }
 
             if (string.IsNullOrEmpty(Email))
             {
                 ModelState.AddModelError("Email", "Email is required.");
-                return View(vm);
             }
 
             if (string.IsNullOrEmpty(Company))
             {
                 ModelState.AddModelError("Company", "Company is required.");
-                return View(vm);
             }
 
             // Check whether at least one interview type is selected
             if (!signupInterviewer.IsTechnical && !signupInterviewer.IsBehavioral && !signupInterviewer.IsCase)
             {
                 ModelState.AddModelError("SignupInterviewer.IsTechnical", "Please select at least one checkbox");
-                return View(vm);
             }
 
             // Check whether at least one timeslot is selected
             if (SelectedEventIds == null || SelectedEventIds.Length == 0)
             {
                 ModelState.AddModelError("SelectedEventIds", "Please select at least one timeslot");
+            }
+
+            if(ModelState.ErrorCount > 0)
+            {
                 return View(vm);
             }
 
@@ -416,17 +415,28 @@ namespace sp2023_mis421_mockinterviews.Controllers
             //add sits
             foreach (int id in SelectedEventIds)
             {
-                
-                var timeslot = new SignupInterviewerTimeslot 
+                var bothTimeslots = new List<SignupInterviewerTimeslot>();
+
+                var timeslotOne = new SignupInterviewerTimeslot 
                 { 
                     TimeslotId = id, 
                     SignupInterviewerId = post.Id 
                 };
 
-                _context.Add(timeslot);
+                var timeslotTwo = new SignupInterviewerTimeslot
+                {
+                    TimeslotId = id + 1,
+                    SignupInterviewerId = post.Id
+                };
+
+                bothTimeslots.Add(timeslotOne);
+                bothTimeslots.Add(timeslotTwo);
+
+                _context.AddRange(bothTimeslots);
                 await _context.SaveChangesAsync();
 
-                emailTimes.Add(timeslot);
+                emailTimes.Add(timeslotOne);
+                emailTimes.Add(timeslotTwo);
             }
 
             //prepare and send email
