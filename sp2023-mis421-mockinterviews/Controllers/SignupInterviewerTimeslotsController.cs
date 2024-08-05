@@ -426,6 +426,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var timeslotTwo = new SignupInterviewerTimeslot
                 {
                     TimeslotId = id + 1,
+                    Timeslot = await _context.Timeslot.FindAsync(id + 1),
                     SignupInterviewerId = post.Id
                 };
 
