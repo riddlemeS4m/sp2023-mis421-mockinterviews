@@ -28,8 +28,6 @@ namespace sp2023_mis421_mockinterviews
 		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
 		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
 
-                //adding dummy comment because i feel like it -sam 2024
-
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 		        options.KnownNetworks.Clear();
 		        options.KnownProxies.Clear();            
@@ -49,13 +47,13 @@ namespace sp2023_mis421_mockinterviews
 
             if (environment == Environments.Development)
             {
-                userDataConnectionString = configuration["ConnectionStrings:Development:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Development:Users' not found.");
-                mockInterviewDataConnectionString = configuration["ConnectionStrings:Development:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Development:Signups' not found.");
+                userDataConnectionString = configuration["ConnectionStrings:SqlServer:Development:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Development:Users' not found.");
+                mockInterviewDataConnectionString = configuration["ConnectionStrings:SqlServer:Development:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Development:Signups' not found.");
             }
             else
             {
-                userDataConnectionString = configuration["ConnectionStrings:Production:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Production:Users' not found.");
-                mockInterviewDataConnectionString = configuration["ConnectionStrings:Production:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:Production:Signups' not found.");
+                userDataConnectionString = configuration["ConnectionStrings:SqlServer:Production:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Production:Users' not found.");
+                mockInterviewDataConnectionString = configuration["ConnectionStrings:SqlServer:Production:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Production:Signups' not found.");
             }
 
             services.AddDbContext<UserDataDbContext>(options =>
@@ -164,11 +162,6 @@ namespace sp2023_mis421_mockinterviews
 	   
             var app = builder.Build();
 
-            //app.UseForwardedHeaders(new ForwardedHeadersOptions
-            //{
-            //    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
-            //});
-
             if (app.Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -179,11 +172,9 @@ namespace sp2023_mis421_mockinterviews
             {
                 app.UseForwardedHeaders();
                 app.UseHsts();
-
                 app.UseWebSockets();
             }
 
-            //app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
@@ -228,6 +219,7 @@ namespace sp2023_mis421_mockinterviews
                     logger.LogError(ex, "Startup checks failed.");
                 }
             }
+
             app.MapGet("/Home", () => "");
             app.Run();
         }
