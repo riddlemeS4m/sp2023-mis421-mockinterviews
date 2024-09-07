@@ -3,21 +3,20 @@ using System.ComponentModel.DataAnnotations;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
-    [Table("EmailTemplates")]
-    public class EmailTemplate
+    [Table("Questions")]
+    public class Question
     {
         [Key]
         public int Id { get; set; }
 
         [Required]
-        [Display(Name = "Subject Line")]
-        public string SubjectLine { get; set; }
+        public string Q { get; set; }
 
-        public string? Body { get; set; }
+        public string? A { get; set; }
 
         public override string ToString()
         {
-            return $"[Email Template] Id: {Id}, Subject Line: {SubjectLine}";
+            return $"[Q] Id: {Id}, Q: {Q}, A: {A}";
         }
     }
 }

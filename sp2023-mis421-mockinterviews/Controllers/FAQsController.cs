@@ -54,13 +54,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
               return _context.FAQs != null ? 
                           View(await _context.FAQs.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+                          Problem("Entity set 'ApplicationDbContext.Question'  is null.");
         }
 		public async Task<IActionResult> Resources()
 		{
 			return _context.FAQs != null ?
-						View(await _context.FAQs.Where(x => x.Answer != null).ToListAsync()) :
-						Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+						View(await _context.FAQs.Where(x => x.A != null).ToListAsync()) :
+						Problem("Entity set 'ApplicationDbContext.Question'  is null.");
 		}
 
         // GET: FAQs/Details/5
@@ -156,7 +156,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.StudentRole + "," + RolesConstants.InterviewerRole)]
-        public async Task<IActionResult> Create([Bind("Id, Question, Answer")] FAQs faq)
+        public async Task<IActionResult> Create([Bind("Id, Question, A")] Question faq)
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
@@ -168,14 +168,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await _context.SaveChangesAsync();
                 if(User.IsInRole(RolesConstants.AdminRole))
                 {
-                    return RedirectToAction("Index", "FAQs");
+                    return RedirectToAction("Index", "Question");
                 }
                 else
                 {
                     ASendAnEmail emailer = new NewFAQSubmitted();
-                    await emailer.SendEmailAsync(_sendGridClient, "Answer Required: Student Submitted New Question", SuperUser.Email, user.FirstName + " " + user.LastName, faq.Question, null);
+                    await emailer.SendEmailAsync(_sendGridClient, "A Required: Student Submitted New Question", SuperUser.Email, user.FirstName + " " + user.LastName, faq.Q, null);
 
-                    return RedirectToAction("Resources", "FAQs");
+                    return RedirectToAction("Resources", "Question");
                 }
                 
             }
@@ -202,7 +202,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RolesConstants.AdminRole)]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Question, Answer")] FAQs faq)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Question, A")] Question faq)
         {
             if (id != faq.Id)
             {
@@ -259,7 +259,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.FAQs == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.FAQs'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Question'  is null.");
             }
             var fAQs = await _context.FAQs.FindAsync(id);
             if (fAQs != null)
@@ -337,7 +337,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var googleDriveSeed = new GoogleDriveServiceSeed(_driveService, _context);
                 await googleDriveSeed.Test();
 
-                return RedirectToAction("Index", "FAQs");
+                return RedirectToAction("Index", "Question");
             }
             catch (Exception ex)
             {

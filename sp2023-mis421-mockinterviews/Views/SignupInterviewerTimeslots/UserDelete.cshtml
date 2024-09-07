@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot
+﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerTimeslot
 
 @{
     ViewData["Title"] = "Delete";
@@ -17,7 +17,7 @@
             Name
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.SignupInterviewer.FirstName) @Html.DisplayFor(model => model.SignupInterviewer.LastName)
+            @Html.DisplayFor(model => model.InterviewerSignup.FirstName) @Html.DisplayFor(model => model.InterviewerSignup.LastName)
         </dd>
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Timeslot.Time)
@@ -26,26 +26,26 @@
             @Html.DisplayFor(model => model.Timeslot.Time)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+            @Html.DisplayNameFor(model => model.Timeslot.Event.Date)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
+            @Html.DisplayFor(model => model.Timeslot.Event.Date)
         </dd>
         <dt>
-            @Html.DisplayNameFor(model => model.SignupInterviewer.InterviewType)
+            @Html.DisplayNameFor(model => model.InterviewerSignup.Type)
         </dt>
         <dd>
-            @Html.DisplayFor(model => model.SignupInterviewer.InterviewType)
+            @Html.DisplayFor(model => model.InterviewerSignup.Type)
         </dd>
         <dt>
             In-Person or Virtual:
         </dt>
 
-        @if (Model.SignupInterviewer.IsVirtual)
+        @if (Model.InterviewerSignup.IsVirtual)
         {
             <dd>Virtual</dd>
         }
-        else if (Model.SignupInterviewer.InPerson)
+        else if (Model.InterviewerSignup.InPerson)
         {
             <dd>In Person</dd>
         }

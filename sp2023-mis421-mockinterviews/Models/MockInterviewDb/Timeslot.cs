@@ -6,27 +6,47 @@ using System.Runtime.CompilerServices;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
+    [Table("Timeslots")]
     public class Timeslot
     {
-        //all static entries
-        //do we need isactive field?
-
-        //LT-yes because we want the dependencies to stay around even after a week of mock interviews is over, that way we can go back in the history and see previous stats
+        [Key]
         public int Id { get; set; }
+
+        [Required]
         [DataType(DataType.Time)]
         [DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
         public DateTime Time { get; set; }
-        [ForeignKey("EventDate")]
-        public int EventDateId { get; set; }
+
+        [Required]
+        [ForeignKey("Events")]
+        public int EventId { get; set; }
+
         [ValidateNever]
-        public EventDate EventDate { get; set; }
-        //should delete this
+        public Event Event { get; set; }
+
+        [Required]
         [DefaultValue(true)]
+        [Display(Name = "Active?")]
         public bool IsActive { get; set; }
+
+        [DefaultValue(false)]
+        [Display(Name = "For Volunteers?")]
         public bool IsVolunteer { get; set; }
+
+        [DefaultValue(false)]
+        [Display(Name = "For Interviewers?")]
         public bool IsInterviewer { get; set; }
+
+        [DefaultValue(false)]
+        [Display(Name = "For Students?")]
         public bool IsStudent { get; set; }
+
         [Display(Name = "Max Sign Ups")]
         public int MaxSignUps { get; set; }
+
+        public override string ToString()
+        {
+            return $"[Timeslots] Id: {Id}, Time: {Time}, Date: {EventId}";
+        }
     }
 }

@@ -1,7 +1,7 @@
 ﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
 @using sp2023_mis421_mockinterviews.Data;
 @using sp2023_mis421_mockinterviews.Data.Constants;
-@model IEnumerable<FAQs>
+@model IEnumerable<Question>
 
 <html>
 <head>
@@ -53,8 +53,8 @@
     @foreach (var faq in Model)
     {
         <div class="faq">
-            <div class="question">@faq.Question</div>
-            <div class="answer">@faq.Answer</div>
+            <div class="question">@faq.Q</div>
+            <div class="answer">@faq.A</div>
         </div>
     }
     @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))

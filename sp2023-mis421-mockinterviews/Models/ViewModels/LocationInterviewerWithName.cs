@@ -5,7 +5,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
 {
     public class LocationInterviewerWithName
     {
-        public LocationInterviewer LocationInterviewer { get; set; }
+        public InterviewerLocation LocationInterviewer { get; set; }
         [Display(Name = "Interviewer")]
         public string InterviewerName { get; set; }
         public string InterviewerPreference { get; set; }

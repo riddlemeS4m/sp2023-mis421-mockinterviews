@@ -1,9 +1,9 @@
 ﻿@using sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
-@model IEnumerable<FAQs>
+@model IEnumerable<Question>
 
 @{
-    ViewData["Title"] = "FAQs";
+    ViewData["Title"] = "Question";
 }
 
 <h1>Manage FAQs</h1>
@@ -15,10 +15,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Question)
+                @Html.DisplayNameFor(model => model.Q)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Answer)
+                @Html.DisplayNameFor(model => model.A)
             </th>
             <th></th>
         </tr>
@@ -27,10 +27,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @Html.DisplayFor(modelItem => item.Question)
+                @Html.DisplayFor(modelItem => item.Q)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.Answer)
+                @Html.DisplayFor(modelItem => item.A)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

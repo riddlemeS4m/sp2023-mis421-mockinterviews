@@ -9,21 +9,21 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<int>(
-                name: "EventDateId",
-                table: "LocationInterviewer",
+                name: "EventId",
+                table: "InterviewerLocation",
                 type: "int",
                 nullable: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationInterviewer_EventDateId",
-                table: "LocationInterviewer",
-                column: "EventDateId");
+                table: "InterviewerLocation",
+                column: "EventId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LocationInterviewer_EventDate_EventDateId",
-                table: "LocationInterviewer",
-                column: "EventDateId",
-                principalTable: "EventDate",
+                table: "InterviewerLocation",
+                column: "EventId",
+                principalTable: "Event",
                 principalColumn: "Id");
         }
 
@@ -31,15 +31,15 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_LocationInterviewer_EventDate_EventDateId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.DropIndex(
                 name: "IX_LocationInterviewer_EventDateId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.DropColumn(
-                name: "EventDateId",
-                table: "LocationInterviewer");
+                name: "EventId",
+                table: "InterviewerLocation");
         }
     }
 }

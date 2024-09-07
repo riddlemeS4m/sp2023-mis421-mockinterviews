@@ -17,7 +17,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 
                 foreach (Timeslot timeslot in timeslots)
                 {
-                    if (!times.Any(x => x.Time.TimeOfDay == timeslot.Time.TimeOfDay && x.EventDate.Date == timeslot.EventDate.Date))
+                    if (!times.Any(x => x.Time.TimeOfDay == timeslot.Time.TimeOfDay && x.Event.Date == timeslot.Event.Date))
                     {
                         context.Add(timeslot);
                         await context.SaveChangesAsync();

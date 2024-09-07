@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "MicrosoftId",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -18,14 +18,14 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AddColumn<bool>(
                 name: "In221",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
 
             migrationBuilder.AddColumn<bool>(
                 name: "InMasters",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -35,15 +35,15 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropColumn(
                 name: "In221",
-                table: "MSTeamsStudentUpload");
+                table: "RosteredStudent");
 
             migrationBuilder.DropColumn(
                 name: "InMasters",
-                table: "MSTeamsStudentUpload");
+                table: "RosteredStudent");
 
             migrationBuilder.AlterColumn<string>(
                 name: "MicrosoftId",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

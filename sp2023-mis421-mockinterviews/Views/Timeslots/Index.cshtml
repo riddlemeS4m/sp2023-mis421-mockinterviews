@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.EventDate.Date)
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Event.Date)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.MaxSignUps)
@@ -38,7 +38,7 @@
                 @Html.DisplayFor(modelItem => item.Timeslot.Time)
             </td>
             <td class="date-column">
-                @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
+                @Html.DisplayFor(modelItem => item.Timeslot.Event.Date)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Timeslot.MaxSignUps)

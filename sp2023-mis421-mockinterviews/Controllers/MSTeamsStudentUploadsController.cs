@@ -31,7 +31,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
               return _context.MSTeamsStudentUpload != null ? 
                           View(await _context.MSTeamsStudentUpload.ToListAsync()) :
-                          Problem("Entity set 'MockInterviewDataDbContext.MSTeamsStudentUpload'  is null.");
+                          Problem("Entity set 'MockInterviewDataDbContext.RosteredStudent'  is null.");
         }
 
         // GET: MSTeamsStudentUploads/Details/5
@@ -85,7 +85,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     _context.MSTeamsStudentUpload.RemoveRange(_context.MSTeamsStudentUpload);
                     await _context.SaveChangesAsync();
 
-                    var records = new List<MSTeamsStudentUpload>();
+                    var records = new List<RosteredStudent>();
 
                     using (var stream = RosterData.OpenReadStream())
                     using (var parser = new TextFieldParser(stream))
@@ -100,7 +100,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                             if (fields.Length >= 3)
                             {
-                                var record = new MSTeamsStudentUpload
+                                var record = new RosteredStudent
                                 {
                                     MicrosoftId = fields[0],
                                     Email = fields[1],
@@ -155,7 +155,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 try
                 {
-                    var records = new List<MSTeamsStudentUpload>();
+                    var records = new List<RosteredStudent>();
 
                     using (var stream = RosterData.OpenReadStream())
                     using (var parser = new TextFieldParser(stream))
@@ -170,7 +170,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                             if (fields.Length >= 3)
                             {
-                                var record = new MSTeamsStudentUpload
+                                var record = new RosteredStudent
                                 {
                                     Email = fields[2],
                                     Name = fields[1] + " " + fields[0],
@@ -233,7 +233,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 try
                 {
-                    var records = new List<MSTeamsStudentUpload>();
+                    var records = new List<RosteredStudent>();
 
                     using (var stream = RosterData.OpenReadStream())
                     using (var parser = new TextFieldParser(stream))
@@ -248,7 +248,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                             if (fields.Length >= 3)
                             {
-                                var record = new MSTeamsStudentUpload
+                                var record = new RosteredStudent
                                 {
                                     Email = fields[6],
                                     Name = fields[1] + " " + fields[0],
@@ -314,7 +314,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RolesConstants.AdminRole)]
 
-        public async Task<IActionResult> Edit(int id, [Bind("Id,MicrosoftId,Email,Name")] MSTeamsStudentUpload mSTeamsStudentUpload)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,MicrosoftId,Email,Name")] RosteredStudent mSTeamsStudentUpload)
         {
             if (id != mSTeamsStudentUpload.Id)
             {
@@ -373,7 +373,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.MSTeamsStudentUpload == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.MSTeamsStudentUpload'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.RosteredStudent'  is null.");
             }
             var mSTeamsStudentUpload = await _context.MSTeamsStudentUpload.FindAsync(id);
             if (mSTeamsStudentUpload != null)

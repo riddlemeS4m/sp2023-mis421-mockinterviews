@@ -29,7 +29,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
               return _context.EventDate != null ? 
                           View(await _context.EventDate.ToListAsync()) :
-                          Problem("Entity set 'MockInterviewDataDbContext.EventDate'  is null.");
+                          Problem("Entity set 'MockInterviewDataDbContext.Event'  is null.");
         }
 
         public async Task<IActionResult> EventStatistics()
@@ -41,20 +41,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
             foreach (var eventDate in eventDates)
             {
                 var studentCount = await _context.InterviewEvent
-                    .Where(e => e.Timeslot.EventDateId == eventDate.Id)
+                    .Where(e => e.Timeslot.EventId == eventDate.Id)
                     .Select(e => e.StudentId)
                     .Distinct()
                     .CountAsync();
 
                 var interviewerCount = await _context.SignupInterviewerTimeslot
                     //.Include(s => s.SignupInterviewer)
-                    .Where(s => s.Timeslot.EventDateId == eventDate.Id)
-                    .Select(s => s.SignupInterviewer.InterviewerId)
+                    .Where(s => s.Timeslot.EventId == eventDate.Id)
+                    .Select(s => s.InterviewerSignup.InterviewerId)
                     .Distinct()
                     .CountAsync();
 
                 var volunteerCount = await _context.VolunteerEvent
-                    .Where(v => v.Timeslot.EventDateId == eventDate.Id)
+                    .Where(v => v.Timeslot.EventId == eventDate.Id)
                     .Select(v => v.StudentId)
                     .Distinct()
                     .CountAsync();
@@ -71,19 +71,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var uniqueStudentCount = await _context.InterviewEvent
-                .Where(x => x.Timeslot.EventDate.IsActive)
+                .Where(x => x.Timeslot.Event.IsActive)
                 .Select(e => e.StudentId)
                 .Distinct()
                 .CountAsync();
 
             var uniqueInterviewerCount = await _context.SignupInterviewerTimeslot
-                .Where(s => s.Timeslot.EventDate.IsActive)
-                .Select(s => s.SignupInterviewer.InterviewerId)
+                .Where(s => s.Timeslot.Event.IsActive)
+                .Select(s => s.InterviewerSignup.InterviewerId)
                 .Distinct()
                 .CountAsync();
 
             var uniqueVolunteerCount = await _context.VolunteerEvent
-                .Where(v => v.Timeslot.EventDate.IsActive)
+                .Where(v => v.Timeslot.Event.IsActive)
                 .Select(v => v.StudentId)
                 .Distinct()
                 .CountAsync();
@@ -130,7 +130,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,EventName,For221,IsActive")] EventDate eventDate, int MaxSignUps)
+        public async Task<IActionResult> Create([Bind("Id,Date,Name,For221,IsActive")] Event eventDate, int MaxSignUps)
         {
             if (ModelState.IsValid)
             {
@@ -155,7 +155,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 _context.Add(eventDate);
                 await _context.SaveChangesAsync();
 
-                var dates = new List<EventDate>
+                var dates = new List<Event>
                 {
                     eventDate
                 };
@@ -196,7 +196,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,EventName,IsActive")] EventDate eventDate)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Name,IsActive")] Event eventDate)
         {
             if (id != eventDate.Id)
             {
@@ -268,7 +268,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.EventDate == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.EventDate'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.Event'  is null.");
             }
             var eventDate = await _context.EventDate.FindAsync(id);
             if (eventDate != null)

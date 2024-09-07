@@ -10,11 +10,11 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_LocationInterviewer_Location_LocationId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.AlterColumn<int>(
                 name: "LocationId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "int",
                 nullable: true,
                 oldClrType: typeof(int),
@@ -22,7 +22,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LocationInterviewer_Location_LocationId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "LocationId",
                 principalTable: "Location",
                 principalColumn: "Id");
@@ -32,11 +32,11 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_LocationInterviewer_Location_LocationId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.AlterColumn<int>(
                 name: "LocationId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "int",
                 nullable: false,
                 defaultValue: 0,
@@ -46,7 +46,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LocationInterviewer_Location_LocationId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "LocationId",
                 principalTable: "Location",
                 principalColumn: "Id",

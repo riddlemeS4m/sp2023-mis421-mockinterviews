@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "StudentId",
-                table: "VolunteerEvent",
+                table: "VolunteerTimeslot",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -18,7 +18,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "LastName",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -26,7 +26,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -34,7 +34,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "FirstName",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -42,7 +42,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -50,15 +50,15 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
             migrationBuilder.AlterColumn<string>(
-                name: "LocationPreference",
-                table: "LocationInterviewer",
+                name: "Preference",
+                table: "InterviewerLocation",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -66,7 +66,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -82,7 +82,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "StudentId",
-                table: "InterviewEvent",
+                table: "Interview",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -90,7 +90,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Status",
-                table: "InterviewEvent",
+                table: "Interview",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -98,7 +98,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Question",
-                table: "FAQs",
+                table: "Question",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -106,7 +106,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "EventName",
-                table: "EventDate",
+                table: "Event",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -117,7 +117,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "StudentId",
-                table: "VolunteerEvent",
+                table: "VolunteerTimeslot",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -127,7 +127,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "LastName",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -137,7 +137,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -147,7 +147,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "FirstName",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -157,7 +157,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Name",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -167,7 +167,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Email",
-                table: "MSTeamsStudentUpload",
+                table: "RosteredStudent",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -176,8 +176,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 oldNullable: true);
 
             migrationBuilder.AlterColumn<string>(
-                name: "LocationPreference",
-                table: "LocationInterviewer",
+                name: "Preference",
+                table: "InterviewerLocation",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -187,7 +187,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -207,7 +207,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "StudentId",
-                table: "InterviewEvent",
+                table: "Interview",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -217,7 +217,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Status",
-                table: "InterviewEvent",
+                table: "Interview",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -227,7 +227,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "Question",
-                table: "FAQs",
+                table: "Question",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",
@@ -237,7 +237,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "EventName",
-                table: "EventDate",
+                table: "Event",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

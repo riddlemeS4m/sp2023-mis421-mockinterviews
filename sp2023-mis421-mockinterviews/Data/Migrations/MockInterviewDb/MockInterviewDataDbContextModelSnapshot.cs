@@ -17,7 +17,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.23")
+                .HasAnnotation("ProductVersion", "6.0.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
@@ -34,14 +34,15 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("SubjectLine")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("EmailTemplate");
+                    b.ToTable("EmailTemplates");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -52,59 +53,22 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EventName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("For221")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.HasKey("Id");
-
-                    b.ToTable("EventDate");
-                });
-
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.FAQs", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Answer")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Question")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("FAQs");
-                });
-
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.GlobalConfigVar", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
                     b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Value")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("GlobalConfigVar");
+                    b.ToTable("Events");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Interview", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -112,14 +76,11 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<DateTime?>("CheckInTime")
+                    b.Property<DateTime?>("CheckedInAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("EndTime")
+                    b.Property<DateTime?>("EndedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("InterviewType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InterviewerFeedback")
                         .HasColumnType("nvarchar(max)");
@@ -127,61 +88,44 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Property<string>("InterviewerRating")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("InterviewerTimeslotId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
                     b.Property<string>("ProcessFeedback")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("SignupInterviewerTimeslotId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("StartTime")
+                    b.Property<DateTime?>("StartedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Status")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("StudentId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeslotId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("LocationId");
-
-                    b.HasIndex("SignupInterviewerTimeslotId");
-
-                    b.HasIndex("TimeslotId");
-
-                    b.ToTable("InterviewEvent");
-                });
-
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<bool>("InPerson")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsVirtual")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Room")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Location");
+                    b.HasIndex("InterviewerTimeslotId");
+
+                    b.HasIndex("LocationId");
+
+                    b.HasIndex("TimeslotId");
+
+                    b.ToTable("Interviews");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.LocationInterviewer", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerLocation", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -189,56 +133,29 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int?>("EventDateId")
+                    b.Property<int?>("EventId")
                         .HasColumnType("int");
 
                     b.Property<string>("InterviewerId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("LocationId")
                         .HasColumnType("int");
 
-                    b.Property<string>("LocationPreference")
+                    b.Property<string>("Preference")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventDateId");
+                    b.HasIndex("EventId");
 
                     b.HasIndex("LocationId");
 
-                    b.ToTable("LocationInterviewer");
+                    b.ToTable("InterviewerLocations");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.MSTeamsStudentUpload", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("In221")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("InMasters")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("MicrosoftId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("MSTeamsStudentUpload");
-                });
-
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewer", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerSignup", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -254,9 +171,6 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.Property<bool>("InPerson")
                         .HasColumnType("bit");
-
-                    b.Property<string>("InterviewType")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("InterviewerId")
                         .HasColumnType("nvarchar(max)");
@@ -279,12 +193,15 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.Property<bool?>("Lunch")
                         .HasColumnType("bit");
 
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.ToTable("SignupInterviewer");
+                    b.ToTable("InterviewerSignups");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerTimeslot", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -292,7 +209,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("SignupInterviewerId")
+                    b.Property<int>("InterviewerSignupId")
                         .HasColumnType("int");
 
                     b.Property<int>("TimeslotId")
@@ -300,11 +217,105 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SignupInterviewerId");
+                    b.HasIndex("InterviewerSignupId");
 
                     b.HasIndex("TimeslotId");
 
-                    b.ToTable("SignupInterviewerTimeslot");
+                    b.ToTable("InterviewerTimeslots");
+                });
+
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<bool>("InPerson")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsVirtual")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Room")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Locations");
+                });
+
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Question", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("A")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Q")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.RosteredStudent", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("In221")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("InMasters")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("MicrosoftId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Roster");
+                });
+
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Setting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Settings");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
@@ -315,7 +326,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
-                    b.Property<int>("EventDateId")
+                    b.Property<int>("EventId")
                         .HasColumnType("int");
 
                     b.Property<bool>("IsActive")
@@ -338,12 +349,12 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EventDateId");
+                    b.HasIndex("EventId");
 
-                    b.ToTable("Timeslot");
+                    b.ToTable("Timeslots");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerTimeslot", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -352,6 +363,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<string>("StudentId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("TimeslotId")
@@ -361,18 +373,18 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("TimeslotId");
 
-                    b.ToTable("VolunteerEvent");
+                    b.ToTable("VolunteerTimeslots");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewEvent", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Interview", b =>
                 {
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerTimeslot", "InterviewerTimeslot")
+                        .WithMany()
+                        .HasForeignKey("InterviewerTimeslotId");
+
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
-
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot", "SignupInterviewerTimeslot")
-                        .WithMany()
-                        .HasForeignKey("SignupInterviewerTimeslotId");
 
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
                         .WithMany()
@@ -380,33 +392,33 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Location");
+                    b.Navigation("InterviewerTimeslot");
 
-                    b.Navigation("SignupInterviewerTimeslot");
+                    b.Navigation("Location");
 
                     b.Navigation("Timeslot");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.LocationInterviewer", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerLocation", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate", "EventDate")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("EventDateId");
+                        .HasForeignKey("EventId");
 
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", "Location")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
-                    b.Navigation("EventDate");
+                    b.Navigation("Event");
 
                     b.Navigation("Location");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewerTimeslot", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerTimeslot", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.SignupInterviewer", "SignupInterviewer")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerSignup", "InterviewerSignup")
                         .WithMany()
-                        .HasForeignKey("SignupInterviewerId")
+                        .HasForeignKey("InterviewerSignupId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -416,23 +428,23 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SignupInterviewer");
+                    b.Navigation("InterviewerSignup");
 
                     b.Navigation("Timeslot");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate", "EventDate")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event", "Event")
                         .WithMany()
-                        .HasForeignKey("EventDateId")
+                        .HasForeignKey("EventId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("EventDate");
+                    b.Navigation("Event");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerTimeslot", b =>
                 {
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
                         .WithMany()

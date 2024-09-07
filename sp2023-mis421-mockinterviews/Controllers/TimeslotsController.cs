@@ -32,8 +32,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Index()
         {
             var timeslots = await _context.Timeslot
-                .Include(t => t.EventDate)
-                .Where(t => t.EventDate.IsActive)
+                .Include(t => t.Event)
+                .Where(t => t.Event.IsActive)
                 .ToListAsync();
             var eventdates = await _context.EventDate
                 .Where(x => x.IsActive)
@@ -62,8 +62,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> SignupReport()
         {
             var timeslots = await _context.Timeslot
-                .Include(t => t.EventDate)
-                .Where(x => x.EventDate.IsActive)
+                .Include(t => t.Event)
+                .Where(x => x.Event.IsActive)
                 .ToListAsync();
             var eventdates = await _context.EventDate
                 .Where(x => x.IsActive)
@@ -96,10 +96,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> AllocationReport()
         {
             var timeslots = await _context.Timeslot
-                .Include(t => t.EventDate)
-                .Where(x => x.EventDate.For221 == For221.n && 
+                .Include(t => t.Event)
+                .Where(x => x.Event.For221 == For221.n && 
                     x.IsInterviewer && 
-                    x.EventDate.IsActive)
+                    x.Event.IsActive)
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
@@ -145,7 +145,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot.Include(t => t.EventDate)
+            var timeslot = await _context.Timeslot.Include(t => t.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (timeslot == null)
             {
@@ -153,14 +153,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             var interviewerList = await _context.SignupInterviewerTimeslot
-                .Include(x => x.SignupInterviewer)
+                .Include(x => x.InterviewerSignup)
                 .Where(x => x.TimeslotId == timeslot.Id)
                 .ToListAsync();
             var interviewerNamesList = new List<string>();
             if (interviewerList != null && interviewerList.Count != 0)
             {
                 var interviewerIds = interviewerList
-                .Select(x => x.SignupInterviewer.InterviewerId)
+                .Select(x => x.InterviewerSignup.InterviewerId)
                 .ToList();
                 foreach (var interviewerid in interviewerIds)
                 {
@@ -257,7 +257,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent,MaxSignUps,EventDateId")] Timeslot timeslot)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Time,IsActive,IsVolunteer,IsInterviewer,IsStudent,MaxSignUps,EventId")] Timeslot timeslot)
         {
             if (id != timeslot.Id)
             {

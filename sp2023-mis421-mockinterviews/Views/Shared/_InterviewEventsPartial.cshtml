@@ -19,7 +19,7 @@
             @foreach (var interviewEventViewModel in Model)
             {
                 <tr>
-                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.Event.Date</td>
                     <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
                     <td>@interviewEventViewModel.InterviewEvent.Status</td>
                     @if (interviewEventViewModel.InterviewEvent.Location == null)
@@ -30,7 +30,7 @@
                     {
                         <td>@interviewEventViewModel.InterviewEvent.Location.Room</td>
                     }
-                    @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
+                    @if (interviewEventViewModel.InterviewEvent.InterviewerTimeslot == null)
                     {
                         <td>Not Assigned</td>
                     }
@@ -38,7 +38,7 @@
                     {
                         <td>@interviewEventViewModel.InterviewerName</td>
                     }
-                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Type</td>
                     <td>
                         @Html.ActionLink("Cancel",
                             "UserDelete",   // <-- ActionMethod

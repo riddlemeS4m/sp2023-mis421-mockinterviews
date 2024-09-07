@@ -10,20 +10,20 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AddColumn<DateTime>(
-                name: "CheckInTime",
-                table: "InterviewEvent",
+                name: "CheckedInAt",
+                table: "Interview",
                 type: "datetime2",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "EndTime",
-                table: "InterviewEvent",
+                name: "EndedAt",
+                table: "Interview",
                 type: "datetime2",
                 nullable: true);
 
             migrationBuilder.AddColumn<DateTime>(
-                name: "StartTime",
-                table: "InterviewEvent",
+                name: "StartedAt",
+                table: "Interview",
                 type: "datetime2",
                 nullable: true);
         }
@@ -31,16 +31,16 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "CheckInTime",
-                table: "InterviewEvent");
+                name: "CheckedInAt",
+                table: "Interview");
 
             migrationBuilder.DropColumn(
-                name: "EndTime",
-                table: "InterviewEvent");
+                name: "EndedAt",
+                table: "Interview");
 
             migrationBuilder.DropColumn(
-                name: "StartTime",
-                table: "InterviewEvent");
+                name: "StartedAt",
+                table: "Interview");
         }
     }
 }

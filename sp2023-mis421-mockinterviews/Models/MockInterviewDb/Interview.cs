@@ -4,44 +4,63 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 {
-    public class InterviewEvent
+    [Table("Interviews")]
+    public class Interview
     {
         //probably our most important entity
-       
+
+        [Key]
         public int Id { get; set; }
+
+        [Required]
         public string StudentId { get; set; }
-        [ForeignKey("Location")]
+
+        [ForeignKey("Locations")]
         public int? LocationId { get; set; }
+
+        [ValidateNever]
         public Location? Location { get; set; }
-        [ForeignKey("Timeslot")]
+
+        [Required]
+        [ForeignKey("Timeslots")]
         public int TimeslotId { get; set; }
+
         [ValidateNever]
         public Timeslot Timeslot { get; set; }
+
         [Display(Name = "Interview Type")]
-        public string? InterviewType { get; set; }
+        public string? Type { get; set; }
+
+        [Required]
         public string Status { get; set; }
+
         [Display(Name = "Rating")]
         public string? InterviewerRating { get; set; }
+
         [Display(Name = "Interviewer Feedback")]
         public string? InterviewerFeedback { get; set; }
+
         [Display(Name = "Process Feedback")]
         public string? ProcessFeedback { get; set; }
-        [ForeignKey("SignupInterviewerTimeslot")]
-        public int? SignupInterviewerTimeslotId { get; set; }
+
+        [ForeignKey("InterviewerTimeslots")]
+        public int? InterviewerTimeslotId { get; set; }
+
         [ValidateNever]
-        public SignupInterviewerTimeslot? SignupInterviewerTimeslot { get; set; }
+        public InterviewerTimeslot? InterviewerTimeslot { get; set; }
         [Display(Name = "Check-In Time")]
-        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
-        public DateTime? CheckInTime { get; set; }
+
+        public DateTime? CheckedInAt { get; set; }
+
         [Display(Name = "Interview Timer")]
-        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
-        public DateTime? StartTime { get; set; }
+        public DateTime? StartedAt { get; set; }
+
         [Display(Name = "Interview End Time")]
-        //[DisplayFormat(DataFormatString = "{0:hh:mm tt}")]
-        public DateTime? EndTime { get; set; }
-		public override string ToString()
-		{
-			return $"{Timeslot.Time:h\\:mm tt} on {Timeslot.EventDate.Date:M/dd/yyyy} <br>";
-		}
-	}
+        public DateTime? EndedAt { get; set; }
+
+        public override string ToString()
+        {
+            return $"{Timeslot.Time:h\\:mm tt} on {Timeslot.Event.Date:M/dd/yyyy} <br>";
+        }
+    }
 }

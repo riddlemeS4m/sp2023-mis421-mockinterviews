@@ -13,14 +13,14 @@ namespace sp2023_mis421_mockinterviews.Data.Access
             { "interview_index_hours", "3" }
         };
 
-        public static List<GlobalConfigVar> SeedGlobalConfigVars(Dictionary<string, GlobalConfigVar> existingConfigVars)
+        public static List<Setting> SeedGlobalConfigVars(Dictionary<string, Setting> existingConfigVars)
         {
-            var list = new List<GlobalConfigVar>();
+            var list = new List<Setting>();
             var missingConfigVarNames = DefaultValues.Keys.Except(existingConfigVars.Keys);
 
             foreach (var missingConfigVarName in missingConfigVarNames)
             {
-                var configVar = new GlobalConfigVar
+                var configVar = new Setting
                 {
                     Name = missingConfigVarName,
                     Value = DefaultValues[missingConfigVarName]

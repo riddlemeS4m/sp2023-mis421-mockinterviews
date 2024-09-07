@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerEvent
+﻿@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerTimeslot
 
 @{
     ViewData["Title"] = "Delete";
@@ -17,10 +17,10 @@
             @Html.DisplayFor(model => model.Timeslot.Time)
         </dd>
         <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Timeslot.EventDate.Date)
+            @Html.DisplayNameFor(model => model.Timeslot.Event.Date)
         </dt>
         <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Timeslot.EventDate.Date)
+            @Html.DisplayFor(model => model.Timeslot.Event.Date)
         </dd>
 
     </dl>

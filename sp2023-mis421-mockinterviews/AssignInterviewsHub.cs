@@ -5,7 +5,7 @@ namespace sp2023_mis421_mockinterviews
 {
     public class AssignInterviewsHub : Hub
     {
-        public async Task SendUpdate(InterviewEvent interviewEvent, string studentname, string interviewername, string time, string date)
+        public async Task SendUpdate(Interview interviewEvent, string studentname, string interviewername, string time, string date)
         {
             await Clients.All.SendAsync("ReceiveInterviewEventUpdate", interviewEvent, studentname, interviewername, time, date);
         }

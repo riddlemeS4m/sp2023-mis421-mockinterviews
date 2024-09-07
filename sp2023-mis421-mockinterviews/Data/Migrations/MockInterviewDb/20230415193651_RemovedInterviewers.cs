@@ -10,26 +10,26 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropForeignKey(
                 name: "FK_LocationInterviewer_Interviewer_InterviewerId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.DropForeignKey(
                 name: "FK_SignupInterviewer_Interviewer_InterviewerId",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
 
             migrationBuilder.DropTable(
                 name: "Interviewer");
 
             migrationBuilder.DropIndex(
                 name: "IX_SignupInterviewer_InterviewerId",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
 
             migrationBuilder.DropIndex(
                 name: "IX_LocationInterviewer_InterviewerId",
-                table: "LocationInterviewer");
+                table: "InterviewerLocation");
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(int),
@@ -37,7 +37,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(int),
@@ -48,7 +48,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<int>(
                 name: "InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -56,7 +56,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<int>(
                 name: "InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -80,17 +80,17 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.CreateIndex(
                 name: "IX_SignupInterviewer_InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 column: "InterviewerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationInterviewer_InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "InterviewerId");
 
             migrationBuilder.AddForeignKey(
                 name: "FK_LocationInterviewer_Interviewer_InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "InterviewerId",
                 principalTable: "Interviewer",
                 principalColumn: "Id",
@@ -98,7 +98,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AddForeignKey(
                 name: "FK_SignupInterviewer_Interviewer_InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 column: "InterviewerId",
                 principalTable: "Interviewer",
                 principalColumn: "Id",

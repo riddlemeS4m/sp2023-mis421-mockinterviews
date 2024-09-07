@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<int>(
                 name: "For221",
-                table: "EventDate",
+                table: "Event",
                 type: "int",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -21,7 +21,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "For221",
-                table: "EventDate",
+                table: "Event",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(int),

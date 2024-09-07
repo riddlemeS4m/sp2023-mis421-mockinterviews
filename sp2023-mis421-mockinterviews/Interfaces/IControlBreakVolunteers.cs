@@ -5,6 +5,6 @@ namespace sp2023_mis421_mockinterviews.Interfaces
 {
 	public interface IControlBreakVolunteers
 	{
-		public Task<List<TimeRangeViewModel>> ToTimeRanges(List<VolunteerEvent> volunteerEvents);
+		public Task<List<TimeRangeViewModel>> ToTimeRanges(List<VolunteerTimeslot> volunteerEvents);
 	}
 }

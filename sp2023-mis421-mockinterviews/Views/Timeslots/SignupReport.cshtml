@@ -19,7 +19,7 @@
                 @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Time)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.EventDate.Date)
+                @Html.DisplayNameFor(model => model.Timeslots[0].Timeslot.Event.Date)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.Timeslots[0].StudentCount)
@@ -45,7 +45,7 @@
                     @Html.DisplayFor(modelItem => item.Timeslot.Time)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.Timeslot.EventDate.Date)
+                    @Html.DisplayFor(modelItem => item.Timeslot.Event.Date)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.StudentCount)
@@ -91,7 +91,7 @@
                 @Html.DisplayNameFor(model => model.EventDates[0].Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EventDates[0].EventName)
+                @Html.DisplayNameFor(model => model.EventDates[0].Name)
             </th>
             <th></th>
         </tr>
@@ -104,7 +104,7 @@
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EventName)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     <a asp-controller="EventDates" asp-action="Edit" asp-route-id="@item.Id">Edit</a> |

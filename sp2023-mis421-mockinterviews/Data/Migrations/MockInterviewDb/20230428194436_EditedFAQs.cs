@@ -9,8 +9,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.AlterColumn<string>(
-                name: "Answer",
-                table: "FAQs",
+                name: "A",
+                table: "Question",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -21,8 +21,8 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
 
             migrationBuilder.AlterColumn<string>(
-                name: "Answer",
-                table: "FAQs",
+                name: "A",
+                table: "Question",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "",

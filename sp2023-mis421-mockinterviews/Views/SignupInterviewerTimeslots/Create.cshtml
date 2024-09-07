@@ -158,7 +158,7 @@
                         >Select Day @(Model.EventDates.IndexOf(Model.EventDates[0]) + 1)</button>
                     </div>
                     <br />
-                    @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    @if (Model.Timeslots[0].EventId != Model.Timeslots[^1].EventId)
                     {
                         <div class="col-md-6">
                             <button 
@@ -174,11 +174,11 @@
 
                 <div class="row" id="center-everything">
                     <div class="col-md-6">
-                        <h3>@Model.Timeslots[0].EventDate.EventName</h3>
-                        <h4 class="date-column">@Model.Timeslots[0].EventDate.Date</h4>
+                        <h3>@Model.Timeslots[0].Event.Name</h3>
+                        <h4 class="date-column">@Model.Timeslots[0].Event.Date</h4>
                         @foreach (var timeslot in Model.Timeslots)
                         {
-                            if (timeslot.EventDateId == Model.Timeslots[0].EventDateId)
+                            if (timeslot.EventId == Model.Timeslots[0].EventId)
                             {
                                 <div>
                                     <input 
@@ -195,14 +195,14 @@
                             }
                         }
                     </div>
-                    @if (Model.Timeslots[0].EventDateId != Model.Timeslots[^1].EventDateId)
+                    @if (Model.Timeslots[0].EventId != Model.Timeslots[^1].EventId)
                     {
                         <div class="col-md-6">
-                            <h3>@Model.Timeslots[^1].EventDate.EventName</h3>
-                            <h4 class="date-column">@Model.Timeslots[^1].EventDate.Date</h4>
+                            <h3>@Model.Timeslots[^1].Event.Name</h3>
+                            <h4 class="date-column">@Model.Timeslots[^1].Event.Date</h4>
                             @foreach (var timeslot in Model.Timeslots)
                             {
-                                if (timeslot.EventDateId == Model.Timeslots[^1].EventDateId)
+                                if (timeslot.EventId == Model.Timeslots[^1].EventId)
                                 {
                                     <div>
                                         <input 

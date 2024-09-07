@@ -8,8 +8,8 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
     public class SignupInterviewerTimeslotsViewModel
     {
         public List<Timeslot> Timeslots { get; set; }
-        public List<EventDate> EventDates { get; set; }
-        public SignupInterviewer SignupInterviewer { get; set; }
+        public List<Event> EventDates { get; set; }
+        public InterviewerSignup SignupInterviewer { get; set; }
         public Dictionary<int, bool> EventDateDictionary { get; set; }
         public List<SelectListItem> Interviewers { get; set; }
         [DisplayName("Interviewer Name")]

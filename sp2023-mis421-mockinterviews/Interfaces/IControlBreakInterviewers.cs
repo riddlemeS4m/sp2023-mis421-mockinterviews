@@ -5,6 +5,6 @@ namespace sp2023_mis421_mockinterviews.Interfaces
 {
 	public interface IControlBreakInterviewers
 	{
-		public Task<List<TimeRangeViewModel>> ToTimeRanges(List<SignupInterviewerTimeslot> signupInterviewerTimeslots);
+		public Task<List<TimeRangeViewModel>> ToTimeRanges(List<InterviewerTimeslot> signupInterviewerTimeslots);
 	}
 }

@@ -42,11 +42,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Index()
         {
             var sits = await _context.SignupInterviewerTimeslot
-                .Include(s => s.SignupInterviewer)
+                .Include(s => s.InterviewerSignup)
                 .Include(s => s.Timeslot)
-                .ThenInclude(s => s.EventDate)
-                .Where(s => s.Timeslot.EventDate.IsActive)
-                .Select(s => s.SignupInterviewerId)
+                .ThenInclude(s => s.Event)
+                .Where(s => s.Timeslot.Event.IsActive)
+                .Select(s => s.InterviewerSignupId)
                 .Distinct()
                 .ToListAsync();
 
@@ -89,7 +89,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] SignupInterviewer signupInterviewer)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] InterviewerSignup signupInterviewer)
         {
             if (ModelState.IsValid)
             {
@@ -125,7 +125,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] SignupInterviewer signupInterviewer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,IsVirtual,InPerson,IsTechnical,IsBehavioral,InterviewerId")] InterviewerSignup signupInterviewer)
         {
             if (id != signupInterviewer.Id)
             {
@@ -183,7 +183,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.SignupInterviewer == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.SignupInterviewer'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.InterviewerSignup'  is null.");
             }
             var signupInterviewer = await _context.SignupInterviewer.FindAsync(id);
             if (signupInterviewer != null)
@@ -234,10 +234,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private async Task UpdateHub()
         {
             var busyInterviewers = await _context.InterviewEvent
-                .Include(x => x.SignupInterviewerTimeslot)
-                .ThenInclude(x => x.SignupInterviewer)
+                .Include(x => x.InterviewerTimeslot)
+                .ThenInclude(x => x.InterviewerSignup)
                 .Where(x => x.Status == StatusConstants.Ongoing)
-                .Select(x => x.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId)
+                .Select(x => x.InterviewerTimeslot.InterviewerSignup.InterviewerId)
                 .Distinct()
                 .ToListAsync();
 
@@ -246,7 +246,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Select(x => new AvailableInterviewer
                 {
                     InterviewerId = x.InterviewerId,
-                    InterviewType = x.InterviewType,
+                    InterviewType = x.Type,
                 })
             .ToListAsync();
 
@@ -262,9 +262,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 iv.Room = await _context.LocationInterviewer
                     .Include(x => x.Location)
-                    .Include(x => x.EventDate)
+                    .Include(x => x.Event)
                     .Where(x => x.InterviewerId == iv.InterviewerId &&
-                        x.EventDate.Date == date)
+                        x.Event.Date == date)
                     .Select(x => x.Location.Room)
                     .FirstOrDefaultAsync() ?? "Not Assigned";
             }

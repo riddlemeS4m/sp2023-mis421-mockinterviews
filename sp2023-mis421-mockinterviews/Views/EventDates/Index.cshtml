@@ -1,4 +1,4 @@
-﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate>
+﻿@model IEnumerable<sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event>
 
 @{
     ViewData["Title"] = "Index";
@@ -17,7 +17,7 @@
                 @Html.DisplayNameFor(model => model.Date)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.EventName)
+                @Html.DisplayNameFor(model => model.Name)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.For221)
@@ -39,7 +39,7 @@
                     @Html.DisplayFor(modelItem => item.Date)
                 </td>
                 <td>
-                    @Html.DisplayFor(modelItem => item.EventName)
+                    @Html.DisplayFor(modelItem => item.Name)
                 </td>
                 <td>
                     @Html.DisplayFor(modelItem => item.For221)

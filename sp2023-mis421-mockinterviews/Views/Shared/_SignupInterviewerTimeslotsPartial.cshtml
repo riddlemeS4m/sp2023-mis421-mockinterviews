@@ -18,7 +18,7 @@
             @foreach (var interviewEventViewModel in Model.InterviewerScheduledInterviews)
             {
                 <tr>
-                    @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
+                    @if (interviewEventViewModel.InterviewEvent.InterviewerTimeslot == null)
                     {
                         <td>Not Assigned</td>
                     }
@@ -26,8 +26,8 @@
                     {
                         <td>@interviewEventViewModel.StudentName</td>
                     }
-                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
-                    <td id="timer-@interviewEventViewModel.InterviewEvent.Id">@interviewEventViewModel.InterviewEvent.StartTime</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Type</td>
+                    <td id="timer-@interviewEventViewModel.InterviewEvent.Id">@interviewEventViewModel.InterviewEvent.StartedAt</td>
                     <td>
 @*                        <a asp-action="Edit" asp-route-id="@interviewEventViewModel.InterviewEvent.Id" asp-controller="InterviewEvents">Update</a>
 *@                        <a 
@@ -147,9 +147,9 @@ else
             @foreach (var interviewEventViewModel in Model.CompletedInterviews)
             {
                 <tr>
-                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td class="date-column">@interviewEventViewModel.InterviewEvent.Timeslot.Event.Date</td>
                     <td class="time-column">@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
-                    @if (interviewEventViewModel.InterviewEvent.SignupInterviewerTimeslot == null)
+                    @if (interviewEventViewModel.InterviewEvent.InterviewerTimeslot == null)
                     {
                         <td>Not Assigned</td>
                     }
@@ -157,7 +157,7 @@ else
                     {
                         <td>@interviewEventViewModel.StudentName</td>
                     }
-                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Type</td>
                     <td>
                         <a asp-controller="Users" asp-action="ExternalUserProfileView" asp-route-userId="@interviewEventViewModel.InterviewEvent.StudentId">View @interviewEventViewModel.StudentName's Profile</a>
                     </td>

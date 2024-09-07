@@ -61,9 +61,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 var volunteerEvents = await _context.VolunteerEvent
                     .Include(v => v.Timeslot)
-                    .ThenInclude(y => y.EventDate)
+                    .ThenInclude(y => y.Event)
                     .OrderBy(ve => ve.TimeslotId)
-                    .Where(v => v.StudentId == userId && v.Timeslot.EventDate.IsActive)
+                    .Where(v => v.StudentId == userId && v.Timeslot.Event.IsActive)
                     .ToListAsync();
 
                 var timeRanges = new ControlBreakVolunteer(_userManager);
@@ -76,22 +76,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
                 var interviewEvents = await _context.InterviewEvent
-                    .Include(v => v.SignupInterviewerTimeslot)
-                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.InterviewerTimeslot)
+                    .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
-                    .ThenInclude(v => v.EventDate)
-                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId 
-                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive
+                    .ThenInclude(v => v.Event)
+                    .Where(v => v.InterviewerTimeslot.InterviewerSignup.InterviewerId == userId 
+                        && v.InterviewerTimeslot.Timeslot.Event.IsActive
                         && v.Status != StatusConstants.Completed)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
                 {
-                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    foreach (Interview interviewEvent in interviewEvents)
                     {
 
-                        if (interviewEvent.SignupInterviewerTimeslot != null)
+                        if (interviewEvent.InterviewerTimeslot != null)
                         {
                             var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
 
@@ -115,28 +115,28 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            model.SignupInterviewerTimeslots = new List<SignupInterviewerTimeslot>();
+            model.SignupInterviewerTimeslots = new List<InterviewerTimeslot>();
             model.InterviewerRangeViewModels = new List<TimeRangeViewModel>();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
                 var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
-    				.Include(s => s.SignupInterviewer)
+    				.Include(s => s.InterviewerSignup)
 					.Include(v => v.Timeslot)
-                    .ThenInclude(v => v.EventDate)
-                    .Include(v => v.SignupInterviewer)
+                    .ThenInclude(v => v.Event)
+                    .Include(v => v.InterviewerSignup)
                     //.OrderBy(ve => ve.Timeslot.EventDate.Date)
                     //.ThenBy(ve => ve.Timeslot.Time)
                     .OrderBy(ve => ve.TimeslotId)
-                    .Where(v => v.SignupInterviewer.InterviewerId == userId 
+                    .Where(v => v.InterviewerSignup.InterviewerId == userId 
                         // && v.Timeslot.IsInterviewer
-                        && v.Timeslot.EventDate.IsActive)
+                        && v.Timeslot.Event.IsActive)
                     .ToListAsync();
 
 
                 if (signupInterviewTimeslots.Count > 0)
                 {
                     var si = signupInterviewTimeslots
-                        .Select(x => x.SignupInterviewerId)
+                        .Select(x => x.InterviewerSignupId)
                         .Distinct()
                         .ToList();
 
@@ -158,22 +158,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
                 var interviewEvents = await _context.InterviewEvent
-                    .Include(v => v.SignupInterviewerTimeslot)
-                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.InterviewerTimeslot)
+                    .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
-                    .ThenInclude(v => v.EventDate)
+                    .ThenInclude(v => v.Event)
                     .Where(v =>  v.StudentId == userId 
-                        && v.Timeslot.EventDate.IsActive)
+                        && v.Timeslot.Event.IsActive)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
                 {
-                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    foreach (Interview interviewEvent in interviewEvents)
                     {
-                        if(interviewEvent.SignupInterviewerTimeslot != null)
+                        if(interviewEvent.InterviewerTimeslot != null)
                         {
-                            var interviewer = await _userManager.FindByIdAsync(interviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId);
+                            var interviewer = await _userManager.FindByIdAsync(interviewEvent.InterviewerTimeslot.InterviewerSignup.InterviewerId);
 
                             model.StudentScheduledInterviews.Add(new InterviewEventViewModel()
                             {
@@ -199,22 +199,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
                 var interviewEvents = await _context.InterviewEvent
-                    .Include(v => v.SignupInterviewerTimeslot)
-                    .ThenInclude(v => v.SignupInterviewer)
+                    .Include(v => v.InterviewerTimeslot)
+                    .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
                     .Include(v => v.Timeslot)
-                    .ThenInclude(v => v.EventDate)
-                    .Where(v => v.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId == userId
-                        && v.SignupInterviewerTimeslot.Timeslot.EventDate.IsActive
+                    .ThenInclude(v => v.Event)
+                    .Where(v => v.InterviewerTimeslot.InterviewerSignup.InterviewerId == userId
+                        && v.InterviewerTimeslot.Timeslot.Event.IsActive
                         && v.Status == StatusConstants.Completed)
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
                 {
-                    foreach (InterviewEvent interviewEvent in interviewEvents)
+                    foreach (Interview interviewEvent in interviewEvents)
                     {
 
-                        if (interviewEvent.SignupInterviewerTimeslot != null)
+                        if (interviewEvent.InterviewerTimeslot != null)
                         {
                             var student = await _userManager.FindByIdAsync(interviewEvent.StudentId);
 
@@ -252,7 +252,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link' does not exist.");
+                throw new Exception("Setting 'zoom_link' does not exist.");
             }
         }
 
@@ -271,7 +271,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'disruption_banner' does not exist, or it is not an integer.");
+                throw new Exception("Setting 'disruption_banner' does not exist, or it is not an integer.");
             }
         }
 
@@ -290,7 +290,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link_visible' does not exist, or it is not an integer.");
+                throw new Exception("Setting 'zoom_link_visible' does not exist, or it is not an integer.");
             }
         }
 
@@ -317,7 +317,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var userFull = await _userManager.FindByIdAsync(user);
                 var interviews = await _context.InterviewEvent
                     .Include(x => x.Timeslot)
-                    .ThenInclude(x => x.EventDate)
+                    .ThenInclude(x => x.Event)
                     .Where(x => x.StudentId == user)
                     .ToListAsync();
                 
@@ -346,11 +346,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var userFull = await _userManager.FindByIdAsync(user);
                 var interviews = await _context.SignupInterviewerTimeslot
                     .Include(x => x.Timeslot)
-                    .ThenInclude(x => x.EventDate)
-                    .Include(x => x.SignupInterviewer)
-                    .OrderBy(x => x.Timeslot.EventDate.Date)
+                    .ThenInclude(x => x.Event)
+                    .Include(x => x.InterviewerSignup)
+                    .OrderBy(x => x.Timeslot.Event.Date)
                     .ThenBy(x => x.Timeslot.Time)
-                    .Where(x => x.SignupInterviewer.InterviewerId == user)
+                    .Where(x => x.InterviewerSignup.InterviewerId == user)
                     .ToListAsync();
 
 				var timeRanges = new ControlBreakInterviewer(_userManager);

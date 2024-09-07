@@ -31,18 +31,18 @@ namespace sp2023_mis421_mockinterviews.Data.Access
         public static readonly bool[] Student = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
         public static readonly bool[] Interviewer = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
 
-        public static List<Timeslot> SeedTimeslots(List<EventDate> dates)
+        public static List<Timeslot> SeedTimeslots(List<Event> dates)
         {
             List<Timeslot> timeslots = new List<Timeslot>();
 
-            foreach (EventDate date in dates)
+            foreach (Event date in dates)
             {
                 for (int i = 0; i < Times.Length; i++)
                 {
                     Timeslot timeslot = new Timeslot();
                     timeslot.Time = DateTime.ParseExact(Times[i], "h:mm tt", CultureInfo.InvariantCulture);
-                    timeslot.EventDate = date;
-                    timeslot.EventDateId = date.Id;
+                    timeslot.Event = date;
+                    timeslot.EventId = date.Id;
                     timeslot.IsVolunteer = true;
                     timeslot.IsInterviewer = Interviewer[i];
                     timeslot.IsStudent = Student[i];

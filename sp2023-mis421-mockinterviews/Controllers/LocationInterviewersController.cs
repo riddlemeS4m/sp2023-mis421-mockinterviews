@@ -34,8 +34,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             var locationInterviewers = await _context.LocationInterviewer
                 .Include(v => v.Location)
-                .Include(v => v.EventDate)
-                .Where(v => v.EventDate.IsActive == true)
+                .Include(v => v.Event)
+                .Where(v => v.Event.IsActive == true)
                 .ToListAsync();
 
             var interviewerIds = locationInterviewers
@@ -54,7 +54,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         {
                             LocationInterviewer = locationInterviewer,
                             InterviewerName = interviewer.FirstName + " " + interviewer.LastName,
-                            InterviewerPreference = locationInterviewer.LocationPreference
+                            InterviewerPreference = locationInterviewer.Preference
                         };
 
             var locationInterviewersWithNames = query.ToList();
@@ -80,7 +80,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var locationInterviewer = await _context.LocationInterviewer
                 .Include(l => l.Location)
-                .Include(l => l.EventDate)
+                .Include(l => l.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
             {
@@ -102,14 +102,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             // Get a list of all Interviewers
             var availableInterviewers = await _context.SignupInterviewerTimeslot
-                .Include(i => i.SignupInterviewer)
+                .Include(i => i.InterviewerSignup)
                 .Include(i => i.Timeslot)
-                .ThenInclude(i => i.EventDate)
-                .Where(i => i.Timeslot.EventDate.IsActive == true)
+                .ThenInclude(i => i.Event)
+                .Where(i => i.Timeslot.Event.IsActive == true)
                 .Select(i => new SelectListItem
                 {
-                    Value = i.SignupInterviewer.InterviewerId,
-                    Text = $"{i.SignupInterviewer.FirstName} {i.SignupInterviewer.LastName}"
+                    Value = i.InterviewerSignup.InterviewerId,
+                    Text = $"{i.InterviewerSignup.FirstName} {i.InterviewerSignup.LastName}"
                 })
                 .Distinct()
                 .ToListAsync();
@@ -154,7 +154,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             // Create the view model
             var viewModel = new LocationInterviewerCreateViewModel
             {
-                LocationInterviewer = new LocationInterviewer(),
+                LocationInterviewer = new InterviewerLocation(),
                 InterviewerNames = availableInterviewers,
                 Dates = availableDates,
                 Locations = availableLocations
@@ -169,7 +169,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,InterviewerId,LocationId,EventDateId")] LocationInterviewer locationInterviewer, bool InPerson)
+        public async Task<IActionResult> Create([Bind("Id,InterviewerId,LocationId,EventId")] InterviewerLocation locationInterviewer, bool InPerson)
         {
             if(locationInterviewer == null)
             {
@@ -178,11 +178,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
             
             if(InPerson)
             {
-                locationInterviewer.LocationPreference = InterviewLocationConstants.InPerson;
+                locationInterviewer.Preference = InterviewLocationConstants.InPerson;
             }
             else
             {
-                locationInterviewer.LocationPreference = InterviewLocationConstants.IsVirtual;
+                locationInterviewer.Preference = InterviewLocationConstants.IsVirtual;
             }
 
             if (ModelState.IsValid)
@@ -237,7 +237,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             // Create the view model
             var viewModel = new LocationInterviewerCreateViewModel
             {
-                LocationInterviewer = new LocationInterviewer(),
+                LocationInterviewer = new InterviewerLocation(),
                 InterviewerNames = availableInterviewers,
                 Dates = availableDates,
                 Locations = availableLocations
@@ -263,7 +263,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             // Get a list of LocationIds already assigned to LocationInterviewers for today
             var assignedLocationIds = await _context.LocationInterviewer
-                .Where(li => li.EventDateId == locationInterviewer.EventDateId)
+                .Where(li => li.EventId == locationInterviewer.EventId)
                 .Select(li => li.LocationId)
                 .Distinct()
                 .ToListAsync();
@@ -271,7 +271,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             // Get a list of all Locations except those already assigned to LocationInterviewers
             var inPerson = true;
             var isVirtual = false;
-            if (locationInterviewer.LocationPreference == InterviewLocationConstants.IsVirtual)
+            if (locationInterviewer.Preference == InterviewLocationConstants.IsVirtual)
             {
                 inPerson = false;
                 isVirtual = true;
@@ -316,7 +316,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId,EventDateId,LocationPreference")] LocationInterviewer locationInterviewer)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,InterviewerId,LocationId,EventId,Preference")] InterviewerLocation locationInterviewer)
         {
             if (id != locationInterviewer.Id)
             {
@@ -364,7 +364,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var locationInterviewer = await _context.LocationInterviewer
                 .Include(l => l.Location)
-                .Include(e => e.EventDate)
+                .Include(e => e.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (locationInterviewer == null)
             {
@@ -388,7 +388,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.LocationInterviewer == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.LocationInterviewer'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.InterviewerLocation'  is null.");
             }
             var locationInterviewer = await _context.LocationInterviewer.FindAsync(id);
             if (locationInterviewer != null)

@@ -58,7 +58,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Value")] GlobalConfigVar globalConfigVar)
+        public async Task<IActionResult> Create([Bind("Id,Name,Value")] Setting globalConfigVar)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Value")] GlobalConfigVar globalConfigVar)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Value")] Setting globalConfigVar)
         {
             if (id != globalConfigVar.Id)
             {
@@ -145,7 +145,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if (_context.GlobalConfigVar == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.GlobalConfigVar'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.Setting'  is null.");
             }
             var globalConfigVar = await _context.GlobalConfigVar.FindAsync(id);
             if (globalConfigVar != null)
@@ -170,7 +170,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return true;
             } catch
             {
-                throw new Exception("GlobalConfigVar 'disruption_banner' does not exist, or it is not an integer.");
+                throw new Exception("Setting 'disruption_banner' does not exist, or it is not an integer.");
             }
         }
 
@@ -188,7 +188,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link_visible' does not exist, or it is not an integer.");
+                throw new Exception("Setting 'zoom_link_visible' does not exist, or it is not an integer.");
             }
         }
 
@@ -202,7 +202,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link' does not exist.");
+                throw new Exception("Setting 'zoom_link' does not exist.");
             }
         }
 
@@ -219,7 +219,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link' does not exist.");
+                throw new Exception("Setting 'zoom_link' does not exist.");
             }
         }
 
@@ -236,7 +236,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'zoom_link_visible' does not exist.");
+                throw new Exception("Setting 'zoom_link_visible' does not exist.");
             }
         }
 
@@ -253,7 +253,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             catch
             {
-                throw new Exception("GlobalConfigVar 'disruption_banner' does not exist.");
+                throw new Exception("Setting 'disruption_banner' does not exist.");
             }
         }
 

@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AddColumn<bool>(
                 name: "CheckedIn",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -20,7 +20,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropColumn(
                 name: "CheckedIn",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
         }
     }
 }

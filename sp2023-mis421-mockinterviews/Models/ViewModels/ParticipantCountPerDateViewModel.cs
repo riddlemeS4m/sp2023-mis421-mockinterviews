@@ -6,7 +6,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
     public class ParticipantCountPerDateViewModel
     {
         [Display(Name = "Event Name")]
-        public EventDate? EventDate { get; set; }
+        public Event? EventDate { get; set; }
         [Display(Name = "No. of Students")]
         public int? StudentCount { get; set; }
         [Display(Name = "No. of Interviewers")]

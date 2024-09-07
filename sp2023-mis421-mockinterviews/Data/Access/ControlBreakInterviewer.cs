@@ -16,16 +16,16 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 			_userManager = userManager;
 		}
 
-		public async Task<List<TimeRangeViewModel>> ToTimeRanges(List<SignupInterviewerTimeslot> signupInterviewTimeslots)
+		public async Task<List<TimeRangeViewModel>> ToTimeRanges(List<InterviewerTimeslot> signupInterviewTimeslots)
 		{
-			signupInterviewTimeslots = signupInterviewTimeslots.OrderBy(x => x.SignupInterviewerId).ThenBy(x => x.TimeslotId).ToList();
+			signupInterviewTimeslots = signupInterviewTimeslots.OrderBy(x => x.InterviewerSignupId).ThenBy(x => x.TimeslotId).ToList();
 			var groupedEvents = new List<TimeRangeViewModel>();
 			var name = new ApplicationUser();
 
 			if (signupInterviewTimeslots != null && signupInterviewTimeslots.Count != 0)
 			{
 				var ints = new List<int>();
-				var currentSI = signupInterviewTimeslots.First().SignupInterviewer;
+				var currentSI = signupInterviewTimeslots.First().InterviewerSignup;
 				var currentEvent = signupInterviewTimeslots.First().Timeslot;
 				var startAt = signupInterviewTimeslots.First().Timeslot.Time;
 
@@ -33,10 +33,10 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 
 				for (int i = 1; i < signupInterviewTimeslots.Count; i++)
 				{
-					var nextSI = signupInterviewTimeslots[i].SignupInterviewer;
+					var nextSI = signupInterviewTimeslots[i].InterviewerSignup;
 					var nextEvent = signupInterviewTimeslots[i].Timeslot;
 
-					if (signupInterviewTimeslots[i].SignupInterviewerId == currentSI.Id
+					if (signupInterviewTimeslots[i].InterviewerSignupId == currentSI.Id
 						&& signupInterviewTimeslots[i].TimeslotId == currentEvent.Id + 1)
 					{
 						currentEvent = nextEvent;
@@ -47,12 +47,12 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 						name = await _userManager.FindByIdAsync(currentSI.InterviewerId);
 						groupedEvents.Add(new TimeRangeViewModel
 						{
-							Date = currentEvent.EventDate.Date,
+							Date = currentEvent.Event.Date,
 							EndTime = currentEvent.Time.AddMinutes(30).ToString(@"h\:mm tt"),
 							StartTime = startAt.ToString(@"h\:mm tt"),
 							Location = GetLocation(currentSI.InPerson),
 							Name = name.FirstName + " " + name.LastName,
-							InterviewType = currentSI.InterviewType,
+							InterviewType = currentSI.Type,
 							TimeslotIds = ints,
 							WantsLunch = currentSI.Lunch,
 							SignupInterviewerId = currentSI.Id
@@ -72,12 +72,12 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 				name = await _userManager.FindByIdAsync(currentSI.InterviewerId);
 				groupedEvents.Add(new TimeRangeViewModel
 				{
-                    Date = currentEvent.EventDate.Date,
+                    Date = currentEvent.Event.Date,
                     EndTime = currentEvent.Time.AddMinutes(30).ToString(@"h\:mm tt"),
                     StartTime = startAt.ToString(@"h\:mm tt"),
                     Location = GetLocation(currentSI.InPerson),
                     Name = name.FirstName + " " + name.LastName,
-                    InterviewType = currentSI.InterviewType,
+                    InterviewType = currentSI.Type,
                     TimeslotIds = ints,
                     WantsLunch = currentSI.Lunch,
                     SignupInterviewerId = currentSI.Id

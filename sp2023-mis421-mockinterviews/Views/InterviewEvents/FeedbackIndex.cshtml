@@ -33,10 +33,10 @@ else
             @foreach (var interviewEventViewModel in Model.StudentScheduledInterviews)
             {
                 <tr>
-                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.EventDate.Date</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Timeslot.Event.Date</td>
                     <td>@interviewEventViewModel.InterviewEvent.Timeslot.Time</td>
                     <td>@interviewEventViewModel.InterviewerName</td>
-                    <td>@interviewEventViewModel.InterviewEvent.InterviewType</td>
+                    <td>@interviewEventViewModel.InterviewEvent.Type</td>
                     @if(interviewEventViewModel.InterviewEvent.InterviewerRating == null)
                     {
                         <td>Not Yet Rated</td>

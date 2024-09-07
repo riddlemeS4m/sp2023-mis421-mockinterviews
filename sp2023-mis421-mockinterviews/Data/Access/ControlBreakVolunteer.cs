@@ -13,7 +13,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 		{
 			_userManager = userManager;
 		}
-		public async Task<List<TimeRangeViewModel>> ToTimeRanges(List<VolunteerEvent> volunteerEvents)
+		public async Task<List<TimeRangeViewModel>> ToTimeRanges(List<VolunteerTimeslot> volunteerEvents)
 		{
 			var groupedEvents = new List<TimeRangeViewModel>();
 
@@ -30,7 +30,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 					var nextEvent = volunteerEvents[i].Timeslot;
 
 					if (currentEnd.Id + 1 == nextEvent.Id
-						&& currentEnd.EventDate.Date == nextEvent.EventDate.Date
+						&& currentEnd.Event.Date == nextEvent.Event.Date
 						&& volunteerEvents[i].StudentId == studentid)
 					{
 						currentEnd = nextEvent;
@@ -41,7 +41,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 						var name = await _userManager.FindByIdAsync(volunteerEvents[i - 1].StudentId);
 						groupedEvents.Add(new TimeRangeViewModel
 						{
-							Date = currentStart.EventDate.Date,
+							Date = currentStart.Event.Date,
 							EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
 							StartTime = currentStart.Time.ToString(@"h\:mm tt"),
 							Name = name.FirstName + " " + name.LastName,
@@ -61,7 +61,7 @@ namespace sp2023_mis421_mockinterviews.Data.Access
 				var user = await _userManager.FindByIdAsync(studentid);
 				groupedEvents.Add(new TimeRangeViewModel
 				{
-					Date = currentStart.EventDate.Date,
+					Date = currentStart.Event.Date,
 					EndTime = currentEnd.Time.AddMinutes(30).ToString(@"h\:mm tt"),
 					StartTime = currentStart.Time.ToString(@"h\:mm tt"),
 					Name = user.FirstName + " " + user.LastName,

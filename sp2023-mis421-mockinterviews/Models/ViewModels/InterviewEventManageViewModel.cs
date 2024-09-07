@@ -5,7 +5,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
 {
     public class InterviewEventManageViewModel
     {
-        public InterviewEvent InterviewEvent { get; set; }
+        public Interview InterviewEvent { get; set; }
         public List<SelectListItem> BehavioralInterviewers { get; set; }
         public List<SelectListItem> TechnicalInterviewers { get; set; }
         public List<SelectListItem> RequestedInterviewers { get; set; }

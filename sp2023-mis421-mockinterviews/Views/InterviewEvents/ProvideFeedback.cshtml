@@ -11,13 +11,13 @@
     <div class="col-md-4">
         <dl>
             <dt>Date</dt>
-            <dd>@Model.InterviewEvent.SignupInterviewerTimeslot.Timeslot.EventDate.Date</dd>
+            <dd>@Model.InterviewEvent.InterviewerTimeslot.Timeslot.Event.Date</dd>
             <dt>Time</dt>
-            <dd>@Model.InterviewEvent.SignupInterviewerTimeslot.Timeslot.Time</dd>
+            <dd>@Model.InterviewEvent.InterviewerTimeslot.Timeslot.Time</dd>
             <dt>Interviewer</dt>
             <dd>@Model.InterviewerName</dd>
             <dt>Focus</dt>
-            <dd>@Model.InterviewEvent.InterviewType</dd>
+            <dd>@Model.InterviewEvent.Type</dd>
         </dl>
         
         <form asp-action="ProvideFeedback">
@@ -27,8 +27,8 @@
             <input type="hidden" asp-for="InterviewEvent.TimeslotId" />
             <input type="hidden" asp-for="InterviewEvent.LocationId" />
             <input type="hidden" asp-for="InterviewEvent.Status" />
-            <input type="hidden" asp-for="InterviewEvent.InterviewType" />
-            <input type="hidden" asp-for="InterviewEvent.SignupInterviewerTimeslotId" />
+            <input type="hidden" asp-for="InterviewEvent.Type" />
+            <input type="hidden" asp-for="InterviewEvent.InterviewerTimeslotId" />
 @*            <input type="hidden" asp-for="InterviewEvent.SignupInterviewerTimeslot.SignupInterviewer.InterviewerId" />
 *@
             @*<div class="form-group">

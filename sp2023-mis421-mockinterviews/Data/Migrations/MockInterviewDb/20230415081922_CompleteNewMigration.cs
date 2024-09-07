@@ -9,7 +9,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "EventDate",
+                name: "Event",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -22,7 +22,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "FAQs",
+                name: "Question",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -86,13 +86,13 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_Timeslot_EventDate_EventDateId",
                         column: x => x.EventDateId,
-                        principalTable: "EventDate",
+                        principalTable: "Event",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "SignupInterviewer",
+                name: "InterviewerSignup",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -117,7 +117,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "LocationInterviewer",
+                name: "InterviewerLocation",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -143,7 +143,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "VolunteerEvent",
+                name: "VolunteerTimeslot",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -163,7 +163,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "SignupInterviewerTimeslot",
+                name: "InterviewerTimeslot",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -177,7 +177,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_SignupInterviewerTimeslot_SignupInterviewer_SignupInterviewerId",
                         column: x => x.SignupInterviewerId,
-                        principalTable: "SignupInterviewer",
+                        principalTable: "InterviewerSignup",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
@@ -189,7 +189,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "InterviewEvent",
+                name: "Interview",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -215,7 +215,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_InterviewEvent_SignupInterviewerTimeslot_SignupInterviewerTimeslotId",
                         column: x => x.SignupInterviewerTimeslotId,
-                        principalTable: "SignupInterviewerTimeslot",
+                        principalTable: "InterviewerTimeslot",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_InterviewEvent_Timeslot_TimeslotId",
@@ -227,77 +227,77 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.CreateIndex(
                 name: "IX_InterviewEvent_LocationId",
-                table: "InterviewEvent",
+                table: "Interview",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InterviewEvent_SignupInterviewerTimeslotId",
-                table: "InterviewEvent",
-                column: "SignupInterviewerTimeslotId");
+                table: "Interview",
+                column: "InterviewerTimeslotId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_InterviewEvent_TimeslotId",
-                table: "InterviewEvent",
+                table: "Interview",
                 column: "TimeslotId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationInterviewer_InterviewerId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "InterviewerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_LocationInterviewer_LocationId",
-                table: "LocationInterviewer",
+                table: "InterviewerLocation",
                 column: "LocationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SignupInterviewer_InterviewerId",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 column: "InterviewerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SignupInterviewerTimeslot_SignupInterviewerId",
-                table: "SignupInterviewerTimeslot",
-                column: "SignupInterviewerId");
+                table: "InterviewerTimeslot",
+                column: "InterviewerSignupId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_SignupInterviewerTimeslot_TimeslotId",
-                table: "SignupInterviewerTimeslot",
+                table: "InterviewerTimeslot",
                 column: "TimeslotId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Timeslot_EventDateId",
                 table: "Timeslot",
-                column: "EventDateId");
+                column: "EventId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_VolunteerEvent_TimeslotId",
-                table: "VolunteerEvent",
+                table: "VolunteerTimeslot",
                 column: "TimeslotId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "FAQs");
+                name: "Question");
 
             migrationBuilder.DropTable(
-                name: "InterviewEvent");
+                name: "Interview");
 
             migrationBuilder.DropTable(
-                name: "LocationInterviewer");
+                name: "InterviewerLocation");
 
             migrationBuilder.DropTable(
-                name: "VolunteerEvent");
+                name: "VolunteerTimeslot");
 
             migrationBuilder.DropTable(
-                name: "SignupInterviewerTimeslot");
+                name: "InterviewerTimeslot");
 
             migrationBuilder.DropTable(
                 name: "Location");
 
             migrationBuilder.DropTable(
-                name: "SignupInterviewer");
+                name: "InterviewerSignup");
 
             migrationBuilder.DropTable(
                 name: "Timeslot");
@@ -306,7 +306,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 name: "Interviewer");
 
             migrationBuilder.DropTable(
-                name: "EventDate");
+                name: "Event");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<bool>(
                 name: "Lunch",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: true,
                 oldClrType: typeof(string),
@@ -22,7 +22,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "Lunch",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true,
                 oldClrType: typeof(bool),

@@ -10,25 +10,25 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.RenameColumn(
                 name: "InterviewerPreference",
-                table: "LocationInterviewer",
-                newName: "LocationPreference");
+                table: "InterviewerLocation",
+                newName: "Preference");
 
             migrationBuilder.AddColumn<string>(
-                name: "InterviewType",
-                table: "SignupInterviewer",
+                name: "Type",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true);
 
             migrationBuilder.AddColumn<bool>(
                 name: "IsCase",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
 
             migrationBuilder.AddColumn<string>(
                 name: "Lunch",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: true);
         }
@@ -36,20 +36,20 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "InterviewType",
-                table: "SignupInterviewer");
+                name: "Type",
+                table: "InterviewerSignup");
 
             migrationBuilder.DropColumn(
                 name: "IsCase",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
 
             migrationBuilder.DropColumn(
                 name: "Lunch",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
 
             migrationBuilder.RenameColumn(
-                name: "LocationPreference",
-                table: "LocationInterviewer",
+                name: "Preference",
+                table: "InterviewerLocation",
                 newName: "InterviewerPreference");
         }
     }

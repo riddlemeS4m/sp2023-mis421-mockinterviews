@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AddColumn<string>(
                 name: "Company",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 defaultValue: "");
@@ -20,7 +20,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropColumn(
                 name: "Company",
-                table: "SignupInterviewer");
+                table: "InterviewerSignup");
         }
     }
 }

@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<bool>(
                 name: "IsVirtual",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -18,7 +18,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<bool>(
                 name: "IsTechnical",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -26,7 +26,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<bool>(
                 name: "IsBehavioral",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -34,7 +34,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<bool>(
                 name: "InPerson",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "bit",
                 nullable: false,
                 oldClrType: typeof(string),
@@ -45,7 +45,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AlterColumn<string>(
                 name: "IsVirtual",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(bool),
@@ -53,7 +53,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "IsTechnical",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(bool),
@@ -61,7 +61,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "IsBehavioral",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(bool),
@@ -69,7 +69,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.AlterColumn<string>(
                 name: "InPerson",
-                table: "SignupInterviewer",
+                table: "InterviewerSignup",
                 type: "nvarchar(max)",
                 nullable: false,
                 oldClrType: typeof(bool),

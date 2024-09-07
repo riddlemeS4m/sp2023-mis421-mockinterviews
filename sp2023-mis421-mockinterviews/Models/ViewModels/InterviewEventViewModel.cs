@@ -5,7 +5,7 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
 {
     public class InterviewEventViewModel
     {
-        public InterviewEvent InterviewEvent { get; set; }
+        public Interview InterviewEvent { get; set; }
         [Display(Name = "Student Name")]
         public string StudentName { get; set; }
         [Display(Name = "Interviewer Name")]

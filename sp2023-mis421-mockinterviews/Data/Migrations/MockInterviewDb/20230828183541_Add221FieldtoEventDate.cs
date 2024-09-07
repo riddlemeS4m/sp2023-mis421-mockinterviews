@@ -10,7 +10,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.AddColumn<bool>(
                 name: "For221",
-                table: "EventDate",
+                table: "Event",
                 type: "bit",
                 nullable: false,
                 defaultValue: false);
@@ -20,7 +20,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
         {
             migrationBuilder.DropColumn(
                 name: "For221",
-                table: "EventDate");
+                table: "Event");
         }
     }
 }

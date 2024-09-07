@@ -1,5 +1,5 @@
 ﻿@using sp2023_mis421_mockinterviews.Data.Constants
-@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.EventDate
+@model sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event
 
 @{
     ViewData["Title"] = "Edit Event Date";
@@ -21,9 +21,9 @@
             </div>
             <br />
             <div class="form-group">
-                <label asp-for="EventName" class="control-label"></label>
-                <input asp-for="EventName" class="form-control" />
-                <span asp-validation-for="EventName" class="text-danger"></span>
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <br />
