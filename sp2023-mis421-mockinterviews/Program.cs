@@ -183,7 +183,7 @@ namespace sp2023_mis421_mockinterviews
                 app.UseWebSockets();
             }
 
-            // app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UsePathBase("/wwwroot/");
 
