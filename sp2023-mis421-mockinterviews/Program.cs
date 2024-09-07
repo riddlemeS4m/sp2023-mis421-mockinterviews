@@ -28,6 +28,8 @@ namespace sp2023_mis421_mockinterviews
 		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
 		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
 
+                //adding dummy comment because i feel like it -sam 2024
+
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 		        options.KnownNetworks.Clear();
 		        options.KnownProxies.Clear();            
