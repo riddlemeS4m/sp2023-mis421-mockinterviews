@@ -20,7 +20,7 @@ namespace sp2023_mis421_mockinterviews
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -123,67 +123,66 @@ namespace sp2023_mis421_mockinterviews
                 });
             });
 
-            services.AddScoped(serviceProvider =>
+            services.AddScoped<GoogleDriveSiteContentService>(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
                 return new GoogleDriveSiteContentService(siteContentFolderId, driveService);
             });
 
-            services.AddScoped(serviceProvider =>
+            services.AddScoped<GoogleDriveResumeService>(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
                 return new GoogleDriveResumeService(resumesFolderId, driveService);
             });
 
-            services.AddScoped(serviceProvider =>
+            services.AddScoped<GoogleDrivePfpService>(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
                 var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
                 return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<InterviewService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new InterviewService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<SettingsService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new SettingsService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<TimeslotService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new TimeslotService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<EventService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new EventService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<InterviewerSignupService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new InterviewerSignupService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<InterviewerLocationService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new InterviewerLocationService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<InterviewerTimeslotService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
                 return new InterviewerTimeslotService(dbContext);
             });
 
-            services.AddScoped(serviceProvider => {
+            services.AddScoped<UserService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<IUserDbContext>();
                 var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 return new UserService(dbContext, userManager);
             });
 
-            
             services.AddSignalR();
 
             services.AddHttpClient();
@@ -211,11 +210,12 @@ namespace sp2023_mis421_mockinterviews
             //    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
             //});
 
-            services.AddAuthentication().AddMicrosoftAccount(microsoftOptions =>
-            {
-                microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Azure AD Client ID not found.");
-                microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
-            });
+            services.AddAuthentication()
+                .AddMicrosoftAccount(microsoftOptions =>
+                {
+                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Azure AD Client ID not found.");
+                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
+                });
 	   
             var app = builder.Build();
 
@@ -251,29 +251,29 @@ namespace sp2023_mis421_mockinterviews
             //look at this later
             using (var scope = app.Services.CreateScope())
             {
-                Console.WriteLine("Checking for required config vars...");
-                var newservices = scope.ServiceProvider;
-                var loggerFactory = newservices.GetRequiredService<ILoggerFactory>();
+                var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
+                var logger = loggerFactory.CreateLogger<Program>();
+
+                logger.LogWarning("Checking for required config vars...");
 
                 try
                 {
-                    var dbContext = newservices.GetRequiredService<MockInterviewDataDbContext>();
-                    var userManager = newservices.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = newservices.GetRequiredService<RoleManager<IdentityRole>>();
-                    var driveService = newservices.GetRequiredService<GoogleDriveSiteContentService>();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<MockInterviewDataDbContext>();
+                    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                    var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+                    var driveService = scope.ServiceProvider.GetRequiredService<GoogleDriveSiteContentService>();
 
-                    UserDbContextSeed.SeedRolesAsync(roleManager).Wait();
-                    UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd).Wait();
-                    MockInterviewDbContextSeed.SeedTimeslots(dbContext).Wait();
-                    MockInterviewDbContextSeed.SeedGlobalConfigVars(dbContext).Wait();
+                    await UserDbContextSeed.SeedRolesAsync(roleManager);
+                    await UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd);
+                    await MockInterviewDbContextSeed.SeedTimeslots(dbContext);
+                    await MockInterviewDbContextSeed.SeedGlobalConfigVars(dbContext);
 
                     var testGoogleDrive = new GoogleDriveServiceSeed(driveService, dbContext);
-                    testGoogleDrive.Test().Wait();
+                    await testGoogleDrive.Test();
                 }
                 catch (Exception ex)
                 {
-                    var logger = loggerFactory.CreateLogger<Program>();
-                    logger.LogError(ex, "Startup checks failed.");
+                    logger.LogError(ex, "One or more startup checks failed.");
                 }
             }
 
