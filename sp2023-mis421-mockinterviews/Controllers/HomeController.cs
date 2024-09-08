@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
 using SendGrid;
+using System.Diagnostics;
+using System.Security.Claims;
 using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
-using System.Diagnostics;
-using System.Security.Claims;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
-using Microsoft.AspNetCore.Authorization;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

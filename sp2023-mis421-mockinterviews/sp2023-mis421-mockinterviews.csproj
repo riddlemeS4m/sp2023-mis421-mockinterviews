@@ -33,15 +33,4 @@
     <PackageReference Include="sendgrid" Version="9.29.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="Views\InterviewEvents\Feedback.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Content Update="Views\InterviewEvents\Override.cshtml">
-      <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
-      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
-    </Content>
-  </ItemGroup>
-
 </Project>

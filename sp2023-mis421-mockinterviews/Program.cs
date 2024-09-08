@@ -37,32 +37,34 @@ namespace sp2023_mis421_mockinterviews
 
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-            string userDataConnectionString;
-            string mockInterviewDataConnectionString;
             string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
 
+            string userDataConnectionString;
+            string mockInterviewDataConnectionString;
             string siteContentFolderId;
             string resumesFolderId;
             string pfpsFolderId;
 
-            if (environment == Environments.Development)
-            {
-                userDataConnectionString = configuration["ConnectionStrings:SqlServer:Development:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Development:Users' not found.");
-                mockInterviewDataConnectionString = configuration["ConnectionStrings:SqlServer:Development:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Development:Signups' not found.");
+            var connectionStringPrefix = $"ConnectionStrings:SqlServer:{environment}:";
+            var googleDriveFolderPrefix = $"GoogleDriveFolders:{environment}:";
 
-                siteContentFolderId = configuration["GoogleDriveFolders:Development:SiteContent"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Development:SiteContent' not stored yet.");
-                resumesFolderId = configuration["GoogleDriveFolders:Development:Resumes"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Development:Resumes' not stored yet.");
-                pfpsFolderId = configuration["GoogleDriveFolders:Development:PFPs"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Development:PFPs' not stored yet.");
+            if (string.IsNullOrEmpty(environment) || environment == Environments.Development)
+            {
+                connectionStringPrefix = "ConnectionStrings:SqlServer:Development:";
+                googleDriveFolderPrefix = "GoogleDriveFolders:Development:";
             }
             else
             {
-                userDataConnectionString = configuration["ConnectionStrings:SqlServer:Production:Users"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Production:Users' not found.");
-                mockInterviewDataConnectionString = configuration["ConnectionStrings:SqlServer:Production:Signups"] ?? throw new InvalidOperationException("Connection string 'ConnectionStrings:SqlServer:Production:Signups' not found.");
-
-                siteContentFolderId = configuration["GoogleDriveFolders:Production:SiteContent"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Production:SiteContent' not stored yet.");
-                resumesFolderId = configuration["GoogleDriveFolders:Production:Resumes"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Production:Resumes' not stored yet.");
-                pfpsFolderId = configuration["GoogleDriveFolders:Production:PFPs"] ?? throw new InvalidOperationException("User secret 'GoogleDriveFolders:Production:PFPs' not stored yet.");
+                connectionStringPrefix = "ConnectionStrings:SqlServer:Production:";
+                googleDriveFolderPrefix = "GoogleDriveFolders:Production:";
             }
+
+            userDataConnectionString = configuration[$"{connectionStringPrefix}Users"] ?? throw new InvalidOperationException($"Connection string '{connectionStringPrefix}Users' not found.");
+            mockInterviewDataConnectionString = configuration[$"{connectionStringPrefix}Signups"] ?? throw new InvalidOperationException($"Connection string '{connectionStringPrefix}Signups' not found.");
+
+            siteContentFolderId = configuration[$"{googleDriveFolderPrefix}SiteContent"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}SiteContent' not stored yet.");
+            resumesFolderId = configuration[$"{googleDriveFolderPrefix}Resumes"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}Resumes' not stored yet.");
+            pfpsFolderId = configuration[$"{googleDriveFolderPrefix}PFPs"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}PFPs' not stored yet.");
 
             services.AddDbContext<UserDataDbContext>(options =>
                 options.UseSqlServer(userDataConnectionString),
@@ -116,24 +118,7 @@ namespace sp2023_mis421_mockinterviews
                 });
             });
 
-            services.AddScoped(serviceProvider =>
-            {
-                var driveService = serviceProvider.GetRequiredService<DriveService>();
-                return new GoogleDriveSiteContentService(siteContentFolderId, driveService);
-            });
-
-            services.AddScoped(serviceProvider =>
-            {
-                var driveService = serviceProvider.GetRequiredService<DriveService>();
-                return new GoogleDriveResumeService(resumesFolderId, driveService);
-            });
-
-            services.AddScoped(serviceProvider =>
-            {
-                var driveService = serviceProvider.GetRequiredService<DriveService>();
-                var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
-                return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
-            });
+            
 
             services.AddSignalR();
 
