@@ -33,4 +33,35 @@
     <PackageReference Include="sendgrid" Version="9.29.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\AppConfiguration\Controllers\" />
+    <Folder Include="Areas\AppConfiguration\Data\" />
+    <Folder Include="Areas\AppConfiguration\Models\" />
+    <Folder Include="Areas\AppConfiguration\Views\" />
+    <Folder Include="Areas\EventConfiguration\Controllers\" />
+    <Folder Include="Areas\EventConfiguration\Data\" />
+    <Folder Include="Areas\EventConfiguration\Models\" />
+    <Folder Include="Areas\EventConfiguration\Views\" />
+    <Folder Include="Areas\EventRegistration\Controllers\" />
+    <Folder Include="Areas\EventRegistration\Data\" />
+    <Folder Include="Areas\EventRegistration\Models\" />
+    <Folder Include="Areas\EventRegistration\Views\" />
+    <Folder Include="Areas\FeedbackPortal\Controllers\" />
+    <Folder Include="Areas\FeedbackPortal\Data\" />
+    <Folder Include="Areas\FeedbackPortal\Models\" />
+    <Folder Include="Areas\FeedbackPortal\Views\" />
+    <Folder Include="Areas\InterviewManagement\Controllers\" />
+    <Folder Include="Areas\InterviewManagement\Data\" />
+    <Folder Include="Areas\InterviewManagement\Models\" />
+    <Folder Include="Areas\InterviewManagement\Views\" />
+    <Folder Include="Areas\Reports\Controllers\" />
+    <Folder Include="Areas\Reports\Data\" />
+    <Folder Include="Areas\Reports\Models\" />
+    <Folder Include="Areas\Reports\Views\" />
+    <Folder Include="Areas\UserManagement\Controllers\" />
+    <Folder Include="Areas\UserManagement\Data\" />
+    <Folder Include="Areas\UserManagement\Models\" />
+    <Folder Include="Areas\UserManagement\Views\" />
+  </ItemGroup>
+
 </Project>
