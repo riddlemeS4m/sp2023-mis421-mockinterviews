@@ -57,7 +57,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.TimeRangeViewModels = new List<TimeRangeViewModel>();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
-                var volunteerEvents = await _context.VolunteerEvent
+                var volunteerEvents = await _context.VolunteerTimeslots
                     .Include(v => v.Timeslot)
                     .ThenInclude(y => y.Event)
                     .OrderBy(ve => ve.TimeslotId)
@@ -73,7 +73,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.InterviewerScheduledInterviews = new List<InterviewEventViewModel>();
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
-                var interviewEvents = await _context.InterviewEvent
+                var interviewEvents = await _context.Interviews
                     .Include(v => v.InterviewerTimeslot)
                     .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
@@ -117,7 +117,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.InterviewerRangeViewModels = new List<TimeRangeViewModel>();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
-                var signupInterviewTimeslots = await _context.SignupInterviewerTimeslot
+                var signupInterviewTimeslots = await _context.InterviewerTimeslots
     				.Include(s => s.InterviewerSignup)
 					.Include(v => v.Timeslot)
                     .ThenInclude(v => v.Event)
@@ -155,7 +155,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.StudentScheduledInterviews = new List<InterviewEventViewModel>();
             if(User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
-                var interviewEvents = await _context.InterviewEvent
+                var interviewEvents = await _context.Interviews
                     .Include(v => v.InterviewerTimeslot)
                     .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
@@ -196,7 +196,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.CompletedInterviews = new();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.InterviewerRole))
             {
-                var interviewEvents = await _context.InterviewEvent
+                var interviewEvents = await _context.Interviews
                     .Include(v => v.InterviewerTimeslot)
                     .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
@@ -242,7 +242,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private async Task<string> GetZoomLink()
         {
             Console.WriteLine("GetZoomLink");
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link");
 
             try
             {
@@ -257,7 +257,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private async Task<string> GetDisruptionBanner()
         {
             Console.WriteLine("Get Disruption Banner");
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
 
             try
             {
@@ -276,7 +276,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         private async Task<string> GetZoomLinkVisible()
         {
             Console.WriteLine("Get Zoom Link Visible");
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
 
             try
             {
@@ -305,7 +305,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> EmailStudents()
         {
-            var uniqueUsers = await _context.InterviewEvent
+            var uniqueUsers = await _context.Interviews
                 .Select(x => x.StudentId)
                 .Distinct()
                 .ToListAsync();
@@ -313,7 +313,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             foreach (var user in uniqueUsers)
             {
                 var userFull = await _userManager.FindByIdAsync(user);
-                var interviews = await _context.InterviewEvent
+                var interviews = await _context.Interviews
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.Event)
                     .Where(x => x.StudentId == user)
@@ -334,7 +334,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> EmailInterviewers()
         {
-            var uniqueUsers = await _context.SignupInterviewer
+            var uniqueUsers = await _context.InterviewerSignups
                 .Select(x => x.InterviewerId)
                 .Distinct()
                 .ToListAsync();
@@ -342,7 +342,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             foreach (var user in uniqueUsers)
             {
                 var userFull = await _userManager.FindByIdAsync(user);
-                var interviews = await _context.SignupInterviewerTimeslot
+                var interviews = await _context.InterviewerTimeslots
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.Event)
                     .Include(x => x.InterviewerSignup)

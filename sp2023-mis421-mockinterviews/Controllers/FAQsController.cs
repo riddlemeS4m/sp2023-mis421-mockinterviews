@@ -52,14 +52,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
-              return _context.FAQs != null ? 
-                          View(await _context.FAQs.ToListAsync()) :
+              return _context.Questions != null ? 
+                          View(await _context.Questions.ToListAsync()) :
                           Problem("Entity set 'ApplicationDbContext.Question'  is null.");
         }
 		public async Task<IActionResult> Resources()
 		{
-			return _context.FAQs != null ?
-						View(await _context.FAQs.Where(x => x.A != null).ToListAsync()) :
+			return _context.Questions != null ?
+						View(await _context.Questions.Where(x => x.A != null).ToListAsync()) :
 						Problem("Entity set 'ApplicationDbContext.Question'  is null.");
 		}
 
@@ -67,12 +67,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Questions == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs
+            var fAQs = await _context.Questions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (fAQs == null)
             {
@@ -87,7 +87,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 		{
             try
             {
-                var fileId = await _context.GlobalConfigVar
+                var fileId = await _context.Settings
                                 .Where(x => x.Name == GoogleDriveServiceSeed.ManualConfigVar)
                                 .Select(x => x.Value)
                                 .FirstOrDefaultAsync();
@@ -119,7 +119,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             try
             {
-                var fileId = await _context.GlobalConfigVar
+                var fileId = await _context.Settings
                 .Where(x => x.Name == GoogleDriveServiceSeed.ParkingPassConfigVar)
                 .Select(x => x.Value)
                 .FirstOrDefaultAsync();
@@ -186,12 +186,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Questions == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs.FindAsync(id);
+            var fAQs = await _context.Questions.FindAsync(id);
             if (fAQs == null)
             {
                 return NotFound();
@@ -236,12 +236,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.FAQs == null)
+            if (id == null || _context.Questions == null)
             {
                 return NotFound();
             }
 
-            var fAQs = await _context.FAQs
+            var fAQs = await _context.Questions
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (fAQs == null)
             {
@@ -257,14 +257,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.FAQs == null)
+            if (_context.Questions == null)
             {
                 return Problem("Entity set 'ApplicationDbContext.Question'  is null.");
             }
-            var fAQs = await _context.FAQs.FindAsync(id);
+            var fAQs = await _context.Questions.FindAsync(id);
             if (fAQs != null)
             {
-                _context.FAQs.Remove(fAQs);
+                _context.Questions.Remove(fAQs);
             }
             
             await _context.SaveChangesAsync();
@@ -297,7 +297,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 if (Manual != null)
                 {
-                    var configVar = await _context.GlobalConfigVar
+                    var configVar = await _context.Settings
                         .Where(x => x.Name == GoogleDriveServiceSeed.ManualConfigVar)
                         .FirstOrDefaultAsync();
 
@@ -317,7 +317,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 if (ParkingPass != null)
                 {
-                    var configVar = await _context.GlobalConfigVar
+                    var configVar = await _context.Settings
                         .Where(x => x.Name == GoogleDriveServiceSeed.ParkingPassConfigVar)
                         .FirstOrDefaultAsync();
 
@@ -347,7 +347,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool FAQsExists(int id)
         {
-          return (_context.FAQs?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Questions?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

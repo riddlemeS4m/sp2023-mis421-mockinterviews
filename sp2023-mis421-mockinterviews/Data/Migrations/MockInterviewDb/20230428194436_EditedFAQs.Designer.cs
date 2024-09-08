@@ -113,7 +113,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.ToTable("Interview");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Locations", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -133,7 +133,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasKey("Id");
 
-                    b.ToTable("Location");
+                    b.ToTable("Locations");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerLocation", b =>
@@ -227,7 +227,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     b.ToTable("InterviewerTimeslot");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslots", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -261,7 +261,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.HasIndex("EventId");
 
-                    b.ToTable("Timeslot");
+                    b.ToTable("Timeslots");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerTimeslot", b =>
@@ -288,7 +288,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Interview", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", "Location")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Locations", "Locations")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
@@ -296,17 +296,17 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .WithMany()
                         .HasForeignKey("InterviewerTimeslotId");
 
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslots", "Timeslots")
                         .WithMany()
                         .HasForeignKey("TimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Location");
+                    b.Navigation("Locations");
 
                     b.Navigation("InterviewerTimeslot");
 
-                    b.Navigation("Timeslot");
+                    b.Navigation("Timeslots");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerLocation", b =>
@@ -315,13 +315,13 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .WithMany()
                         .HasForeignKey("EventId");
 
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Location", "Location")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Locations", "Locations")
                         .WithMany()
                         .HasForeignKey("LocationId");
 
                     b.Navigation("Event");
 
-                    b.Navigation("Location");
+                    b.Navigation("Locations");
                 });
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.InterviewerTimeslot", b =>
@@ -332,7 +332,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslots", "Timeslots")
                         .WithMany()
                         .HasForeignKey("TimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -340,10 +340,10 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
                     b.Navigation("InterviewerSignup");
 
-                    b.Navigation("Timeslot");
+                    b.Navigation("Timeslots");
                 });
 
-            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", b =>
+            modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslots", b =>
                 {
                     b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Event", "Event")
                         .WithMany()
@@ -356,13 +356,13 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             modelBuilder.Entity("sp2023_mis421_mockinterviews.Models.MockInterviewDb.VolunteerTimeslot", b =>
                 {
-                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslot", "Timeslot")
+                    b.HasOne("sp2023_mis421_mockinterviews.Models.MockInterviewDb.Timeslots", "Timeslots")
                         .WithMany()
                         .HasForeignKey("TimeslotId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Timeslot");
+                    b.Navigation("Timeslots");
                 });
 #pragma warning restore 612, 618
         }

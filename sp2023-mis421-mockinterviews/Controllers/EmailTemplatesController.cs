@@ -25,18 +25,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: EmailTemplates
         public async Task<IActionResult> Index()
         {
-              return View(await _context.EmailTemplate.ToListAsync());
+              return View(await _context.EmailTemplates.ToListAsync());
         }
 
         // GET: EmailTemplates/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.EmailTemplate == null)
+            if (id == null || _context.EmailTemplates == null)
             {
                 return NotFound();
             }
 
-            var emailTemplate = await _context.EmailTemplate
+            var emailTemplate = await _context.EmailTemplates
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (emailTemplate == null)
             {
@@ -71,12 +71,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: EmailTemplates/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.EmailTemplate == null)
+            if (id == null || _context.EmailTemplates == null)
             {
                 return NotFound();
             }
 
-            var emailTemplate = await _context.EmailTemplate.FindAsync(id);
+            var emailTemplate = await _context.EmailTemplates.FindAsync(id);
             if (emailTemplate == null)
             {
                 return NotFound();
@@ -122,12 +122,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: EmailTemplates/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.EmailTemplate == null)
+            if (id == null || _context.EmailTemplates == null)
             {
                 return NotFound();
             }
 
-            var emailTemplate = await _context.EmailTemplate
+            var emailTemplate = await _context.EmailTemplates
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (emailTemplate == null)
             {
@@ -142,14 +142,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.EmailTemplate == null)
+            if (_context.EmailTemplates == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.EmailTemplate'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.EmailTemplates'  is null.");
             }
-            var emailTemplate = await _context.EmailTemplate.FindAsync(id);
+            var emailTemplate = await _context.EmailTemplates.FindAsync(id);
             if (emailTemplate != null)
             {
-                _context.EmailTemplate.Remove(emailTemplate);
+                _context.EmailTemplates.Remove(emailTemplate);
             }
             
             await _context.SaveChangesAsync();
@@ -158,7 +158,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool EmailTemplateExists(int id)
         {
-          return _context.EmailTemplate.Any(e => e.Id == id);
+          return _context.EmailTemplates.Any(e => e.Id == id);
         }
     }
 }

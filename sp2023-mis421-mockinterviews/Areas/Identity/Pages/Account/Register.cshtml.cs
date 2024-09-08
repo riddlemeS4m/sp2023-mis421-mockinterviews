@@ -144,7 +144,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                     _logger.LogInformation("User created a new account with password.");
 
                     var userId = await _userManager.GetUserIdAsync(user);
-                    var exists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(record => record.Email == Input.Email);
+                    var exists = await _context.RosteredStudents.FirstOrDefaultAsync(record => record.Email == Input.Email);
 
                     if(exists != null)
                     {

@@ -9,11 +9,11 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
     {
         public static async Task SeedTimeslots(MockInterviewDataDbContext context)
         {
-            var dates = await context.EventDate.ToListAsync();
+            var dates = await context.Events.ToListAsync();
 
             if (dates.Count != 0)
             {
-                var times = await context.Timeslot.ToListAsync();
+                var times = await context.Timeslots.ToListAsync();
                 var timeslots = TimeslotSeed.SeedTimeslots(dates);
 
                 foreach (Timeslot timeslot in timeslots)
@@ -30,7 +30,7 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
         public static async Task SeedGlobalConfigVars(MockInterviewDataDbContext context)
         {
             Console.WriteLine("Checking global config vars...");
-            var existingConfigVars = await context.GlobalConfigVar.ToDictionaryAsync(c => c.Name);
+            var existingConfigVars = await context.Settings.ToDictionaryAsync(c => c.Name);
 
             var missingConfigVars = GlobalConfigVarSeed.SeedGlobalConfigVars(existingConfigVars);
 

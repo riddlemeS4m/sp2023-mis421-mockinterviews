@@ -26,18 +26,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: GlobalConfigVars
         public async Task<IActionResult> Index()
         {
-              return View(await _context.GlobalConfigVar.ToListAsync());
+              return View(await _context.Settings.ToListAsync());
         }
 
         // GET: GlobalConfigVars/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.GlobalConfigVar == null)
+            if (id == null || _context.Settings == null)
             {
                 return NotFound();
             }
 
-            var globalConfigVar = await _context.GlobalConfigVar
+            var globalConfigVar = await _context.Settings
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (globalConfigVar == null)
             {
@@ -72,12 +72,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: GlobalConfigVars/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.GlobalConfigVar == null)
+            if (id == null || _context.Settings == null)
             {
                 return NotFound();
             }
 
-            var globalConfigVar = await _context.GlobalConfigVar.FindAsync(id);
+            var globalConfigVar = await _context.Settings.FindAsync(id);
             if (globalConfigVar == null)
             {
                 return NotFound();
@@ -123,12 +123,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: GlobalConfigVars/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.GlobalConfigVar == null)
+            if (id == null || _context.Settings == null)
             {
                 return NotFound();
             }
 
-            var globalConfigVar = await _context.GlobalConfigVar
+            var globalConfigVar = await _context.Settings
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (globalConfigVar == null)
             {
@@ -143,14 +143,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.GlobalConfigVar == null)
+            if (_context.Settings == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.Setting'  is null.");
             }
-            var globalConfigVar = await _context.GlobalConfigVar.FindAsync(id);
+            var globalConfigVar = await _context.Settings.FindAsync(id);
             if (globalConfigVar != null)
             {
-                _context.GlobalConfigVar.Remove(globalConfigVar);
+                _context.Settings.Remove(globalConfigVar);
             }
             
             await _context.SaveChangesAsync();
@@ -159,7 +159,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<bool> GetBanner()
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
 
             try
             {
@@ -176,7 +176,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<bool> GetZoomLinkVisible()
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
 
             try
             {
@@ -194,7 +194,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<string> GetZoomLink()
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link");
 
             try
             {
@@ -208,7 +208,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> SetZoomLink(string link)
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link");
 
             try
             {
@@ -225,7 +225,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> SetZoomLinkVisible(int display)
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
 
             try
             {
@@ -242,7 +242,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> SetDisruptionBanner(int display)
         {
-            var banner = await _context.GlobalConfigVar.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
+            var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
 
             try
             {
@@ -259,7 +259,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool GlobalConfigVarExists(int id)
         {
-          return _context.GlobalConfigVar.Any(e => e.Id == id);
+          return _context.Settings.Any(e => e.Id == id);
         }
 
     }

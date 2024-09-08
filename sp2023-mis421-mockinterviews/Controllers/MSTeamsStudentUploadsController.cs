@@ -29,8 +29,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Index()
         {
-              return _context.MSTeamsStudentUpload != null ? 
-                          View(await _context.MSTeamsStudentUpload.ToListAsync()) :
+              return _context.RosteredStudents != null ? 
+                          View(await _context.RosteredStudents.ToListAsync()) :
                           Problem("Entity set 'MockInterviewDataDbContext.RosteredStudent'  is null.");
         }
 
@@ -39,12 +39,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.MSTeamsStudentUpload == null)
+            if (id == null || _context.RosteredStudents == null)
             {
                 return NotFound();
             }
 
-            var mSTeamsStudentUpload = await _context.MSTeamsStudentUpload
+            var mSTeamsStudentUpload = await _context.RosteredStudents
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (mSTeamsStudentUpload == null)
             {
@@ -82,7 +82,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 try
                 {
-                    _context.MSTeamsStudentUpload.RemoveRange(_context.MSTeamsStudentUpload);
+                    _context.RosteredStudents.RemoveRange(_context.RosteredStudents);
                     await _context.SaveChangesAsync();
 
                     var records = new List<RosteredStudent>();
@@ -119,7 +119,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     // You can save them to the database using Entity Framework Core
 
                     // Example: Save records to the database
-                    await _context.MSTeamsStudentUpload.AddRangeAsync(filteredRecords);
+                    await _context.RosteredStudents.AddRangeAsync(filteredRecords);
                     await _context.SaveChangesAsync();
 
                     return RedirectToAction(nameof(Index));
@@ -183,18 +183,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                     foreach(var record in records)
                     {
-                        var studentExists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == record.Email);
+                        var studentExists = await _context.RosteredStudents.FirstOrDefaultAsync(x => x.Email == record.Email);
                         if (studentExists == null)
                         {
                             if(record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != "crimson.ua.edu")
                             {
-                                await _context.MSTeamsStudentUpload.AddAsync(record);
+                                await _context.RosteredStudents.AddAsync(record);
                             }
                         }
                         else if(studentExists != null)
                         {
                             studentExists.InMasters = true;
-                            _context.MSTeamsStudentUpload.Update(studentExists);
+                            _context.RosteredStudents.Update(studentExists);
                         }
                     }
                     
@@ -261,18 +261,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                     foreach (var record in records)
                     {
-                        var studentExists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == record.Email);
+                        var studentExists = await _context.RosteredStudents.FirstOrDefaultAsync(x => x.Email == record.Email);
                         if (studentExists == null)
                         {
                             if (record.Email != "Email" && record.Email[(record.Email.IndexOf('@') + 1)..] != "crimson.ua.edu")
                             {
-                                await _context.MSTeamsStudentUpload.AddAsync(record);
+                                await _context.RosteredStudents.AddAsync(record);
                             }
                         }
                         else if (studentExists != null)
                         {
                             studentExists.In221 = true;
-                            _context.MSTeamsStudentUpload.Update(studentExists);
+                            _context.RosteredStudents.Update(studentExists);
                         }
                     }
 
@@ -294,12 +294,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.MSTeamsStudentUpload == null)
+            if (id == null || _context.RosteredStudents == null)
             {
                 return NotFound();
             }
 
-            var mSTeamsStudentUpload = await _context.MSTeamsStudentUpload.FindAsync(id);
+            var mSTeamsStudentUpload = await _context.RosteredStudents.FindAsync(id);
             if (mSTeamsStudentUpload == null)
             {
                 return NotFound();
@@ -349,12 +349,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.MSTeamsStudentUpload == null)
+            if (id == null || _context.RosteredStudents == null)
             {
                 return NotFound();
             }
 
-            var mSTeamsStudentUpload = await _context.MSTeamsStudentUpload
+            var mSTeamsStudentUpload = await _context.RosteredStudents
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (mSTeamsStudentUpload == null)
             {
@@ -371,14 +371,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.MSTeamsStudentUpload == null)
+            if (_context.RosteredStudents == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.RosteredStudent'  is null.");
             }
-            var mSTeamsStudentUpload = await _context.MSTeamsStudentUpload.FindAsync(id);
+            var mSTeamsStudentUpload = await _context.RosteredStudents.FindAsync(id);
             if (mSTeamsStudentUpload != null)
             {
-                _context.MSTeamsStudentUpload.Remove(mSTeamsStudentUpload);
+                _context.RosteredStudents.Remove(mSTeamsStudentUpload);
             }
             
             await _context.SaveChangesAsync();
@@ -387,7 +387,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool MSTeamsStudentUploadExists(int id)
         {
-          return (_context.MSTeamsStudentUpload?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.RosteredStudents?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         public async Task<IActionResult> AttendanceReportAll()

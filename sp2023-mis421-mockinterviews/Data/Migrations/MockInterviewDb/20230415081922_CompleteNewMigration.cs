@@ -52,7 +52,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Location",
+                name: "Locations",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -67,7 +67,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 });
 
             migrationBuilder.CreateTable(
-                name: "Timeslot",
+                name: "Timeslots",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -137,7 +137,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_LocationInterviewer_Location_LocationId",
                         column: x => x.LocationId,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -157,7 +157,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_VolunteerEvent_Timeslot_TimeslotId",
                         column: x => x.TimeslotId,
-                        principalTable: "Timeslot",
+                        principalTable: "Timeslots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -183,7 +183,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_SignupInterviewerTimeslot_Timeslot_TimeslotId",
                         column: x => x.TimeslotId,
-                        principalTable: "Timeslot",
+                        principalTable: "Timeslots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -210,7 +210,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_InterviewEvent_Location_LocationId",
                         column: x => x.LocationId,
-                        principalTable: "Location",
+                        principalTable: "Locations",
                         principalColumn: "Id");
                     table.ForeignKey(
                         name: "FK_InterviewEvent_SignupInterviewerTimeslot_SignupInterviewerTimeslotId",
@@ -220,7 +220,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                     table.ForeignKey(
                         name: "FK_InterviewEvent_Timeslot_TimeslotId",
                         column: x => x.TimeslotId,
-                        principalTable: "Timeslot",
+                        principalTable: "Timeslots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -267,7 +267,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
 
             migrationBuilder.CreateIndex(
                 name: "IX_Timeslot_EventDateId",
-                table: "Timeslot",
+                table: "Timeslots",
                 column: "EventId");
 
             migrationBuilder.CreateIndex(
@@ -294,13 +294,13 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.MockInterviewDb
                 name: "InterviewerTimeslot");
 
             migrationBuilder.DropTable(
-                name: "Location");
+                name: "Locations");
 
             migrationBuilder.DropTable(
                 name: "InterviewerSignup");
 
             migrationBuilder.DropTable(
-                name: "Timeslot");
+                name: "Timeslots");
 
             migrationBuilder.DropTable(
                 name: "Interviewer");

@@ -52,7 +52,7 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
         {
             try
             {
-                var manualExists = await _context.GlobalConfigVar
+                var manualExists = await _context.Settings
                     .Where(x => x.Name == ManualConfigVar)
                     .FirstOrDefaultAsync();
 
@@ -61,14 +61,14 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
                     var iManualId = await _driveService.GetAllFileIdsFromQuery(Manual);
                     var manualId = iManualId.FirstOrDefault() ?? throw new Exception("Uploading manual to Google Drive failed.");
 
-                    await _context.GlobalConfigVar.AddAsync(new Setting
+                    await _context.Settings.AddAsync(new Setting
                     {
                         Name = ManualConfigVar,
                         Value = manualId
                     });
                 }
 
-                var parkingPassExists = await _context.GlobalConfigVar
+                var parkingPassExists = await _context.Settings
                     .Where(x => x.Name == ParkingPassConfigVar)
                     .FirstOrDefaultAsync();
 
@@ -77,7 +77,7 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
                     var iParkingPassId = await _driveService.GetAllFileIdsFromQuery(ParkingPass);
                     var parkingPassId = iParkingPassId.FirstOrDefault() ?? throw new Exception("Uploading parking pass to Google Drive failed.");
 
-                    await _context.GlobalConfigVar.AddAsync(new Setting
+                    await _context.Settings.AddAsync(new Setting
                     {
                         Name = ParkingPassConfigVar,
                         Value = parkingPassId

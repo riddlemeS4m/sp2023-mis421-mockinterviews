@@ -32,7 +32,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers
         public async Task<IActionResult> Index()
         {
-            var locationInterviewers = await _context.LocationInterviewer
+            var locationInterviewers = await _context.InterviewerLocations
                 .Include(v => v.Location)
                 .Include(v => v.Event)
                 .Where(v => v.Event.IsActive == true)
@@ -58,7 +58,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         };
 
             var locationInterviewersWithNames = query.ToList();
-            var locations = await _context.Location
+            var locations = await _context.Locations
                 .OrderBy(u => u.Room)
                 .ToListAsync();
 
@@ -73,12 +73,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.LocationInterviewer == null)
+            if (id == null || _context.InterviewerLocations == null)
             {
                 return NotFound();
             }
 
-            var locationInterviewer = await _context.LocationInterviewer
+            var locationInterviewer = await _context.InterviewerLocations
                 .Include(l => l.Location)
                 .Include(l => l.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -101,7 +101,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Create()
         {
             // Get a list of all Interviewers
-            var availableInterviewers = await _context.SignupInterviewerTimeslot
+            var availableInterviewers = await _context.InterviewerTimeslots
                 .Include(i => i.InterviewerSignup)
                 .Include(i => i.Timeslot)
                 .ThenInclude(i => i.Event)
@@ -115,7 +115,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToListAsync();
 
 
-            var availableLocations = await _context.Location
+            var availableLocations = await _context.Locations
                 .Select(i => new SelectListItem
                 {
                     Value = i.Id.ToString(),
@@ -123,7 +123,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 })
                 .ToListAsync();
 
-            var availableDates = await _context.EventDate
+            var availableDates = await _context.Events
                 .Where(i => i.IsActive)
                 .Select(i => new SelectListItem
                 {
@@ -203,7 +203,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 })
                 .ToList();
 
-            var availableLocations = _context.Location
+            var availableLocations = _context.Locations
                     .Select(i => new SelectListItem
                     {
                         Value = i.Id.ToString(),
@@ -211,7 +211,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     })
                     .ToList();
 
-            var availableDates = _context.EventDate
+            var availableDates = _context.Events
                 .Select(i => new SelectListItem
                 {
                     Value = i.Id.ToString(),
@@ -250,19 +250,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.LocationInterviewer == null)
+            if (id == null || _context.InterviewerLocations == null)
             {
                 return NotFound();
             }
 
-            var locationInterviewer = await _context.LocationInterviewer.FindAsync(id);
+            var locationInterviewer = await _context.InterviewerLocations.FindAsync(id);
             if (locationInterviewer == null)
             {
                 return NotFound();
             }
 
             // Get a list of LocationIds already assigned to LocationInterviewers for today
-            var assignedLocationIds = await _context.LocationInterviewer
+            var assignedLocationIds = await _context.InterviewerLocations
                 .Where(li => li.EventId == locationInterviewer.EventId)
                 .Select(li => li.LocationId)
                 .Distinct()
@@ -278,7 +278,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
            
 
-            var availableLocations = await _context.Location
+            var availableLocations = await _context.Locations
                 //.Where(l => (!assignedLocationIds.Contains(l.Id) || l.Id == locationInterviewer.LocationId) && (l.InPerson == inPerson && l.IsVirtual == isVirtual))
                 .Select(i => new SelectListItem
                 {
@@ -357,12 +357,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: LocationInterviewers/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.LocationInterviewer == null)
+            if (id == null || _context.InterviewerLocations == null)
             {
                 return NotFound();
             }
 
-            var locationInterviewer = await _context.LocationInterviewer
+            var locationInterviewer = await _context.InterviewerLocations
                 .Include(l => l.Location)
                 .Include(e => e.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
@@ -386,14 +386,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.LocationInterviewer == null)
+            if (_context.InterviewerLocations == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.InterviewerLocation'  is null.");
             }
-            var locationInterviewer = await _context.LocationInterviewer.FindAsync(id);
+            var locationInterviewer = await _context.InterviewerLocations.FindAsync(id);
             if (locationInterviewer != null)
             {
-                _context.LocationInterviewer.Remove(locationInterviewer);
+                _context.InterviewerLocations.Remove(locationInterviewer);
             }
             
             await _context.SaveChangesAsync();
@@ -402,7 +402,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool LocationInterviewerExists(int id)
         {
-          return (_context.LocationInterviewer?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.InterviewerLocations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

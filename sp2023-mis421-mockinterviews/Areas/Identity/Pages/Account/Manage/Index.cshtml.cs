@@ -175,7 +175,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account.Manage
 
             if(Input.Class != userClass && (userClass == Classes.FirstSem || userClass == null)) 
             {
-                var shouldBeIn221 = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(x => x.Email == user.Email);
+                var shouldBeIn221 = await _context.RosteredStudents.FirstOrDefaultAsync(x => x.Email == user.Email);
                 if(shouldBeIn221 == null)
                 {
                     user.Class = Classes.NotYetMIS;

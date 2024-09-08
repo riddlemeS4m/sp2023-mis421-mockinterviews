@@ -24,7 +24,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
                 name: "FK_LocationInterviewer_Location_LocationId",
                 table: "InterviewerLocation",
                 column: "LocationId",
-                principalTable: "Location",
+                principalTable: "Locations",
                 principalColumn: "Id");
         }
 
@@ -48,7 +48,7 @@ namespace sp2023_mis421_mockinterviews.Data.Migrations.Data
                 name: "FK_LocationInterviewer_Location_LocationId",
                 table: "InterviewerLocation",
                 column: "LocationId",
-                principalTable: "Location",
+                principalTable: "Locations",
                 principalColumn: "Id",
                 onDelete: ReferentialAction.Cascade);
         }

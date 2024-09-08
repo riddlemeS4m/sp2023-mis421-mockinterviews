@@ -108,7 +108,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Index()
         {         
             //var interviewers = new List<AvailableInterviewer>();
-            var busyInterviewers = await _context.InterviewEvent
+            var busyInterviewers = await _context.Interviews
                 .Include(x => x.InterviewerTimeslot)
                 .ThenInclude(x => x.InterviewerSignup)
                 .Where(x => x.Status == StatusConstants.Ongoing)
@@ -116,7 +116,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            var interviewers = await _context.SignupInterviewer
+            var interviewers = await _context.InterviewerSignups
                 .Where(x => x.CheckedIn && !busyInterviewers.Contains(x.InterviewerId))
                 .Select(x => new AvailableInterviewer
                 {
@@ -135,7 +135,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var date = DateTime.Now.Date;
                 //var date = new DateTime(2024, 2, 8);
 
-                iv.Room = await _context.LocationInterviewer
+                iv.Room = await _context.InterviewerLocations
                     .Include(x => x.Location)
                     .Include(x => x.Event)
                     .Where(x => x.InterviewerId == iv.InterviewerId &&
@@ -146,7 +146,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             interviewers.Sort((x, y) => string.Compare(x.Name, y.Name));
             
-            var hoursInAdvanceStr = _context.GlobalConfigVar
+            var hoursInAdvanceStr = _context.Settings
                 .Where(x => x.Name == "interview_index_hours")
                 .Select(x => x.Value)
                 .FirstOrDefault();
@@ -160,11 +160,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 throw new Exception("Setting 'interview_index_hours' is not an integer.");
             }
 
-            var timeslot = await _context.Timeslot
+            var timeslot = await _context.Timeslots
                 .OrderByDescending(x => x.MaxSignUps)
                 .FirstOrDefaultAsync();
             var maxsignups = timeslot.MaxSignUps * hoursInAdvance * 2; //* 2 because there are two interviews per hour
-            var interviewEvents = await _context.InterviewEvent
+            var interviewEvents = await _context.Interviews
                 .Include(i => i.Location)
                 .Include(i => i.InterviewerTimeslot)
                 .ThenInclude(i => i.InterviewerSignup)
@@ -190,7 +190,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToDictionaryAsync(u => u.Id, u => u.FullName);
 
             //3. Collect unique InterviewerIds
-            var interviewerIds = await _context.SignupInterviewer
+            var interviewerIds = await _context.InterviewerSignups
                 .Select(ie => ie.InterviewerId)
                 .Distinct()
                 .ToListAsync();
@@ -246,7 +246,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> AttendanceReport()
         {
             //can't find my other attendance report method for some reason
-            var uniqueStudentIds = await _context.InterviewEvent
+            var uniqueStudentIds = await _context.Interviews
                 .Select(e => e.StudentId)
                 .Distinct()
                 .ToListAsync();
@@ -318,8 +318,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             };
 
-            var entireProgram = await _context.MSTeamsStudentUpload.CountAsync();
-            var entire221 = await _context.MSTeamsStudentUpload.Where(x => x.In221 == true).CountAsync();
+            var entireProgram = await _context.RosteredStudents.CountAsync();
+            var entire221 = await _context.RosteredStudents.Where(x => x.In221 == true).CountAsync();
 
             double percentEntireProgram = (double)total / entireProgram;
             double percentEntire221 = (double)signedup221 / entire221;
@@ -352,7 +352,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> AssessFeedback()
         {
-            var interviewEvents = await _context.InterviewEvent
+            var interviewEvents = await _context.Interviews
                 .Include(i => i.Location)
                 .Include(i => i.InterviewerTimeslot)
                 .ThenInclude(i => i.InterviewerSignup)
@@ -405,7 +405,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             model.StudentScheduledInterviews = new List<InterviewEventViewModel>();
             if (User.IsInRole(RolesConstants.AdminRole) || User.IsInRole(RolesConstants.StudentRole))
             {
-                var interviewEvents = await _context.InterviewEvent
+                var interviewEvents = await _context.Interviews
                     .Include(v => v.InterviewerTimeslot)
                     .ThenInclude(v => v.InterviewerSignup)
                     .Include(v => v.Location)
@@ -448,7 +448,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.StudentRole)]
         public async Task<IActionResult> ProvideFeedback(int id)
         {
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x=>x.InterviewerTimeslot)
                 .ThenInclude(x=>x.InterviewerSignup)
                 .Include(x => x.Location)
@@ -497,7 +497,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
 
-            var interviewEventActual = await _context.InterviewEvent
+            var interviewEventActual = await _context.Interviews
                 .Include(x => x.InterviewerTimeslot)
                 .ThenInclude(x => x.InterviewerSignup)
                 .Include(x => x.Location)
@@ -519,12 +519,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(i => i.Location)
                 .Include(i => i.InterviewerTimeslot)
                 .ThenInclude(i => i.InterviewerSignup)
@@ -582,26 +582,26 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var timeslots = new List<Timeslot>();
             if (user.Class == Classes.NotYetMIS || user.Class == Classes.FirstSem)
             {
-                timeslots = await _context.Timeslot
+                timeslots = await _context.Timeslots
                     .Where(x => x.IsStudent)
                     .Include(y => y.Event)
-                    .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                    .Where(x => _context.Interviews.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
                     .Where(x => x.Event.For221 != For221.n 
                         && x.Event.IsActive)
                     .ToListAsync();
             }
             else
             {
-                timeslots = await _context.Timeslot
+                timeslots = await _context.Timeslots
                     .Where(x => x.IsStudent)
                     .Include(y => y.Event)
-                    .Where(x => _context.InterviewEvent.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
+                    .Where(x => _context.Interviews.Count(y => y.TimeslotId == x.Id) < x.MaxSignUps)
                     .Where(x => x.Event.For221 != For221.y 
                         && x.Event.IsActive)
                     .ToListAsync();
             }
 
-            var interviewEvents = await _context.InterviewEvent
+            var interviewEvents = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.StudentId == userId
@@ -667,13 +667,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var emailTimes = new List<Interview>();
                 List<string> calendarEvents = new();
 
-                var newEvent = await _context.InterviewEvent
+                var newEvent = await _context.Interviews
                     .Include(v => v.Timeslot)
                     .ThenInclude(y => y.Event)
                     .Where(v => v.TimeslotId == SelectedEventIds)
                     .FirstOrDefaultAsync();
                 emailTimes.Add(newEvent);
-                newEvent = await _context.InterviewEvent
+                newEvent = await _context.Interviews
                     .Include(v => v.Timeslot)
                     .ThenInclude(y => y.Event)
                     .Where(v => v.TimeslotId == SelectedEventIds + 1)
@@ -702,12 +702,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole + "," + RolesConstants.InterviewerRole)]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == id)
@@ -929,7 +929,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 else
                 {
-                    var signupInterviewTimeslot = await _context.SignupInterviewerTimeslot
+                    var signupInterviewTimeslot = await _context.InterviewerTimeslots
                         .Include(x => x.InterviewerSignup)
                         .Include(x => x.Timeslot)
                         .ThenInclude(x => x.Event)
@@ -955,7 +955,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         interviewerPreference = InterviewLocationConstants.InPerson;
                     }
 
-                    var location = await _context.LocationInterviewer
+                    var location = await _context.InterviewerLocations
                         .Include(x => x.Location)
                         .Where(x => x.InterviewerId == InterviewerId && 
                             x.Preference == interviewerPreference && 
@@ -1010,18 +1010,18 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Override(int? id)
         {
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent.FindAsync(id);
+            var interviewEvent = await _context.Interviews.FindAsync(id);
             if (interviewEvent == null)
             {
                 return NotFound();
             }
 
-            interviewEvent = await _context.InterviewEvent
+            interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == id)
@@ -1030,7 +1030,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             //var selectedInterviewers = await _userManager.GetUsersInRoleAsync(RolesConstants.InterviewerRole);
             //var interviewers = selectedInterviewers.ToList();
 
-            var selectedInterviewers = await _context.SignupInterviewerTimeslot
+            var selectedInterviewers = await _context.InterviewerTimeslots
                 .Include(x => x.InterviewerSignup)
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
@@ -1125,7 +1125,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 else
                 {
-                    var signupInterviewTimeslot = await _context.SignupInterviewerTimeslot
+                    var signupInterviewTimeslot = await _context.InterviewerTimeslots
                         .Include(x => x.InterviewerSignup)
                         .Include(x => x.Timeslot)
                         .ThenInclude(x => x.Event)
@@ -1146,7 +1146,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         interviewerPreference = InterviewLocationConstants.InPerson;
                     }
 
-                    var location = await _context.LocationInterviewer
+                    var location = await _context.InterviewerLocations
                         .Include(x => x.Location)
                         .Where(x => x.InterviewerId == InterviewerId && x.Preference == interviewerPreference && x.EventId == signupInterviewTimeslot.Timeslot.EventId && x.LocationId != null)
                         .FirstOrDefaultAsync();
@@ -1174,7 +1174,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     }
                 }
 
-                var newInterviewEvent = await _context.InterviewEvent
+                var newInterviewEvent = await _context.Interviews
                     .Include(x => x.Location)
                     .Include(x => x.InterviewerTimeslot)
                     .ThenInclude(x => x.InterviewerSignup)
@@ -1221,12 +1221,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(i => i.Location)
                 .Include(i => i.InterviewerTimeslot)
                 .ThenInclude(i => i.InterviewerSignup)
@@ -1273,14 +1273,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.InterviewEvent == null)
+            if (_context.Interviews == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.Interview'  is null.");
             }
-            var interviewEvent = await _context.InterviewEvent.FindAsync(id);
+            var interviewEvent = await _context.Interviews.FindAsync(id);
             if (interviewEvent != null)
             {
-                _context.InterviewEvent.Remove(interviewEvent);
+                _context.Interviews.Remove(interviewEvent);
             }
             
             await _context.SaveChangesAsync();
@@ -1289,33 +1289,33 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool InterviewEventExists(int id)
         {
-          return (_context.InterviewEvent?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Interviews?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         private async Task<List<string>> OutsourceQuery(Interview interviewEvent)
         {
             // Get the timeslot of the current user's interview
-            var timeslot = _context.InterviewEvent
+            var timeslot = _context.Interviews
                 .Include(i => i.Timeslot.Event)
                 .Where(i => i.StudentId == interviewEvent.StudentId && i.TimeslotId == interviewEvent.TimeslotId)
                 .Select(i => i.Timeslot)
                 .FirstOrDefault();
 
             // Get the SignupInterviewerTimeslots for the same timeslot and event date as the user's interview
-            var signupInterviewerTimeslots = _context.SignupInterviewerTimeslot
+            var signupInterviewerTimeslots = _context.InterviewerTimeslots
                 .Include(s => s.InterviewerSignup)
                 .Where(s => s.TimeslotId == timeslot.Id && 
                     s.Timeslot.Event.Date == timeslot.Event.Date && 
                     s.Timeslot.Event.IsActive == true)
                 .ToList();
 
-            var interviewers = _context.SignupInterviewer
+            var interviewers = _context.InterviewerSignups
                 .Select(x => x.InterviewerId)
                 .Distinct()
                 .ToList();
 
             //Get list of all distinct interviewers that have signed up to deliver the same type of interview as the student needs
-            var selectedTypes = _context.SignupInterviewer
+            var selectedTypes = _context.InterviewerSignups
                 .Where(u => ((interviewEvent.Type == InterviewTypeConstants.Technical && u.IsTechnical) ||
                              (interviewEvent.Type == InterviewTypeConstants.Behavioral && u.IsBehavioral)))
                 .Select(x => x.InterviewerId)
@@ -1329,7 +1329,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToList();
 
             //get list of all distinct interviewers that are in an interview event with a status of checked in or ongoing
-            var selectedStatusNot = _context.InterviewEvent
+            var selectedStatusNot = _context.Interviews
                 .Include(x => x.InterviewerTimeslot)
                 .ThenInclude(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
@@ -1344,7 +1344,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToList();
 
             //Get list of all distinct interviewers that are assigned to a location
-            var selectedLocation = _context.LocationInterviewer
+            var selectedLocation = _context.InterviewerLocations
                 .Where(x => x.LocationId != null &&
                     x.Event == timeslot.Event &&
                     x.Event.IsActive == true)
@@ -1353,7 +1353,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToList();
 
             //Get list of all distinct interviewers that have interviewed this student
-            var haveInterviewed = _context.InterviewEvent
+            var haveInterviewed = _context.Interviews
                 .Where(x => x.StudentId == interviewEvent.StudentId)
                 .Select(x => x.InterviewerTimeslot.InterviewerSignup.InterviewerId)
                 .Distinct()
@@ -1383,7 +1383,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<List<IVM>> OutsourceQuery2024(Interview ie)
         {
-            var allInterviewers = await _context.SignupInterviewerTimeslot
+            var allInterviewers = await _context.InterviewerTimeslots
                 .Include(x => x.InterviewerSignup)
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
@@ -1391,7 +1391,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     x.Timeslot.Event.IsActive &&
                     x.Timeslot.Event.Date == ie.Timeslot.Event.Date &&
                     x.InterviewerSignup.CheckedIn &&
-                    !_context.InterviewEvent
+                    !_context.Interviews
                         .Where(i => i.Status == "Ongoing")
                         .Select(i => i.InterviewerTimeslot.InterviewerSignup.InterviewerId)
                         .Contains(x.InterviewerSignup.InterviewerId))
@@ -1460,12 +1460,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.StudentRole)]
         public async Task<IActionResult> UserDelete(int? id)
         {
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return NotFound();
             }
 
-            var interviewEvent = await _context.InterviewEvent.Include(i => i.Location).Include(i => i.InterviewerTimeslot)
+            var interviewEvent = await _context.Interviews.Include(i => i.Location).Include(i => i.InterviewerTimeslot)
                 .Include(i => i.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
             
@@ -1486,14 +1486,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.StudentRole)]
         public async Task<IActionResult> UserDeleteConfirmed(int id)
         {
-            if (_context.InterviewEvent == null)
+            if (_context.Interviews == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.Interview'  is null.");
             }
-            var interviewEvent = await _context.InterviewEvent.FindAsync(id);
+            var interviewEvent = await _context.Interviews.FindAsync(id);
             if (interviewEvent != null && interviewEvent.StudentId == User.FindFirstValue(ClaimTypes.NameIdentifier))
             {
-                _context.InterviewEvent.Remove(interviewEvent);
+                _context.Interviews.Remove(interviewEvent);
             }
 
             await _context.SaveChangesAsync();
@@ -1505,12 +1505,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             Console.WriteLine($"Interviewee checked in. Interview Id: {id}");
 
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return BadRequest("Interview not found.");
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == id)
@@ -1548,12 +1548,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             Console.WriteLine($"Interview marked completed. Id: {id}");
 
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return BadRequest("Interview not found.");
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == id)
@@ -1596,12 +1596,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             Console.WriteLine($"Interview marked no-show. Id: {id}");
 
-            if (id == null || _context.InterviewEvent == null)
+            if (id == null || _context.Interviews == null)
             {
                 return BadRequest("Interview not found.");
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == id)
@@ -1645,7 +1645,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return BadRequest("Interview not found.");
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(x => x.Id == Id)
@@ -1668,7 +1668,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
             else
             {
-                var signupInterviewTimeslot = await _context.SignupInterviewerTimeslot
+                var signupInterviewTimeslot = await _context.InterviewerTimeslots
                     .Include(x => x.InterviewerSignup)
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.Event)
@@ -1690,7 +1690,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewerPreference = InterviewLocationConstants.InPerson;
                 }
 
-                var location = await _context.LocationInterviewer
+                var location = await _context.InterviewerLocations
                     .Include(x => x.Location)
                     .Where(x => x.InterviewerId == InterviewerId &&
                         x.Preference == interviewerPreference &&
@@ -1721,7 +1721,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 await UpdateHub(Id);
                 await UpdateHub();
 
-                var ie = await _context.InterviewEvent
+                var ie = await _context.Interviews
                     .Include(x => x.InterviewerTimeslot)
                     .ThenInclude(x => x.InterviewerSignup)
                     .Where(x => x.Id == Id)
@@ -1775,12 +1775,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<ActionResult<AVM>> GetAvailableInterviewers(int id)
         {
-            if (id == 0 || !_context.InterviewEvent.Any(x => x.Id == id))
+            if (id == 0 || !_context.Interviews.Any(x => x.Id == id))
             {
                 return BadRequest("Invalid ID or Interview Event not found.");
             }
 
-            var interviewEvent = await _context.InterviewEvent
+            var interviewEvent = await _context.Interviews
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .FirstOrDefaultAsync(x => x.Id == id);
@@ -1802,7 +1802,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> GetCompletedInterviews()
         {
-            var interviewEvents = await _context.InterviewEvent
+            var interviewEvents = await _context.Interviews
                 .Include(i => i.Location)
                 .Include(i => i.InterviewerTimeslot)
                 .ThenInclude(i => i.InterviewerSignup)
@@ -1826,7 +1826,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ToDictionaryAsync(u => u.Id, u => u.FullName);
 
             //3. Collect unique InterviewerIds
-            var interviewerIds = await _context.SignupInterviewer
+            var interviewerIds = await _context.InterviewerSignups
                 .Select(ie => ie.InterviewerId)
                 .Distinct()
                 .ToListAsync();
@@ -1877,7 +1877,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             if(User.IsInRole (RolesConstants.StudentRole))
             {
                 string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var ie = await _context.InterviewEvent
+                var ie = await _context.Interviews
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.Event)
                     .Where(x => x.StudentId == userId &&
@@ -1917,7 +1917,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             if(User.IsInRole(RolesConstants.AdminRole))
             {
-                var sits = await _context.SignupInterviewerTimeslot
+                var sits = await _context.InterviewerTimeslots
                                 .Include(x => x.Timeslot)
                                 .ThenInclude(x => x.Event)
                                 .Where(x => x.Timeslot.Event.IsActive)
@@ -1925,7 +1925,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                                 .Distinct()
                                 .ToListAsync();
 
-                var interviewers = await _context.SignupInterviewer
+                var interviewers = await _context.InterviewerSignups
                     .Where(x => sits.Contains(x.Id))
                     .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
                     .OrderBy(x => x.Text)
@@ -1964,7 +1964,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return BadRequest("InterviewerSignup ID was invalid.");
             }
 
-            var interviewer = await _context.SignupInterviewer
+            var interviewer = await _context.InterviewerSignups
                 .Where(x => x.Id == newId)
                 .FirstOrDefaultAsync();
 
@@ -1978,7 +1978,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             _context.Update(interviewer);
             await _context.SaveChangesAsync();
 
-            var sits = await _context.SignupInterviewerTimeslot
+            var sits = await _context.InterviewerTimeslots
                     .Include(x => x.Timeslot)
                     .ThenInclude(x => x.Event)
                     .Where(x => x.Timeslot.Event.IsActive)
@@ -1986,7 +1986,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Distinct()
                     .ToListAsync();
 
-            var interviewers = await _context.SignupInterviewer
+            var interviewers = await _context.InterviewerSignups
                 .Where(x => sits.Contains(x.Id))
                 .Select(x => new SelectListItem { Text = x.FirstName + " " + x.LastName, Value = x.Id.ToString() })
                 .OrderBy(x => x.Text)
@@ -2001,7 +2001,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var date = DateTime.Now.Date;
                 //var date = new DateTime(2024, 2, 3);
 
-                var li = await _context.LocationInterviewer
+                var li = await _context.InterviewerLocations
                     .Include(x => x.Location)
                     .Include(x => x.Event)
                     .Where(x => x.InterviewerId == interviewerId &&
@@ -2097,7 +2097,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task UpdateHub(int id)
         {
-            var newInterviewEvent = await _context.InterviewEvent
+            var newInterviewEvent = await _context.Interviews
                 .Include(x => x.Location)
                 .Include(x => x.InterviewerTimeslot)
                 .ThenInclude(x => x.InterviewerSignup)
@@ -2143,7 +2143,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task UpdateHub()
         {
-            var busyInterviewers = await _context.InterviewEvent
+            var busyInterviewers = await _context.Interviews
                 .Include(x => x.InterviewerTimeslot)
                 .ThenInclude(x => x.InterviewerSignup)
                 .Where(x => x.Status == StatusConstants.Ongoing)
@@ -2151,7 +2151,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Distinct()
                 .ToListAsync();
 
-            var interviewers = await _context.SignupInterviewer
+            var interviewers = await _context.InterviewerSignups
                 .Where(x => x.CheckedIn && !busyInterviewers.Contains(x.InterviewerId))
                 .Select(x => new AvailableInterviewer
                 {
@@ -2170,7 +2170,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 var date = DateTime.Now.Date;
                 //var date = new DateTime(2024, 2, 8);
 
-                iv.Room = await _context.LocationInterviewer
+                iv.Room = await _context.InterviewerLocations
                     .Include(x => x.Location)
                     .Include(x => x.Event)
                     .Where(x => x.InterviewerId == iv.InterviewerId &&

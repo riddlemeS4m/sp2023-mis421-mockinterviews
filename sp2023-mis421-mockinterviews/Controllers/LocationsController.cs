@@ -25,20 +25,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Locations
         public async Task<IActionResult> Index()
         {
-              return _context.Location != null ? 
-                          View(await _context.Location.ToListAsync()) :
-                          Problem("Entity set 'ApplicationDbContext.Location'  is null.");
+              return _context.Locations != null ? 
+                          View(await _context.Locations.ToListAsync()) :
+                          Problem("Entity set 'ApplicationDbContext.Locations'  is null.");
         }
 
         // GET: Locations/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Location == null)
+            if (id == null || _context.Locations == null)
             {
                 return NotFound();
             }
 
-            var location = await _context.Location
+            var location = await _context.Locations
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
             {
@@ -73,12 +73,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Locations/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Location == null)
+            if (id == null || _context.Locations == null)
             {
                 return NotFound();
             }
 
-            var location = await _context.Location.FindAsync(id);
+            var location = await _context.Locations.FindAsync(id);
             if (location == null)
             {
                 return NotFound();
@@ -124,12 +124,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Locations/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Location == null)
+            if (id == null || _context.Locations == null)
             {
                 return NotFound();
             }
 
-            var location = await _context.Location
+            var location = await _context.Locations
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (location == null)
             {
@@ -144,14 +144,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int Id)
         {
-            if (_context.Location == null)
+            if (_context.Locations == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Location'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Locations'  is null.");
             }
-            var location = await _context.Location.FindAsync(Id);
+            var location = await _context.Locations.FindAsync(Id);
             if (location != null)
             {
-                _context.Location.Remove(location);
+                _context.Locations.Remove(location);
             }
             
             await _context.SaveChangesAsync();
@@ -160,7 +160,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool LocationExists(int id)
         {
-          return (_context.Location?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Locations?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

@@ -39,7 +39,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Index()
         {
-            var volunteerEvents = await _context.VolunteerEvent
+            var volunteerEvents = await _context.VolunteerTimeslots
                 .Include(v => v.Timeslot)
                 .ThenInclude(y => y.Event)
                 .Where(y => y.Timeslot.Event.IsActive == true)
@@ -57,15 +57,15 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.VolunteerEvent == null)
+            if (id == null || _context.VolunteerTimeslots == null)
             {
                 return NotFound();
             }
 
-            var volunteerEvent = await _context.VolunteerEvent
+            var volunteerEvent = await _context.VolunteerTimeslots
                 .Include(v => v.Timeslot)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            var specificTimeslot = await _context.Timeslot
+            var specificTimeslot = await _context.Timeslots
                 .Include(v => v.Event)
                 .FirstOrDefaultAsync(m => m.Id == volunteerEvent.Timeslot.Id);
             volunteerEvent.Timeslot = specificTimeslot;
@@ -83,11 +83,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            var timeslots = await _context.Timeslot
+            var timeslots = await _context.Timeslots
                 .Where(x => x.IsVolunteer == true)
                 .Include(y => y.Event)
-                .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
-                .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.VolunteerTimeslots.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.Interviews.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => x.Event.For221 == For221.n)
                 .Where(x => x.Event.IsActive)
                 .ToListAsync();
@@ -142,11 +142,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
             //    .ToList();
 
             //handle bad input
-            var timeslots = await _context.Timeslot
+            var timeslots = await _context.Timeslots
                 .Where(x => x.IsVolunteer == true)
                 .Include(y => y.Event)
-                .Where(x => !_context.VolunteerEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
-                .Where(x => !_context.InterviewEvent.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.VolunteerTimeslots.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
+                .Where(x => !_context.Interviews.Any(y => y.TimeslotId == x.Id && y.StudentId == userId))
                 .Where(x => x.Event.For221 == For221.n)
                 .Where(x => x.Event.IsActive)
                 .ToListAsync();
@@ -183,7 +183,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     _context.Add(volunteerEvent);
                     await _context.SaveChangesAsync();
 
-                    var newEvent = await _context.VolunteerEvent
+                    var newEvent = await _context.VolunteerTimeslots
                         .Include(v => v.Timeslot)
                         .ThenInclude(y => y.Event)
                         .Where(v => v.Id == volunteerEvent.Id)
@@ -206,17 +206,17 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.VolunteerEvent == null)
+            if (id == null || _context.VolunteerTimeslots == null)
             {
                 return NotFound();
             }
 
-            var volunteerEvent = await _context.VolunteerEvent.FindAsync(id);
+            var volunteerEvent = await _context.VolunteerTimeslots.FindAsync(id);
             if (volunteerEvent == null)
             {
                 return NotFound();
             }
-            ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
+            ViewData["TimeslotId"] = new SelectList(_context.Timeslots, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);
         }
 
@@ -254,7 +254,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            ViewData["TimeslotId"] = new SelectList(_context.Timeslot, "Id", "Id", volunteerEvent.TimeslotId);
+            ViewData["TimeslotId"] = new SelectList(_context.Timeslots, "Id", "Id", volunteerEvent.TimeslotId);
             return View(volunteerEvent);
         }
 
@@ -262,12 +262,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.VolunteerEvent == null)
+            if (id == null || _context.VolunteerTimeslots == null)
             {
                 return NotFound();
             }
 
-            var volunteerEvent = await _context.VolunteerEvent
+            var volunteerEvent = await _context.VolunteerTimeslots
                 .Include(v => v.Timeslot).ThenInclude(y => y.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (volunteerEvent == null)
@@ -287,12 +287,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
 			string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var user = await _userManager.FindByIdAsync(userId);
 
-			if (_context.VolunteerEvent == null)
+			if (_context.VolunteerTimeslots == null)
             {
                 return Problem("Entity set 'MockInterviewDataDbContext.VolunteerTimeslot'  is null.");
             }
 
-            var volunteerEvent = await _context.VolunteerEvent.FindAsync(id);
+            var volunteerEvent = await _context.VolunteerTimeslots.FindAsync(id);
             if (volunteerEvent != null)
             {
                 string fullName = user.FirstName + " " + user.LastName;
@@ -300,7 +300,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 ASendAnEmail emailNotification = new VolunteerCancellationNotification();
                 await emailNotification.SendEmailAsync(_sendGridClient, "Volunteer Cancellation Notification: " + fullName, SuperUser.Email, fullName, volunteerEvent.ToString(), null);
 
-                _context.VolunteerEvent.Remove(volunteerEvent);
+                _context.VolunteerTimeslots.Remove(volunteerEvent);
             }
 
             await _context.SaveChangesAsync();
@@ -309,7 +309,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool VolunteerEventExists(int id)
         {
-          return (_context.VolunteerEvent?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.VolunteerTimeslots?.Any(e => e.Id == id)).GetValueOrDefault();
         }
 
         private async Task<ActionResult> GetUserId()
@@ -354,7 +354,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             // Get the timeslots to delete
-            var timeslotsToDelete = await _context.VolunteerEvent
+            var timeslotsToDelete = await _context.VolunteerTimeslots
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(t => timeslots.Contains(t.Id))
@@ -396,7 +396,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
 
             // Get the timeslots to delete
-            var timeslotsToDelete = await _context.VolunteerEvent
+            var timeslotsToDelete = await _context.VolunteerTimeslots
                 
                 .Where(t => timeslots.Contains(t.Id))
                 .ToListAsync();
@@ -407,7 +407,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             // Delete the timeslots
-            _context.VolunteerEvent.RemoveRange(timeslotsToDelete);
+            _context.VolunteerTimeslots.RemoveRange(timeslotsToDelete);
             await _context.SaveChangesAsync();
 
             if (User.IsInRole(RolesConstants.AdminRole))
@@ -430,7 +430,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             // Get the timeslots to delete
-            var timeslotsToDelete = await _context.VolunteerEvent
+            var timeslotsToDelete = await _context.VolunteerTimeslots
                 .Include(x => x.Timeslot)
                 .ThenInclude(x => x.Event)
                 .Where(t => timeslots.Contains(t.Id))
@@ -467,13 +467,13 @@ namespace sp2023_mis421_mockinterviews.Controllers
         {
 
             // Get the timeslots to delete
-            var timeslotsToDelete = await _context.VolunteerEvent
+            var timeslotsToDelete = await _context.VolunteerTimeslots
 
                 .Where(t => timeslots.Contains(t.Id))
                 .ToListAsync();
 
             // Delete the timeslots
-            _context.VolunteerEvent.RemoveRange(timeslotsToDelete);
+            _context.VolunteerTimeslots.RemoveRange(timeslotsToDelete);
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "VolunteerEvents");

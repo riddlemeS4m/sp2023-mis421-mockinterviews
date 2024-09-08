@@ -31,11 +31,11 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots
         public async Task<IActionResult> Index()
         {
-            var timeslots = await _context.Timeslot
+            var timeslots = await _context.Timeslots
                 .Include(t => t.Event)
                 .Where(t => t.Event.IsActive)
                 .ToListAsync();
-            var eventdates = await _context.EventDate
+            var eventdates = await _context.Events
                 .Where(x => x.IsActive)
                 .ToListAsync();
 
@@ -61,20 +61,20 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
         public async Task<IActionResult> SignupReport()
         {
-            var timeslots = await _context.Timeslot
+            var timeslots = await _context.Timeslots
                 .Include(t => t.Event)
                 .Where(x => x.Event.IsActive)
                 .ToListAsync();
-            var eventdates = await _context.EventDate
+            var eventdates = await _context.Events
                 .Where(x => x.IsActive)
                 .ToListAsync();
 
             var countlist = new List<ParticipantCountViewModel>();
             foreach(Timeslot timeslot in timeslots)
             {
-                var studentCount = await _context.InterviewEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var volunteerCount = await _context.VolunteerEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var interviewerCount = await _context.SignupInterviewerTimeslot.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
                 countlist.Add(new ParticipantCountViewModel
                 {
                     Timeslot = timeslot,
@@ -95,7 +95,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> AllocationReport()
         {
-            var timeslots = await _context.Timeslot
+            var timeslots = await _context.Timeslots
                 .Include(t => t.Event)
                 .Where(x => x.Event.For221 == For221.n && 
                     x.IsInterviewer && 
@@ -105,9 +105,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var countlist = new List<ParticipantCountViewModel>();
             foreach (Timeslot timeslot in timeslots)
             {
-                var studentCount = await _context.InterviewEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var volunteerCount = await _context.VolunteerEvent.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var interviewerCount = await _context.SignupInterviewerTimeslot.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
                 countlist.Add(new ParticipantCountViewModel
                 {
                     Timeslot = timeslot,
@@ -140,19 +140,19 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.Timeslots == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot.Include(t => t.Event)
+            var timeslot = await _context.Timeslots.Include(t => t.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (timeslot == null)
             {
                 return NotFound();
             }
 
-            var interviewerList = await _context.SignupInterviewerTimeslot
+            var interviewerList = await _context.InterviewerTimeslots
                 .Include(x => x.InterviewerSignup)
                 .Where(x => x.TimeslotId == timeslot.Id)
                 .ToListAsync();
@@ -169,7 +169,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            var studentList = await _context.InterviewEvent
+            var studentList = await _context.Interviews
                .Where(x => x.TimeslotId == timeslot.Id)
                .ToListAsync();
             var studentNamesList = new List<string>();
@@ -185,7 +185,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
             }
 
-            var volunteerList = await _context.VolunteerEvent
+            var volunteerList = await _context.VolunteerTimeslots
                .Where(x => x.TimeslotId == timeslot.Id)
                .ToListAsync();
             var volunteerNamesList = new List<string>();
@@ -238,12 +238,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.Timeslots == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot.FindAsync(id);
+            var timeslot = await _context.Timeslots.FindAsync(id);
             if (timeslot == null)
             {
                 return NotFound();
@@ -271,7 +271,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     _context.Update(timeslot);
                     await _context.SaveChangesAsync();
 
-                    var pairedtimeslot = await _context.Timeslot.FindAsync(id + 1);
+                    var pairedtimeslot = await _context.Timeslots.FindAsync(id + 1);
                     if(pairedtimeslot != null)
                     {
                         pairedtimeslot.MaxSignUps = timeslot.MaxSignUps;
@@ -300,12 +300,12 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // GET: Timeslots/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Timeslot == null)
+            if (id == null || _context.Timeslots == null)
             {
                 return NotFound();
             }
 
-            var timeslot = await _context.Timeslot
+            var timeslot = await _context.Timeslots
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (timeslot == null)
             {
@@ -321,14 +321,14 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Timeslot == null)
+            if (_context.Timeslots == null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.Timeslot'  is null.");
+                return Problem("Entity set 'MockInterviewDataDbContext.Timeslots'  is null.");
             }
-            var timeslot = await _context.Timeslot.FindAsync(id);
+            var timeslot = await _context.Timeslots.FindAsync(id);
             if (timeslot != null)
             {
-                _context.Timeslot.Remove(timeslot);
+                _context.Timeslots.Remove(timeslot);
             }
             
             await _context.SaveChangesAsync();
@@ -342,7 +342,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         public async Task<IActionResult> UpdateMaxSignupsConfirmed(int maxsignups)
         {
-            var timeslots = await _context.Timeslot.ToListAsync();
+            var timeslots = await _context.Timeslots.ToListAsync();
             foreach (var timeslot in timeslots)
             {
                 timeslot.MaxSignUps = maxsignups;
@@ -355,7 +355,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private bool TimeslotExists(int id)
         {
-          return (_context.Timeslot?.Any(e => e.Id == id)).GetValueOrDefault();
+          return (_context.Timeslots?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

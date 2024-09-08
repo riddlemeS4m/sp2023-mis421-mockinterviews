@@ -15,7 +15,7 @@ namespace sp2023_mis421_mockinterviews.Interfaces.IDbContext
         public DbSet<Timeslot> Timeslots { get; set; }
         public DbSet<VolunteerTimeslot> VolunteerTimeslots { get; set; }
         public DbSet<Event> Events { get; set; }
-        public DbSet<RosteredStudent> Roster { get; set; }
+        public DbSet<RosteredStudent> RosteredStudents { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<EmailTemplate> EmailTemplates { get; set; }
 

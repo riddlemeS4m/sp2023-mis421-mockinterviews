@@ -214,7 +214,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
                 await _userStore.SetUserNameAsync(user, Input.Email, CancellationToken.None);
                 await _emailStore.SetEmailAsync(user, Input.Email, CancellationToken.None);
 
-                var exists = await _context.MSTeamsStudentUpload.FirstOrDefaultAsync(record => record.Email == Input.Email);
+                var exists = await _context.RosteredStudents.FirstOrDefaultAsync(record => record.Email == Input.Email);
                 
                 if(exists != null)
                 {
