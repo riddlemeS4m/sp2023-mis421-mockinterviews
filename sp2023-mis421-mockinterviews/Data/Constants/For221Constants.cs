@@ -30,6 +30,17 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 _ => string.Empty,
             };
         }
+
+        public static For221? GetFor221Int(int? for221)
+        {
+            return for221 switch
+            {
+                0 => For221.b,
+                1 => For221.n,
+                2 => For221.y,
+                _ => null,
+            };
+        }
     }
     public enum For221
     {

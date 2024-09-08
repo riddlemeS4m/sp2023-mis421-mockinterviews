@@ -17,26 +17,28 @@ namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class HomeController : Controller
     {
-/*        private readonly ILogger<HomeController> _logger;*/
         private readonly MockInterviewDataDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
-        private readonly HttpClient _httpClient;
+        private readonly ILogger<HomeController> _logger;
 
-        public HomeController(/*ILogger<HomeController> logger,*/ 
+
+        public HomeController(
             MockInterviewDataDbContext context, 
             UserManager<ApplicationUser> userManager,
-            ISendGridClient sendGridClient)
+            ISendGridClient sendGridClient,
+            ILogger<HomeController> logger)
         {
-/*            _logger = logger;*/
             _context = context;
             _userManager = userManager;
             _sendGridClient = sendGridClient;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            Console.WriteLine("Calling the index method on the home controller...");
+            _logger.LogInformation("Calling {method} method...", nameof(Index));
+
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var userFull = await _userManager.FindByIdAsync(userId);
 
@@ -122,11 +124,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 					.Include(v => v.Timeslot)
                     .ThenInclude(v => v.Event)
                     .Include(v => v.InterviewerSignup)
-                    //.OrderBy(ve => ve.Timeslot.EventDate.Date)
-                    //.ThenBy(ve => ve.Timeslot.Time)
                     .OrderBy(ve => ve.TimeslotId)
                     .Where(v => v.InterviewerSignup.InterviewerId == userId 
-                        // && v.Timeslot.IsInterviewer
                         && v.Timeslot.Event.IsActive)
                     .ToListAsync();
 
@@ -241,7 +240,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<string> GetZoomLink()
         {
-            Console.WriteLine("GetZoomLink");
             var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link");
 
             try
@@ -256,7 +254,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<string> GetDisruptionBanner()
         {
-            Console.WriteLine("Get Disruption Banner");
             var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "disruption_banner");
 
             try
@@ -265,6 +262,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     return "none";
                 }
+
                 return "block";
             }
             catch
@@ -275,7 +273,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
         private async Task<string> GetZoomLinkVisible()
         {
-            Console.WriteLine("Get Zoom Link Visible");
             var banner = await _context.Settings.FirstOrDefaultAsync(m => m.Name == "zoom_link_visible");
 
             try
@@ -284,6 +281,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 {
                     return "none";
                 }
+
                 return "block";
             }
             catch
@@ -367,7 +365,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        public async Task<IActionResult> AttemptLogin()
+        public IActionResult AttemptLogin()
         {
             if (User.Identity.IsAuthenticated)
             {
@@ -379,7 +377,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
         }
 
-        public async Task<IActionResult> AttemptLogout()
+        public IActionResult AttemptLogout()
         {
             if (User.Identity.IsAuthenticated)
             {

@@ -125,7 +125,8 @@ namespace sp2023_mis421_mockinterviews
             services.AddScoped<GoogleDriveSiteContentService>(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
-                return new GoogleDriveSiteContentService(siteContentFolderId, driveService);
+                var logger = serviceProvider.GetRequiredService<ILogger<GoogleDriveSiteContentService>>();
+                return new GoogleDriveSiteContentService(siteContentFolderId, driveService, logger);
             });
 
             services.AddScoped<GoogleDriveResumeService>(serviceProvider =>
@@ -158,7 +159,8 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddScoped<EventService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new EventService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<EventService>>();
+                return new EventService(dbContext, logger);
             });
 
             services.AddScoped<InterviewerSignupService>(serviceProvider => {
@@ -242,14 +244,16 @@ namespace sp2023_mis421_mockinterviews
             app.MapHub<AssignInterviewsHub>("/interviewhub");
             app.MapHub<AvailableInterviewersHub>("/interviewershub");
 
-            app.MapControllerRoute(
-                name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                  name: "areas",
-                  pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                    name: "areas",
+                    pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller=Home}/{action=Index}/{id?}"
                 );
             });
 
@@ -261,25 +265,33 @@ namespace sp2023_mis421_mockinterviews
                 var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger<Program>();
 
-                logger.LogInformation("Checking for required config vars...");
+                logger.LogInformation("Proceeding with custom startup checks...");
 
                 try
                 {
                     var dbContext = scope.ServiceProvider.GetRequiredService<ISignupDbContext>();
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
                     var driveService = scope.ServiceProvider.GetRequiredService<GoogleDriveSiteContentService>();
                     var settingsService = scope.ServiceProvider.GetRequiredService<SettingsService>();
                     var timeslotService = scope.ServiceProvider.GetRequiredService<TimeslotService>();
                     var eventService = scope.ServiceProvider.GetRequiredService<EventService>();
 
-
+                    logger.LogInformation("Checking that all required roles exist in table 'AspNetRoles'...");
                     await UserDbContextSeed.SeedRolesAsync(roleManager);
+
+                    logger.LogInformation("Checking that backup admin user exists...");
                     await UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd);
+
+                    logger.LogInformation("Checking that all events have correct number of timeslots...");
                     await TimeslotSeed.SeedTimeslots(eventService, timeslotService);
+
+                    logger.LogInformation("Checking that all settings exist and have values...");
                     await SettingsSeed.SeedSettings(settingsService);
 
                     var testGoogleDrive = new GoogleDriveServiceSeed(driveService, dbContext);
+                    logger.LogInformation("Looking for parking pass and manual...");
                     await testGoogleDrive.Test();
                 }
                 catch (Exception ex)

@@ -16,7 +16,8 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
         private const string ManualFilePath = "wwwroot/lib/MockInterviewManual_Spring2024.docx";
         private readonly GoogleDriveSiteContentService _driveService;
         private readonly ISignupDbContext _context;
-        public GoogleDriveServiceSeed(GoogleDriveSiteContentService siteContentDriveService, ISignupDbContext context)
+        public GoogleDriveServiceSeed(GoogleDriveSiteContentService siteContentDriveService, 
+            ISignupDbContext context)
         {
             _driveService = siteContentDriveService;
             _context = context;

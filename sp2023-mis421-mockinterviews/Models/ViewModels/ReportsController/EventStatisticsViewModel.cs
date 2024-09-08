@@ -1,4 +1,4 @@
-﻿namespace sp2023_mis421_mockinterviews.Models.ViewModels
+﻿namespace sp2023_mis421_mockinterviews.Models.ViewModels.ReportsController
 {
     public class EventStatisticsViewModel
     {

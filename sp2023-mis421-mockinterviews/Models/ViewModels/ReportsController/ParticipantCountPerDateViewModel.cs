@@ -1,7 +1,7 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using System.ComponentModel.DataAnnotations;
 
-namespace sp2023_mis421_mockinterviews.Models.ViewModels
+namespace sp2023_mis421_mockinterviews.Models.ViewModels.ReportsController
 {
     public class ParticipantCountPerDateViewModel
     {

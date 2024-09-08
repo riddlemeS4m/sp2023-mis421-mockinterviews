@@ -1,4 +1,4 @@
-﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.EventDateCreationViewModel
+﻿@model sp2023_mis421_mockinterviews.Models.ViewModels.EventsController.EventDateCreationViewModel
 
 @{
     ViewData["Title"] = "Create";
@@ -94,7 +94,9 @@
                 >
                 <label class="form-check-label" for="EventDate.For221False">MIS 321 & Above</label>
             </div>
-            <span asp-validation-for="EventDate.For221" class="text-danger"></span>
+            <div>
+                <span asp-validation-for="EventDate.For221" class="text-danger"></span>
+            </div>
             <br /><br />
 
             <div class="form-group">

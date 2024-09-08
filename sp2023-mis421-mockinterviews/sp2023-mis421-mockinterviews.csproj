@@ -54,7 +54,6 @@
     <Folder Include="Areas\InterviewManagement\Data\" />
     <Folder Include="Areas\InterviewManagement\Models\" />
     <Folder Include="Areas\InterviewManagement\Views\" />
-    <Folder Include="Areas\Reports\Controllers\" />
     <Folder Include="Areas\Reports\Data\" />
     <Folder Include="Areas\Reports\Models\" />
     <Folder Include="Areas\Reports\Views\" />

@@ -11,9 +11,14 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 
         public GenericSignupDbService(ISignupDbContext context)
         {
-            _context = context;
-            _dbSet = _context.Set<T>();
-        }
+            _context = context ?? throw new ArgumentNullException(nameof(context), "Database context cannot be null.");
+            _dbSet = context.Set<T>();
+
+            if (_dbSet == null)
+            {
+                throw new InvalidOperationException($"Database set '{typeof(T).Name}' has not been initialized.");
+            }
+        }   
 
         public async Task<IEnumerable<T>> GetAllAsync()
         {

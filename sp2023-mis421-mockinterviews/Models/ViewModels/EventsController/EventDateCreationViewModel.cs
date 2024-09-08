@@ -1,6 +1,6 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
-namespace sp2023_mis421_mockinterviews.Models.ViewModels
+namespace sp2023_mis421_mockinterviews.Models.ViewModels.EventsController
 {
     public class EventDateCreationViewModel
     {

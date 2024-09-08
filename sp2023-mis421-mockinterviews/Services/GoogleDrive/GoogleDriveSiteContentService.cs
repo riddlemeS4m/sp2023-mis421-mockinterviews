@@ -9,10 +9,14 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
     {
         private readonly string _folderId;
         private readonly DriveService _driveClient;
-        public GoogleDriveSiteContentService(string folderId, DriveService driveClient)
+        private readonly ILogger<GoogleDriveSiteContentService> _logger;
+        public GoogleDriveSiteContentService(string folderId, 
+            DriveService driveClient, 
+            ILogger<GoogleDriveSiteContentService> logger)
         {
             _folderId = folderId;
             _driveClient = driveClient;
+            _logger = logger;
         }
 
         public async Task<(Google.Apis.Drive.v3.Data.File, MemoryStream)> GetOneFile(string fileId, bool download = false)
@@ -36,12 +40,12 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (file == null)
             {
-                Console.WriteLine($"Did not find file with id '{fileId}'");
+                _logger.LogWarning("Did not find file with id '{query}'", fileId);
                 return (null, null);
             }
             else
             {
-                Console.WriteLine($"File with id '{fileId}' found.");
+                _logger.LogInformation("Found file with id '{query}'", fileId);
                 return (file, stream);
             }
         }
@@ -52,12 +56,12 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (files == null || files.Count == 0)
             {
-                Console.WriteLine($"{nameof(files)} was empty.");
+                _logger.LogWarning("{name} was empty", nameof(files));
                 return idList;
             }
             else
             {
-                Console.WriteLine($"File ids parsed.");
+                _logger.LogInformation("File ids parsed");
                 foreach (var file in files)
                 {
                     idList.Add(file.Id);
@@ -81,12 +85,12 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (result.Files == null || result.Files.Count == 0)
             {
-                Console.WriteLine($"Did not find query '{query}'");
+                _logger.LogWarning("Did not find the required file for '{query}'", query);
                 return new List<Google.Apis.Drive.v3.Data.File>();
             }
             else
             {
-                Console.WriteLine($"Found query '{query}'");
+                _logger.LogInformation("Found the required file for '{query}'", query);
                 return result.Files;
             }
         }
@@ -164,7 +168,7 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
             {
                 var request = _driveClient.Files.Delete(fileId);
                 await request.ExecuteAsync();
-                Console.WriteLine($"File with id {fileId} was deleted successfully.");
+                _logger.LogInformation("File with id '{fileId}' was deleted successfully", fileId);
             }
             catch (Exception)
             {

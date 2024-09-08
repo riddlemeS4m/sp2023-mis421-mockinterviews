@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Constants;
-using sp2023_mis421_mockinterviews.Data.Contexts;
 using sp2023_mis421_mockinterviews.Data.Seeds;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
-using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Models.ViewModels.EventsController;
 using sp2023_mis421_mockinterviews.Services.SignupDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
@@ -21,114 +15,46 @@ namespace sp2023_mis421_mockinterviews.Controllers
     {
         private readonly ISignupDbContext _context;
         private readonly TimeslotService _timeslotService;
+        private readonly EventService _eventService;
         private readonly ILogger<EventDatesController> _logger;
+
         public EventDatesController(ISignupDbContext context,
             TimeslotService timeslotService,
+            EventService eventService,
             ILogger<EventDatesController> logger)
         {
             _context = context;
             _timeslotService = timeslotService;
+            _eventService = eventService;
             _logger = logger;
         }
 
         // GET: EventDates
         public async Task<IActionResult> Index()
         {
-              return _context.Events != null ? 
-                          View(await _context.Events.ToListAsync()) :
-                          Problem("Entity set 'MockInterviewDataDbContext.Event'  is null.");
+            _logger.LogInformation("Called {method} method...", nameof(Index));
+            return View(await _eventService.GetAllAsync());
         }
-
-        public async Task<IActionResult> EventStatistics()
-        {
-            var eventDates = await _context.Events.ToListAsync();
-
-            var participantCounts = new List<ParticipantCountPerDateViewModel>();
-
-            foreach (var eventDate in eventDates)
-            {
-                var studentCount = await _context.Interviews
-                    .Where(e => e.Timeslot.EventId == eventDate.Id)
-                    .Select(e => e.StudentId)
-                    .Distinct()
-                    .CountAsync();
-
-                var interviewerCount = await _context.InterviewerTimeslots
-                    //.Include(s => s.SignupInterviewer)
-                    .Where(s => s.Timeslot.EventId == eventDate.Id)
-                    .Select(s => s.InterviewerSignup.InterviewerId)
-                    .Distinct()
-                    .CountAsync();
-
-                var volunteerCount = await _context.VolunteerTimeslots
-                    .Where(v => v.Timeslot.EventId == eventDate.Id)
-                    .Select(v => v.StudentId)
-                    .Distinct()
-                    .CountAsync();
-
-                var countViewModel = new ParticipantCountPerDateViewModel
-                {
-                    EventDate = eventDate,
-                    StudentCount = studentCount,
-                    InterviewerCount = interviewerCount,
-                    VolunteerCount = volunteerCount
-                };
-
-                participantCounts.Add(countViewModel);
-            }
-
-            var uniqueStudentCount = await _context.Interviews
-                .Where(x => x.Timeslot.Event.IsActive)
-                .Select(e => e.StudentId)
-                .Distinct()
-                .CountAsync();
-
-            var uniqueInterviewerCount = await _context.InterviewerTimeslots
-                .Where(s => s.Timeslot.Event.IsActive)
-                .Select(s => s.InterviewerSignup.InterviewerId)
-                .Distinct()
-                .CountAsync();
-
-            var uniqueVolunteerCount = await _context.VolunteerTimeslots
-                .Where(v => v.Timeslot.Event.IsActive)
-                .Select(v => v.StudentId)
-                .Distinct()
-                .CountAsync();
-
-
-            var eventStatisticsVM = new EventStatisticsViewModel
-            {
-                EventStatistics = participantCounts,
-                TotalStudents = uniqueStudentCount,
-                TotalInterviewers = uniqueInterviewerCount,
-                TotalVolunteers = uniqueVolunteerCount
-            };
-
-            return View("EventStatistics", eventStatisticsVM);
-        }
-
 
         // GET: EventDates/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            if (id == null || _context.Events == null)
+            _logger.LogInformation("Called {method} method...", nameof(Details));
+
+            var @event = await _eventService.GetByIdAsync(id);
+
+            if (@event == null)
             {
                 return NotFound();
             }
 
-            var eventDate = await _context.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (eventDate == null)
-            {
-                return NotFound();
-            }
-
-            return View(eventDate);
+            return View(@event);
         }
 
         // GET: EventDates/Create
         public IActionResult Create()
         {
+            _logger.LogInformation("Getting initial {method} view", nameof(Create));
             return View();
         }
 
@@ -137,54 +63,59 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Date,Name,For221,IsActive")] Event eventDate, int MaxSignUps)
+        public async Task<IActionResult> Create([Bind("Id,Date,Name,For221,IsActive")] Event EventDate, int MaxSignUps)
         {
-            if (ModelState.IsValid)
+            _logger.LogInformation("{method} method was called with a body...", nameof(Create));
+
+            var vm = new EventDateCreationViewModel();
+
+            var value = GetFor221Value(Request.Form);
+
+            if(value < 0)
             {
-                // Check if both checkboxes are selected
-                bool isFor221True = Request.Form["For221True"].Count > 0;
-                bool isFor221False = Request.Form["For221False"].Count > 0;
-
-                // Set the value of the "For221" field based on the checkboxes
-                if (isFor221True && isFor221False)
-                {
-                    eventDate.For221 = For221.b;
-                }
-                else if (isFor221True)
-                {
-                    eventDate.For221 = For221.y;
-                }
-                else if (isFor221False)
-                {
-                    eventDate.For221 = For221.n;
-                }
-
-                _context.Add(eventDate);
-                await _context.SaveChangesAsync();
-
-                TimeslotSeed.MaxSignups = MaxSignUps;
-                await TimeslotSeed.SeedTimeslots(_timeslotService, eventDate);
-           
-                return RedirectToAction("Index","EventDates");
+                ModelState.AddModelError("EventDate.For221", "Please indicate whether the event is for 221.");
+                vm.EventDate = EventDate;
+                return View(vm);
             }
 
-            return View(eventDate);
+            if (!ModelState.IsValid)
+            {
+                vm.EventDate = EventDate;
+                return View(vm);
+            }
+
+            EventDate.For221 = (For221)For221Constants.GetFor221Int(value);
+
+            var attempt = await _eventService.AddAsync(EventDate);
+
+            if(attempt == null)
+            {
+                return NotFound();
+            }
+
+            TimeslotSeed.MaxSignups = MaxSignUps;
+            await TimeslotSeed.SeedTimeslots(_timeslotService, EventDate);
+        
+            return RedirectToAction("Index","EventDates");
         }
 
         // GET: EventDates/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            //if (id == null || _context.EventDate == null)
-            //{
-            //    return NotFound();
-            //}
-
-            var eventDate = await _context.Events.FindAsync(id);
-            if (eventDate == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            return View(eventDate);
+
+            _logger.LogInformation("Getting initial {method} view...", nameof(Edit));
+            var @event = await _eventService.GetByIdAsync(id);
+
+            if (@event == null)
+            {
+                return NotFound();
+            }
+
+            return View(@event);
         }
 
         // POST: EventDates/Edit/5
@@ -192,69 +123,63 @@ namespace sp2023_mis421_mockinterviews.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Name,IsActive")] Event eventDate)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Date,Name,IsActive")] Event @event)
         {
-            if (id != eventDate.Id)
+            _logger.LogInformation("{method} method was called with a body...", nameof(Edit));
+
+            if (id != @event.Id)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                try
-                {
-                    bool isFor221True = Request.Form["For221True"].Count > 0;
-                    bool isFor221False = Request.Form["For221False"].Count > 0;
-
-                    // Set the value of the "For221" field based on the checkboxes
-                    if (isFor221True && isFor221False)
-                    {
-                        eventDate.For221 = For221.b;
-                    }
-                    else if (isFor221True)
-                    {
-                        eventDate.For221 = For221.y;
-                    }
-                    else if (isFor221False)
-                    {
-                        eventDate.For221 = For221.n;
-                    }
-
-                    _context.Update(eventDate);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!EventDateExists(eventDate.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction("Index","EventDates");
+                return View(@event);
             }
-            return View(eventDate);
+
+            var value = GetFor221Value(Request.Form);
+
+            if(value < 0)
+            {
+                ModelState.AddModelError("", "Please check indicate whether the event is for 221.");
+                return View(@event);
+            }
+
+            @event.For221 = (For221)For221Constants.GetFor221Int(value);
+
+            try
+            {
+                var attempt = await _eventService.UpdateAsync(@event);
+
+                if(attempt == null)
+                {
+                    return NotFound();
+                }
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!await EventDateExists(@event.Id))
+                {
+                    return NotFound();
+                }
+            }
+
+            return RedirectToAction("Index","EventDates");
         }
 
         // GET: EventDates/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            //if (id == null || _context.EventDate == null)
-            //{
-            //    return NotFound();
-            //}
+            _logger.LogInformation("Called {method} method...", nameof(Delete));
 
-            var eventDate = await _context.Events
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (eventDate == null)
+            var @event = await _eventService.GetByIdAsync(id);
+
+            if (@event == null)
             {
                 return NotFound();
             }
 
-            return View(eventDate);
+            return View(@event);
         }
 
         // POST: EventDates/Delete/5
@@ -262,23 +187,51 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Events == null)
+            _logger.LogInformation("Finalizing event deletion...");
+
+            var @event = await _eventService.GetByIdAsync(id);
+
+            if (@event != null)
             {
-                return Problem("Entity set 'MockInterviewDataDbContext.Event'  is null.");
-            }
-            var eventDate = await _context.Events.FindAsync(id);
-            if (eventDate != null)
-            {
-                _context.Events.Remove(eventDate);
+                var deleted = await _eventService.DeleteAsync(@event);
+
+                if(!deleted)
+                {
+                    return NotFound();
+                }
             }
             
-            await _context.SaveChangesAsync();
-            return RedirectToAction("Index", "Timeslots");
+            return RedirectToAction("Index", "EventDates");
         }
 
-        private bool EventDateExists(int id)
+        private async Task<bool> EventDateExists(int id)
         {
-          return (_context.Events?.Any(e => e.Id == id)).GetValueOrDefault();
+            var exists = await _eventService.GetByIdAsync(id);
+            return exists != null;  
+            //return (_context.Events?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        private static int GetFor221Value(IFormCollection form)
+        {
+            bool isFor221True = form["For221True"].Count > 0;
+            bool isFor221False = form["For221False"].Count > 0;
+
+            if (isFor221True && isFor221False)
+            {
+                return (int)For221.b;
+            }
+            else if (isFor221True)
+            {
+                return (int)For221.y;
+            }
+            else if (isFor221False)
+            {
+                return (int)For221.n;
+            }
+            else
+            {
+                return -1;
+            }
         }
     }
 }
