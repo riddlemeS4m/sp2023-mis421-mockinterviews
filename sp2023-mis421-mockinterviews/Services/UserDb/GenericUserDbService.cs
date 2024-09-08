@@ -2,14 +2,14 @@ using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
 
-namespace sp2023_mis421_mockinterviews.Services.SignupDb
+namespace sp2023_mis421_mockinterviews.Services.UserDb
 {
-    public class GenericSignupDbService<T> : IAccessData<T> where T : class
+    public class GenericUserDbService<T> : IAccessData<T> where T : class
     {
-        protected readonly ISignupDbContext _context;
+        protected readonly IUserDbContext _context;
         protected readonly DbSet<T> _dbSet;
 
-        public GenericSignupDbService(ISignupDbContext context)
+        public GenericUserDbService(IUserDbContext context)
         {
             _context = context;
             _dbSet = _context.Set<T>();

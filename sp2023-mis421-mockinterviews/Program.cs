@@ -11,6 +11,9 @@ using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 using sp2023_mis421_mockinterviews.Services.SignalR;
 using Microsoft.Extensions.Caching.Memory;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
+using sp2023_mis421_mockinterviews.Services.UserDb;
+using sp2023_mis421_mockinterviews.Services.SignupDb;
 
 namespace sp2023_mis421_mockinterviews
 {
@@ -136,6 +139,47 @@ namespace sp2023_mis421_mockinterviews
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
                 var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
                 return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new InterviewService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new SettingsService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new TimeslotService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new EventService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new InterviewerSignupService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new InterviewerLocationService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
+                return new InterviewerTimeslotService(dbContext);
+            });
+
+            services.AddScoped(serviceProvider => {
+                var dbContext = serviceProvider.GetRequiredService<IUserDbContext>();
+                var userManager = serviceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+                return new UserService(dbContext, userManager);
             });
 
             
