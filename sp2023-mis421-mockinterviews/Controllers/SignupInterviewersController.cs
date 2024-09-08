@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Identity;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Services.SignalR;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

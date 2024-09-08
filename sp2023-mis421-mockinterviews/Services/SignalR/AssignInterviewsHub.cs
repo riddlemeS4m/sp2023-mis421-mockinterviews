@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
-namespace sp2023_mis421_mockinterviews
+namespace sp2023_mis421_mockinterviews.Services.SignalR
 {
     public class AssignInterviewsHub : Hub
     {

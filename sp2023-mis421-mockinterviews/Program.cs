@@ -9,6 +9,7 @@ using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
+using sp2023_mis421_mockinterviews.Services.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace sp2023_mis421_mockinterviews

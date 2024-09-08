@@ -27,6 +27,7 @@ using System.Globalization;
 using System.Text;
 using Microsoft.AspNetCore.SignalR;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
+using sp2023_mis421_mockinterviews.Services.SignalR;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

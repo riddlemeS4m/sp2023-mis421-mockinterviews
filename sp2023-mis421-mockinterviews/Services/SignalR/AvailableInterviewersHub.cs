@@ -2,7 +2,7 @@
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 
-namespace sp2023_mis421_mockinterviews
+namespace sp2023_mis421_mockinterviews.Services.SignalR
 {
     public class AvailableInterviewersHub : Hub
     {
