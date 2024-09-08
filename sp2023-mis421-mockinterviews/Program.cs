@@ -253,7 +253,7 @@ namespace sp2023_mis421_mockinterviews
                 var loggerFactory = scope.ServiceProvider.GetRequiredService<ILoggerFactory>();
                 var logger = loggerFactory.CreateLogger<Program>();
 
-                logger.LogWarning("Checking for required config vars...");
+                logger.LogInformation("Checking for required config vars...");
 
                 try
                 {
