@@ -1,4 +1,5 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Services.SignupDb;
 using System.Globalization;
 
 namespace sp2023_mis421_mockinterviews.Data.Seeds
@@ -31,22 +32,50 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
         public static readonly bool[] Student = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
         public static readonly bool[] Interviewer = { false, false, true, false, true, false, true, false, false, false, true, false, true, false, true, false, false, false };
 
-        public static List<Timeslot> SeedTimeslots(List<Event> dates)
+        public static async Task SeedTimeslots(EventService eventService, TimeslotService timeslotService)
         {
-            List<Timeslot> timeslots = new List<Timeslot>();
+            var dates = await eventService.GetAllAsync();
+            
+            if (dates.Any())
+            {
+                var times = await timeslotService.GetAllAsync();
+                var timeslots = SeedTimeslots(dates);
 
-            foreach (Event date in dates)
+                foreach (var timeslot in timeslots)
+                {
+                    if (!times.Any(x => x.Time.TimeOfDay == timeslot.Time.TimeOfDay && x.Event.Date == timeslot.Event.Date))
+                    {
+                        await timeslotService.AddAsync(timeslot);
+                    }
+                }
+            }
+        }
+
+        public static async Task SeedTimeslots(TimeslotService timeslotService, Event theEvent)
+        {
+            var timeslots = SeedTimeslots(new List<Event> { theEvent });
+
+            await timeslotService.AddRange(timeslots);
+        }
+
+        private static List<Timeslot> SeedTimeslots(IEnumerable<Event> dates)
+        {
+            var timeslots = new List<Timeslot>();
+
+            foreach (var date in dates)
             {
                 for (int i = 0; i < Times.Length; i++)
                 {
-                    Timeslot timeslot = new Timeslot();
-                    timeslot.Time = DateTime.ParseExact(Times[i], "h:mm tt", CultureInfo.InvariantCulture);
-                    timeslot.Event = date;
-                    timeslot.EventId = date.Id;
-                    timeslot.IsVolunteer = true;
-                    timeslot.IsInterviewer = Interviewer[i];
-                    timeslot.IsStudent = Student[i];
-                    timeslot.MaxSignUps = MaxSignups;
+                    var timeslot = new Timeslot()
+                    {
+                        Time = DateTime.ParseExact(Times[i], "h:mm tt", CultureInfo.InvariantCulture),
+                        Event = date,
+                        EventId = date.Id,
+                        IsVolunteer = true,
+                        IsInterviewer = Interviewer[i],
+                        IsStudent = Student[i],
+                        MaxSignUps = MaxSignups
+                    };
                     timeslots.Add(timeslot);
                 }
             }

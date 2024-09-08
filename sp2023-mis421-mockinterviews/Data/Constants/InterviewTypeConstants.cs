@@ -14,9 +14,20 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Text = Behavioral, Value = Behavioral },
-                new SelectListItem { Text = Technical, Value = Technical },
-                new SelectListItem { Text = Case, Value = Case }
+                new() { Text = Behavioral, Value = Behavioral },
+                new() { Text = Technical, Value = Technical },
+                new() { Text = Case, Value = Case }
+            };
+        }
+
+        public static string GetInterviewTypeText(InterviewTypes? interviewType)
+        {
+            return interviewType switch
+            {
+                InterviewTypes.Behavioral => Behavioral,
+                InterviewTypes.Technical => Technical,
+                InterviewTypes.Case => Case,
+                _ => string.Empty
             };
         }
     }

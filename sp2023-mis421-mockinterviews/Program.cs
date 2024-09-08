@@ -1,16 +1,15 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.Extensions.Caching.Memory;
 using Google.Apis.Drive.v3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using SendGrid;
-using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 using sp2023_mis421_mockinterviews.Services.SignalR;
-using Microsoft.Extensions.Caching.Memory;
-using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Services.UserDb;
 using sp2023_mis421_mockinterviews.Services.SignupDb;
 using sp2023_mis421_mockinterviews.Data.Seeds;
@@ -71,7 +70,7 @@ namespace sp2023_mis421_mockinterviews
             resumesFolderId = configuration[$"{googleDriveFolderPrefix}Resumes"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}Resumes' not stored yet.");
             pfpsFolderId = configuration[$"{googleDriveFolderPrefix}PFPs"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}PFPs' not stored yet.");
 
-            services.AddDbContext<UserDataDbContext>(options =>
+            services.AddDbContext<IUserDbContext, UserDataDbContext>(options =>
                 options.UseSqlServer(userDataConnectionString),
                 ServiceLifetime.Scoped);
 
@@ -84,7 +83,7 @@ namespace sp2023_mis421_mockinterviews
             //update-database -context userdatadbcontext -startupproject sp2023-mis421-mockinterviews
             //this is to account for using two different database sets for the two different environments
 
-            services.AddDbContext<MockInterviewDataDbContext>(options =>
+            services.AddDbContext<ISignupDbContext, MockInterviewDataDbContext>(options =>
                 options.UseSqlServer(mockInterviewDataConnectionString),
                 ServiceLifetime.Scoped);
 
@@ -258,15 +257,19 @@ namespace sp2023_mis421_mockinterviews
 
                 try
                 {
-                    var dbContext = scope.ServiceProvider.GetRequiredService<MockInterviewDataDbContext>();
+                    var dbContext = scope.ServiceProvider.GetRequiredService<ISignupDbContext>();
                     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
                     var driveService = scope.ServiceProvider.GetRequiredService<GoogleDriveSiteContentService>();
+                    var settingsService = scope.ServiceProvider.GetRequiredService<SettingsService>();
+                    var timeslotService = scope.ServiceProvider.GetRequiredService<TimeslotService>();
+                    var eventService = scope.ServiceProvider.GetRequiredService<EventService>();
+
 
                     await UserDbContextSeed.SeedRolesAsync(roleManager);
                     await UserDbContextSeed.SeedSuperAdminAsync(userManager, adminPwd);
-                    await MockInterviewDbContextSeed.SeedTimeslots(dbContext);
-                    await MockInterviewDbContextSeed.SeedGlobalConfigVars(dbContext);
+                    await TimeslotSeed.SeedTimeslots(eventService, timeslotService);
+                    await SettingsSeed.SeedSettings(settingsService);
 
                     var testGoogleDrive = new GoogleDriveServiceSeed(driveService, dbContext);
                     await testGoogleDrive.Test();

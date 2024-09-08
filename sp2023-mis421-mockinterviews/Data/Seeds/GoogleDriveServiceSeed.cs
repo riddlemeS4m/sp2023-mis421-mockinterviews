@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 
@@ -14,8 +15,8 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
         private const string ParkingPassFilePath = "wwwroot/lib/GuestParking_Spring2024.pdf";
         private const string ManualFilePath = "wwwroot/lib/MockInterviewManual_Spring2024.docx";
         private readonly GoogleDriveSiteContentService _driveService;
-        private readonly MockInterviewDataDbContext _context;
-        public GoogleDriveServiceSeed(GoogleDriveSiteContentService siteContentDriveService, MockInterviewDataDbContext context)
+        private readonly ISignupDbContext _context;
+        public GoogleDriveServiceSeed(GoogleDriveSiteContentService siteContentDriveService, ISignupDbContext context)
         {
             _driveService = siteContentDriveService;
             _context = context;

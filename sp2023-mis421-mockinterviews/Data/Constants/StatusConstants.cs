@@ -17,11 +17,11 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Text = Default, Value = Default },
-                new SelectListItem { Text = CheckedIn, Value = CheckedIn },
-                new SelectListItem { Text = Ongoing, Value = Ongoing },
-                new SelectListItem { Text = Completed, Value = Completed },
-                new SelectListItem { Text = NoShow, Value = NoShow },
+                new() { Text = Default, Value = Default },
+                new() { Text = CheckedIn, Value = CheckedIn },
+                new() { Text = Ongoing, Value = Ongoing },
+                new() { Text = Completed, Value = Completed },
+                new() { Text = NoShow, Value = NoShow },
             };
         }
 
@@ -29,9 +29,9 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Text = Default, Value = Default },
-                new SelectListItem { Text = CheckedIn, Value = CheckedIn },
-                new SelectListItem { Text = NoShow, Value = NoShow },
+                new() { Text = Default, Value = Default },
+                new() { Text = CheckedIn, Value = CheckedIn },
+                new() { Text = NoShow, Value = NoShow },
             };
 
         }
@@ -39,10 +39,23 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         {
             return new List<SelectListItem>
             {
-                new SelectListItem { Text = Completed, Value = Completed },
-                new SelectListItem { Text = NoShow, Value = NoShow },
+                new() { Text = Completed, Value = Completed },
+                new() { Text = NoShow, Value = NoShow },
             };
         }
+
+        public static string GetStatusText(Statuses? status)
+        {
+            return status switch
+            {
+                Statuses.Default => Default,
+                Statuses.CheckedIn => CheckedIn,
+                Statuses.Ongoing => Ongoing,
+                Statuses.Completed => Completed,
+                Statuses.NoShow => NoShow,
+                _ => string.Empty,
+            };
+        }  
 
         public enum Statuses
         {

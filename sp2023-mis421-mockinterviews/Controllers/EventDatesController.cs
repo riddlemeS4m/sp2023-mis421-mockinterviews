@@ -9,19 +9,26 @@ using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Data.Contexts;
 using sp2023_mis421_mockinterviews.Data.Seeds;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Services.SignupDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     [Authorize(Roles = RolesConstants.AdminRole)]
     public class EventDatesController : Controller
     {
-        private readonly MockInterviewDataDbContext _context;
-
-        public EventDatesController(MockInterviewDataDbContext context)
+        private readonly ISignupDbContext _context;
+        private readonly TimeslotService _timeslotService;
+        private readonly ILogger<EventDatesController> _logger;
+        public EventDatesController(ISignupDbContext context,
+            TimeslotService timeslotService,
+            ILogger<EventDatesController> logger)
         {
             _context = context;
+            _timeslotService = timeslotService;
+            _logger = logger;
         }
 
         // GET: EventDates
@@ -155,19 +162,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 _context.Add(eventDate);
                 await _context.SaveChangesAsync();
 
-                var dates = new List<Event>
-                {
-                    eventDate
-                };
-
                 TimeslotSeed.MaxSignups = MaxSignUps;
-                var timeslots = TimeslotSeed.SeedTimeslots(dates);
-
-                foreach (Timeslot timeslot in timeslots)
-                {
-                    _context.Add(timeslot);
-                    await _context.SaveChangesAsync();
-                }
+                await TimeslotSeed.SeedTimeslots(_timeslotService, eventDate);
            
                 return RedirectToAction("Index","EventDates");
             }
