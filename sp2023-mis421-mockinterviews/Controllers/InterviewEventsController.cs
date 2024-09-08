@@ -14,7 +14,6 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SendGrid.Helpers.Mail;
 using SendGrid;
-using sp2023_mis421_mockinterviews.Data;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
@@ -28,6 +27,7 @@ using System.Text;
 using Microsoft.AspNetCore.SignalR;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
 using sp2023_mis421_mockinterviews.Services.SignalR;
+using sp2023_mis421_mockinterviews.Data.Contexts;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

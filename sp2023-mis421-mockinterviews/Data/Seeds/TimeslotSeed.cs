@@ -1,7 +1,7 @@
 ﻿using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using System.Globalization;
 
-namespace sp2023_mis421_mockinterviews.Data.Access
+namespace sp2023_mis421_mockinterviews.Data.Seeds
 {
     //not really a constant class
     //probably should have a seed directory

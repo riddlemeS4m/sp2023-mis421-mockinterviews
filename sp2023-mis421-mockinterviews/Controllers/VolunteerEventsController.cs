@@ -1,26 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
 using SendGrid;
-using sp2023_mis421_mockinterviews.Data;
+using System.Globalization;
+using System.Text;
+using System.Security.Claims;
+using sp2023_mis421_mockinterviews.Interfaces.IServices;
+using sp2023_mis421_mockinterviews.Data.Seeds;
+using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Data.Constants;
+using sp2023_mis421_mockinterviews.Data.Access.Emails;
+using sp2023_mis421_mockinterviews.Data.Access.Reports;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
-using sp2023_mis421_mockinterviews.Data.Constants;
-using sp2023_mis421_mockinterviews.Data.Access;
-using Microsoft.Extensions.Hosting;
-using sp2023_mis421_mockinterviews.Data.Access.Emails;
-using System.Globalization;
-using System.Text;
-using sp2023_mis421_mockinterviews.Interfaces.IServices;
+
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {

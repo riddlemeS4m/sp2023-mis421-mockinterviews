@@ -2,7 +2,7 @@
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using System.Text;
-using sp2023_mis421_mockinterviews.Data.Access;
+using sp2023_mis421_mockinterviews.Data.Seeds;
 
 namespace sp2023_mis421_mockinterviews.Interfaces.IServices
 {

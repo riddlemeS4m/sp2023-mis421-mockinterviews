@@ -1,8 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using sp2023_mis421_mockinterviews.Data.Contexts;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 
-namespace sp2023_mis421_mockinterviews.Data.Access
+namespace sp2023_mis421_mockinterviews.Data.Seeds
 {
     public class GoogleDriveServiceSeed
     {

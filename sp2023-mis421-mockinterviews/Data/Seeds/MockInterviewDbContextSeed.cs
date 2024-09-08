@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using sp2023_mis421_mockinterviews.Data.Contexts;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
-namespace sp2023_mis421_mockinterviews.Data.Access
+namespace sp2023_mis421_mockinterviews.Data.Seeds
 {
     public class MockInterviewDbContextSeed
     {

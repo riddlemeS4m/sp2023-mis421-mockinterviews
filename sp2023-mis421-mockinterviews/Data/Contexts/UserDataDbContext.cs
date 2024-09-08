@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 
-namespace sp2023_mis421_mockinterviews.Data
+namespace sp2023_mis421_mockinterviews.Data.Contexts
 {
     public class UserDataDbContext : IdentityDbContext<ApplicationUser>, IUserDbContext
     {
@@ -51,6 +51,6 @@ namespace sp2023_mis421_mockinterviews.Data
         public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
             return base.SaveChangesAsync(cancellationToken);
-        }        
+        }
     }
 }
