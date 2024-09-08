@@ -1,6 +1,7 @@
 ﻿using Google.Apis.Drive.v3;
 using Google.Apis.Upload;
-using sp2023_mis421_mockinterviews.Interfaces;
+using sp2023_mis421_mockinterviews.Interfaces.IServices;
+using sp2023_mis421_mockinterviews.Interfaces.IUtilities;
 
 namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 {

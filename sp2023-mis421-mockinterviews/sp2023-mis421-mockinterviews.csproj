@@ -33,4 +33,8 @@
     <PackageReference Include="sendgrid" Version="9.29.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Interfaces\IDbContext\" />
+  </ItemGroup>
+
 </Project>

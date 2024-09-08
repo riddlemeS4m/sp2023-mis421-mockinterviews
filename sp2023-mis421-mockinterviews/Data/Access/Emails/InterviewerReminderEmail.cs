@@ -1,4 +1,4 @@
-﻿using sp2023_mis421_mockinterviews.Interfaces;
+﻿using sp2023_mis421_mockinterviews.Interfaces.IServices;
 
 namespace sp2023_mis421_mockinterviews.Data.Access.Emails
 {

@@ -1,6 +1,6 @@
 ﻿using Google.Apis.Drive.v3;
 
-namespace sp2023_mis421_mockinterviews.Interfaces
+namespace sp2023_mis421_mockinterviews.Interfaces.IServices
 {
     public interface IGoogleDrive
     {

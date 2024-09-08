@@ -118,8 +118,26 @@ namespace sp2023_mis421_mockinterviews
                 });
             });
 
-            
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                return new GoogleDriveSiteContentService(siteContentFolderId, driveService);
+            });
 
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                return new GoogleDriveResumeService(resumesFolderId, driveService);
+            });
+
+            services.AddScoped(serviceProvider =>
+            {
+                var driveService = serviceProvider.GetRequiredService<DriveService>();
+                var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
+                return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
+            });
+
+            
             services.AddSignalR();
 
             services.AddHttpClient();

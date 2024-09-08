@@ -1,12 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
-using sp2023_mis421_mockinterviews.Interfaces;
+using sp2023_mis421_mockinterviews.Interfaces.IReports;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 
 namespace sp2023_mis421_mockinterviews.Data.Access
 {
-	public class ControlBreakVolunteer : IControlBreakVolunteers
+    public class ControlBreakVolunteer : IControlBreakVolunteers
 	{
 		private readonly UserManager<ApplicationUser> _userManager;
 		public ControlBreakVolunteer(UserManager<ApplicationUser> userManager)

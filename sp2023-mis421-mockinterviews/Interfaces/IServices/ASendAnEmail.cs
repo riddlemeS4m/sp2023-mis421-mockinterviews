@@ -4,7 +4,7 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using System.Text;
 using sp2023_mis421_mockinterviews.Data.Access;
 
-namespace sp2023_mis421_mockinterviews.Interfaces
+namespace sp2023_mis421_mockinterviews.Interfaces.IServices
 {
     public abstract class ASendAnEmail
     {
@@ -36,7 +36,7 @@ namespace sp2023_mis421_mockinterviews.Interfaces
 
             var msg = MailHelper.CreateSingleEmail(FromEmail, ToEmail, Subject, PlainTextContent, HTMLContent);
 
-            if(base64CalendarContent != null)
+            if (base64CalendarContent != null)
             {
                 foreach (string Event in base64CalendarContent)
                 {
