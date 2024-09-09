@@ -511,7 +511,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> Edit(int[] SelectedEventIds1, int[] SelectedEventIds2, int[] SelectedEventIds3, int[] SelectedEventIds4,
             [Bind("Id,InterviewerId,IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] InterviewerSignup signupInterviewer, bool Lunch)
         {
-            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null || Lunch == null)
+            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null)
             {
                 return NotFound();
             }
@@ -635,17 +635,29 @@ namespace sp2023_mis421_mockinterviews.Controllers
             //add any new timeslots that were checked
             foreach (int id in SelectedEventIds)
             {
-                var timeslot = new InterviewerTimeslot
+                var bothTimeslots = new List<InterviewerTimeslot>();
+                var timeslotOne = new InterviewerTimeslot
                 {
                     TimeslotId = id,
                     InterviewerSignupId = signupInterviewer.Id
                 };
-
-                if(!existingSits.Contains(timeslot))
+                var timeslotTwo = new InterviewerTimeslot
                 {
-                    _context.Add(timeslot);
+                    TimeslotId = id + 1,
+                    InterviewerSignupId = signupInterviewer.Id
+                };
+
+                bothTimeslots.Add(timeslotOne);
+                bothTimeslots.Add(timeslotTwo);
+
+                foreach(var timeslot in bothTimeslots)
+                {
+                    if (!existingSits.Contains(timeslot))
+                    {
+                        _context.Add(timeslot);
+                    }
+                    await _context.SaveChangesAsync();
                 }
-                await _context.SaveChangesAsync();
             }
 
             //remove any timeslots that were unchecked
@@ -718,7 +730,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         public async Task<IActionResult> CreateForInterviewer(int[] SelectedEventIds1, int[] SelectedEventIds2, int[] SelectedEventIds3, int[] SelectedEventIds4,
             [Bind("IsTechnical,IsBehavioral,IsCase,IsVirtual,InPerson")] InterviewerSignup signupInterviewer, bool Lunch, string InterviewerId)
         {
-            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null || Lunch == null)
+            if((SelectedEventIds1 == null && SelectedEventIds2 == null && SelectedEventIds3 == null && SelectedEventIds4 == null) || signupInterviewer == null)
             {
                 return NotFound();
             }
@@ -850,11 +862,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     interviewtype = InterviewTypeConstants.Case;
                 }
 
-                if (Lunch == null)
-                {
-                    Lunch = false;
-                }
-
                 post = new InterviewerSignup
                 {
                     InterviewerId = InterviewerId,
@@ -900,21 +907,34 @@ namespace sp2023_mis421_mockinterviews.Controllers
             var emailTimes = new List<InterviewerTimeslot>();
             foreach (int id in SelectedEventIds)
             {
+                var bothTimeslots = new List<InterviewerTimeslot>();
 
-                var timeslot = new InterviewerTimeslot
+                var timeslotOne = new InterviewerTimeslot
                 {
                     TimeslotId = id,
                     InterviewerSignupId = post.Id
                 };
 
+                var timeslotTwo = new InterviewerTimeslot
+                {
+                    TimeslotId = id + 1,
+                    InterviewerSignupId = post.Id
+                };
+
+                bothTimeslots.Add(timeslotOne);
+                bothTimeslots.Add(timeslotTwo);
+
                 if (ModelState.IsValid)
                 {
-                    _context.Add(timeslot);
+                    _context.AddRange(bothTimeslots);
                     await _context.SaveChangesAsync();
                 }
-                emailTimes.Add(timeslot);
+
+                emailTimes.Add(timeslotOne);
+                emailTimes.Add(timeslotTwo);
             }
 
+            //probably need to conditionally email if user is being signed up for first time
             //var sortedTimes = emailTimes
             //    .OrderBy(ve => ve.TimeslotId)
             //    .ToList();
@@ -935,7 +955,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             var signupInterviewerTimeslot = await _context.InterviewerTimeslots
                 .Include(s => s.InterviewerSignup)
-                .Include(s => s.Timeslot).ThenInclude(y => y.Event)
+                .Include(s => s.Timeslot)
+                .ThenInclude(y => y.Event)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
             if (signupInterviewerTimeslot == null)
@@ -1091,7 +1112,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [Authorize(Roles = RolesConstants.InterviewerRole + "," + RolesConstants.AdminRole)]
         public async Task<IActionResult> UserDeleteRangeConfirmed(int id)
         {
-            if(id == null || id == 0)
+            if(id == 0)
             {
                 return NotFound();
             }
