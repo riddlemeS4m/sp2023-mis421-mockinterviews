@@ -83,7 +83,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .ThenInclude(v => v.Event)
                     .Where(v => v.InterviewerTimeslot.InterviewerSignup.InterviewerId == userId 
                         && v.InterviewerTimeslot.Timeslot.Event.IsActive
-                        && v.Status != StatusConstants.Completed)
+                        && (v.Status != StatusConstants.Completed
+                        || v.Status != StatusConstants.NoShow
+                        || v.Status != StatusConstants.Excused))
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)

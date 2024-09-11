@@ -43,6 +43,7 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
                 .ThenInclude(j => j.Event)
                 .Where(i => i.Status != StatusConstants.Completed &&
                     i.Status != StatusConstants.NoShow &&
+                    i.Status != StatusConstants.Excused &&
                     i.Timeslot.Event.IsActive)
                 .OrderBy(i => i.TimeslotId)
                 .Take(numberOfInterviews)
