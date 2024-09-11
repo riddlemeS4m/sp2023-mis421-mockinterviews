@@ -1,33 +1,25 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
+﻿using System.Globalization;
+using System.Text;
 using System.Net.Sockets;
 using System.Security.Claims;
-using System.Security.Policy;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
-using SendGrid.Helpers.Mail;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
+using sp2023_mis421_mockinterviews.Models.ViewModels.InterviewsController;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
-using NuGet.Versioning;
-using Microsoft.AspNetCore.Razor.Language;
 using sp2023_mis421_mockinterviews.Data.Constants;
-using sp2023_mis421_mockinterviews.Data.Access;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
-using System.Globalization;
-using System.Text;
-using Microsoft.AspNetCore.SignalR;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
+using sp2023_mis421_mockinterviews.Services.UserDb;
+using sp2023_mis421_mockinterviews.Services.SignupDb;
 using sp2023_mis421_mockinterviews.Services.SignalR;
-using sp2023_mis421_mockinterviews.Data.Contexts;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
@@ -82,23 +74,35 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
     public class InterviewEventsController : Controller
     {
-        private readonly MockInterviewDataDbContext _context;
+        private readonly ISignupDbContext _context;
+        private readonly TimeslotService _timeslotService;
+        private readonly InterviewService _interviewService;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly UserService _userService;
         private readonly ISendGridClient _sendGridClient;
         private readonly IHubContext<AssignInterviewsHub> _hubContext;
         private readonly IHubContext<AvailableInterviewersHub> _hubContextInterviewer;
+        private readonly ILogger<InterviewEventsController> _logger;
 
-        public InterviewEventsController(MockInterviewDataDbContext context, 
+        public InterviewEventsController(ISignupDbContext context, 
+            TimeslotService timeslotService,
+            InterviewService interviewService,
             UserManager<ApplicationUser> userManager, 
+            UserService userService,
             ISendGridClient sendGridClient,
             IHubContext<AssignInterviewsHub> hubContext,
-            IHubContext<AvailableInterviewersHub> hubContextInterviewer)
+            IHubContext<AvailableInterviewersHub> hubContextInterviewer,
+            ILogger<InterviewEventsController> logger)
         {
             _context = context;
+            _timeslotService = timeslotService;
+            _interviewService = interviewService;
             _userManager = userManager;
+            _userService = userService;
             _sendGridClient = sendGridClient;
             _hubContext = hubContext;
             _hubContextInterviewer = hubContextInterviewer;
+            _logger = logger;
         }
 	    // adding a dummy comment bc I feel like it
         //--Dalton Wright, Fall 2023
@@ -1501,11 +1505,142 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
 
         [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> CreateForStudent()
+        {
+            var students = await _userService.GetUsersByRole(RolesConstants.StudentRole);
+            var studentList = new List<SelectListItem>();
+            foreach (var student in students)
+            {
+                studentList.Add(new SelectListItem
+                {
+                    Value = student.Id,
+                    Text = student.FirstName + " " + student.LastName
+                });
+            }
+
+            studentList.Sort((x, y) => string.Compare(x.Text, y.Text));
+
+            var timeslots = await _timeslotService.GetActiveTimeslotsByRole(true, false);
+            var timeslotsList = timeslots.ToList();
+
+            InterviewSignupByAdminViewModel model = new()
+            {
+                Timeslots = timeslotsList,
+                Events = timeslotsList.Select(x => x.Event).Distinct().ToList(),
+                Students = studentList,
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> CreateForStudent(int SelectedEventIds, string StudentId)
+        {
+            var students = await _userService.GetUsersByRole(RolesConstants.StudentRole);
+            var studentList = new List<SelectListItem>();
+            foreach (var student in students)
+            {
+                studentList.Add(new SelectListItem
+                {
+                    Value = student.Id,
+                    Text = student.FirstName + " " + student.LastName
+                });
+            }
+
+            studentList.Sort((x, y) => string.Compare(x.Text, y.Text));
+
+            var timeslots = await _timeslotService.GetActiveTimeslotsByRole(true, false);
+            var timeslotsList = timeslots.ToList();
+
+            int days = timeslotsList.Select(x => x.EventId)
+                .Distinct()
+                .Count();
+
+            var vm = new InterviewSignupByAdminViewModel()
+            {
+                Timeslots = timeslotsList,
+                Events = timeslotsList.Select(x => x.Event).Distinct().ToList(),
+                Students = studentList
+            };
+
+            if(SelectedEventIds == 0)
+            {
+                ModelState.AddModelError("StudentId","Please select a timeslot");
+                return View(vm);
+            }
+
+            if(string.IsNullOrEmpty(StudentId))
+            {
+                ModelState.AddModelError("StudentId", "Please select a student");
+                return View(vm);
+            }
+
+            var user = await _userService.GetByIdAsync(StudentId);
+
+            var interviewTypeTwo = InterviewTypeConstants.Technical;
+            if (user.Class == Classes.NotYetMIS|| user.Class == Classes.FirstSem)
+            {
+                interviewTypeTwo = InterviewTypeConstants.Behavioral;
+            }
+
+            var interviewEvents = new List<Interview>
+            {
+                new() 
+                {
+                    TimeslotId = SelectedEventIds,
+                    StudentId = StudentId,
+                    Status = StatusConstants.Default,
+                    Type = InterviewTypeConstants.Behavioral
+                },
+                new() 
+                {
+                    TimeslotId = SelectedEventIds + 1,
+                    StudentId = StudentId,
+                    Status = StatusConstants.Default,
+                    Type= interviewTypeTwo
+                }
+            };
+
+            await _interviewService.AddRange(interviewEvents);
+
+            // var emailTimes = new List<Interview>();
+            // List<string> calendarEvents = new();
+
+            // var newEvent = await _context.Interviews
+            //     .Include(v => v.Timeslot)
+            //     .ThenInclude(y => y.Event)
+            //     .Where(v => v.TimeslotId == SelectedEventIds)
+            //     .FirstOrDefaultAsync();
+            // emailTimes.Add(newEvent);
+            // newEvent = await _context.Interviews
+            //     .Include(v => v.Timeslot)
+            //     .ThenInclude(y => y.Event)
+            //     .Where(v => v.TimeslotId == SelectedEventIds + 1)
+            //     .FirstOrDefaultAsync();
+            // emailTimes.Add(newEvent);
+
+            // string interviewDetails = "";
+            // foreach (var interview in emailTimes)
+            // {
+            //     var plainBytes = Encoding.UTF8.GetBytes(CreateCalendarEvent(interview.Timeslot.Time, interview.Timeslot.Time.AddMinutes(30)));
+            //     string tempEvent = Convert.ToBase64String(plainBytes);
+            //     calendarEvents.Add(tempEvent);
+            //     interviewDetails += interview.ToString();
+            // }
+
+            // ASendAnEmail emailer = new StudentSignupEmail();
+            // await emailer.SendEmailAsync(_sendGridClient, "UA MIS Mock Interview Sign-Up Confirmation", student.Email, student.FirstName, interviewDetails, calendarEvents); ;
+
+            return RedirectToAction("Index", "InterviewEvents");
+        }
+
+        [Authorize(Roles = RolesConstants.AdminRole)]
         public async Task<IActionResult> StudentCheckIn(int id)
         {
-            Console.WriteLine($"Interviewee checked in. Interview Id: {id}");
+            _logger.LogInformation("Interviewee checked in. Interview Id: {id}", id);
 
-            if (id == null || _context.Interviews == null)
+            if (_context.Interviews == null)
             {
                 return BadRequest("Interview not found.");
             }

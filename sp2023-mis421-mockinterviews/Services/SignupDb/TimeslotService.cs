@@ -7,8 +7,11 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 {
     public class TimeslotService : GenericSignupDbService<Timeslot>
     {
-        public TimeslotService(ISignupDbContext context) : base(context)
+        private readonly ILogger<TimeslotService> _logger;
+        public TimeslotService(ISignupDbContext context,
+            ILogger<TimeslotService> logger) : base(context)
         {
+            _logger = logger;
         }
 
         /// <summary>
@@ -23,6 +26,53 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
                 .Where(x => x.Event.For221 != for221
                     && x.Event.IsActive)
                 .ToListAsync();
+        }
+
+        /// <summary>
+        ///     Returns enumerable list of timeslots for all active events.
+        /// </summary>
+        
+        public async Task<IEnumerable<Timeslot>> GetActiveTimeslots()
+        {
+            return await _dbSet
+                .Include(x => x.Event)
+                .Where(x => x.Event.IsActive)
+                .ToListAsync();
+        }
+
+        /// <summary>
+        ///     Parameters: bool isStudent, bool isInterviewer <br />
+        ///     Returns: enumerable list of timeslots for all active events based on role.
+        /// </summary>
+        
+        public async Task<IEnumerable<Timeslot>> GetActiveTimeslotsByRole(bool isStudent, bool isInterviewer)
+        {
+            _logger.LogInformation("Getting all active timeslots by role...");
+
+            if(isStudent)
+            {
+                _logger.LogInformation("Returning all active student timeslots...");
+                return await _dbSet
+                    .Include(x => x.Event)
+                    .Where(x => x.Event.IsActive && x.IsStudent)
+                    .ToListAsync();
+            }
+            else if(isInterviewer)
+            {
+                _logger.LogInformation("Returning all active interviewer timeslots...");
+                return await _dbSet
+                    .Include(x => x.Event)
+                    .Where(x => x.Event.IsActive && x.IsInterviewer)
+                    .ToListAsync();
+            }
+            else
+            {
+                _logger.LogInformation("Returning all active volunteer timeslots...");
+                return await _dbSet
+                    .Include(x => x.Event)
+                    .Where(x => x.Event.IsActive && x.IsVolunteer)
+                    .ToListAsync();
+            }
         }
     }
 }
