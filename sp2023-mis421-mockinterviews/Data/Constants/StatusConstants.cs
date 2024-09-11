@@ -12,6 +12,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
         public const string Ongoing = "Ongoing";
         public const string Completed = "Completed";
         public const string NoShow = "No Show";
+        public const string Excused = "Excused";
 
         public static List<SelectListItem> GetCompleteStatusOptions()
         {
@@ -22,6 +23,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 new() { Text = Ongoing, Value = Ongoing },
                 new() { Text = Completed, Value = Completed },
                 new() { Text = NoShow, Value = NoShow },
+                new() { Text = Excused, Value = Excused },
             };
         }
 
@@ -53,6 +55,7 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
                 Statuses.Ongoing => Ongoing,
                 Statuses.Completed => Completed,
                 Statuses.NoShow => NoShow,
+                Statuses.Excused => Excused,
                 _ => string.Empty,
             };
         }  
@@ -63,7 +66,8 @@ namespace sp2023_mis421_mockinterviews.Data.Constants
             CheckedIn,
             Ongoing,
             Completed,
-            NoShow
+            NoShow,
+            Excused
         }
     }
 }

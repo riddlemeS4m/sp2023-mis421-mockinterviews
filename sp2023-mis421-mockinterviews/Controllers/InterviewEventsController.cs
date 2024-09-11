@@ -176,6 +176,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .ThenInclude(j => j.Event)
                 .Where(i => i.Status != StatusConstants.Completed && 
                     i.Status != StatusConstants.NoShow && 
+                    i.Status != StatusConstants.Excused &&
                     i.Timeslot.Event.IsActive)
                 .OrderBy(i => i.TimeslotId)
                 .Take(maxsignups)
@@ -1944,7 +1945,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Include(i => i.Timeslot)
                 .ThenInclude(j => j.Event)
                 .Where(i => (i.Status == StatusConstants.Completed ||
-                    i.Status == StatusConstants.NoShow) &&
+                    i.Status == StatusConstants.NoShow ||
+                    i.Status == StatusConstants.Excused) &&
                     i.Timeslot.Event.IsActive)
                 .ToListAsync();
 
@@ -2245,7 +2247,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 .Select(x => x.FirstName + " " + x.LastName)
                 .FirstOrDefaultAsync();
 
-            if (newInterviewEvent.Status == StatusConstants.Completed || newInterviewEvent.Status == StatusConstants.NoShow)
+            if (newInterviewEvent.Status == StatusConstants.Completed || newInterviewEvent.Status == StatusConstants.NoShow || newInterviewEvent.Status == StatusConstants.Excused)
             {
                 studentname = "delete";
             }
