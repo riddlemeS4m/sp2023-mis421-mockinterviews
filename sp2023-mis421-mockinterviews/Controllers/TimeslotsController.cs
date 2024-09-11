@@ -1,31 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Constants;
-using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.UserDb;
-using sp2023_mis421_mockinterviews.Models.ViewModels;
+using sp2023_mis421_mockinterviews.Models.ViewModels.TimeslotsController;
+using sp2023_mis421_mockinterviews.Models.ViewModels.ReportsController;
+using sp2023_mis421_mockinterviews.Services.SignupDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     [Authorize(Roles = RolesConstants.AdminRole)]
     public class TimeslotsController : Controller
     {
-        private readonly MockInterviewDataDbContext _context;
+        private readonly ISignupDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly TimeslotService _timeslotService;
+        private readonly ILogger<TimeslotsController> _logger;
 
-        public TimeslotsController(MockInterviewDataDbContext context, 
-            UserManager<ApplicationUser> userManager)
+        public TimeslotsController(ISignupDbContext context, 
+            UserManager<ApplicationUser> userManager,
+            TimeslotService timeslotService,
+            ILogger<TimeslotsController> logger)
         {
             _context = context;
             _userManager = userManager;
+            _timeslotService = timeslotService;
+            _logger = logger;
         }
 
         // GET: Timeslots
@@ -58,83 +61,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
             };
 
             return View(viewModel);
-        }
-        public async Task<IActionResult> SignupReport()
-        {
-            var timeslots = await _context.Timeslots
-                .Include(t => t.Event)
-                .Where(x => x.Event.IsActive)
-                .ToListAsync();
-            var eventdates = await _context.Events
-                .Where(x => x.IsActive)
-                .ToListAsync();
-
-            var countlist = new List<ParticipantCountViewModel>();
-            foreach(Timeslot timeslot in timeslots)
-            {
-                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                countlist.Add(new ParticipantCountViewModel
-                {
-                    Timeslot = timeslot,
-                    StudentCount = studentCount,
-                    InterviewerCount = interviewerCount,
-                    VolunteerCount = volunteerCount
-                });
-            }
-
-            var viewModel = new TimeslotViewModel()
-            {
-                Timeslots = countlist,
-                EventDates = eventdates
-            };
-
-            return View("SignupReport", viewModel);
-        }
-
-        public async Task<IActionResult> AllocationReport()
-        {
-            var timeslots = await _context.Timeslots
-                .Include(t => t.Event)
-                .Where(x => x.Event.For221 == For221.n && 
-                    x.IsInterviewer && 
-                    x.Event.IsActive)
-                .ToListAsync();
-
-            var countlist = new List<ParticipantCountViewModel>();
-            foreach (Timeslot timeslot in timeslots)
-            {
-                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
-                countlist.Add(new ParticipantCountViewModel
-                {
-                    Timeslot = timeslot,
-                    StudentCount = studentCount,
-                    InterviewerCount = interviewerCount,
-                    VolunteerCount = volunteerCount,
-                    Difference = studentCount - interviewerCount
-                });
-            }
-
-            var top10underserved = countlist
-                .OrderByDescending(x => x.Difference)
-                .Take(10)
-                .ToList();
-
-            var top10available = countlist
-                .OrderByDescending(x => x.Difference)
-                .TakeLast(10)
-                .ToList();
-
-            var viewModel = new AllocationReportViewModel()
-            {
-                Top10Available = top10available,
-                Top10Underserved = top10underserved,
-            };
-
-            return View("AllocationReport", viewModel);
         }
 
         // GET: Timeslots/Details/5
@@ -335,7 +261,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> UpdateMaxTimeslots()
+        public IActionResult UpdateMaxTimeslots()
         {
             return View();
         }

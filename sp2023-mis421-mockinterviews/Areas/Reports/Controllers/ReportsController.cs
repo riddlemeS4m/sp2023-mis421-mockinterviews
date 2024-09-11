@@ -3,7 +3,9 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
+using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Models.ViewModels.ReportsController;
+using sp2023_mis421_mockinterviews.Models.ViewModels.TimeslotsController;
 using sp2023_mis421_mockinterviews.Services.SignupDb;
 
 namespace sp2023_mis421_mockinterviews.Areas.Reports.Controllers
@@ -95,6 +97,84 @@ namespace sp2023_mis421_mockinterviews.Areas.Reports.Controllers
             };
 
             return View("EventStatistics", eventStatisticsVM);
+        }
+
+        public async Task<IActionResult> SignupReport()
+        {
+            var timeslots = await _context.Timeslots
+                .Include(t => t.Event)
+                .Where(x => x.Event.IsActive)
+                .ToListAsync();
+            var eventdates = await _context.Events
+                .Where(x => x.IsActive)
+                .ToListAsync();
+
+            var countlist = new List<ParticipantCountViewModel>();
+            foreach(Timeslot timeslot in timeslots)
+            {
+                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                countlist.Add(new ParticipantCountViewModel
+                {
+                    Timeslot = timeslot,
+                    StudentCount = studentCount,
+                    InterviewerCount = interviewerCount,
+                    VolunteerCount = volunteerCount
+                });
+            }
+
+            var viewModel = new TimeslotViewModel()
+            {
+                Timeslots = countlist,
+                EventDates = eventdates
+            };
+
+            return View("SignupReport", viewModel);
+        }
+
+        public async Task<IActionResult> AllocationReport()
+        {
+            var timeslots = await _context.Timeslots
+                .Include(t => t.Event)
+                .Where(x => x.Event.For221 == For221.n && 
+                    x.IsInterviewer && 
+                    x.Event.IsActive)
+                .ToListAsync();
+
+            var countlist = new List<ParticipantCountViewModel>();
+            foreach (Timeslot timeslot in timeslots)
+            {
+                var studentCount = await _context.Interviews.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var volunteerCount = await _context.VolunteerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                var interviewerCount = await _context.InterviewerTimeslots.Where(x => x.TimeslotId == timeslot.Id).CountAsync();
+                countlist.Add(new ParticipantCountViewModel
+                {
+                    Timeslot = timeslot,
+                    StudentCount = studentCount,
+                    InterviewerCount = interviewerCount,
+                    VolunteerCount = volunteerCount,
+                    Difference = studentCount - interviewerCount
+                });
+            }
+
+            var top10underserved = countlist
+                .OrderByDescending(x => x.Difference)
+                .Take(10)
+                .ToList();
+
+            var top10available = countlist
+                .OrderByDescending(x => x.Difference)
+                .TakeLast(10)
+                .ToList();
+
+            var viewModel = new AllocationReportViewModel()
+            {
+                Top10Available = top10available,
+                Top10Underserved = top10underserved,
+            };
+
+            return View("AllocationReport", viewModel);
         }
     }
 }
