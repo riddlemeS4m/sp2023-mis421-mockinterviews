@@ -7,8 +7,11 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 {
     public class InterviewService : GenericSignupDbService<Interview>
     {
-        public InterviewService(ISignupDbContext context) : base(context)
+        private readonly ILogger<InterviewService> _logger;
+        public InterviewService(ISignupDbContext context,
+            ILogger<InterviewService> logger) : base(context)
         {
+            _logger = logger;
         }
 
         public async Task<Interview> GetByIdAsync(int id)

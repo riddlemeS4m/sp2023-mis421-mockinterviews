@@ -144,7 +144,8 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddScoped<InterviewService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new InterviewService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<InterviewService>>();
+                return new InterviewService(dbContext, logger);
             });
 
             services.AddScoped<SettingsService>(serviceProvider => {
@@ -154,7 +155,8 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddScoped<TimeslotService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new TimeslotService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<TimeslotService>>();
+                return new TimeslotService(dbContext, logger);
             });
 
             services.AddScoped<EventService>(serviceProvider => {
