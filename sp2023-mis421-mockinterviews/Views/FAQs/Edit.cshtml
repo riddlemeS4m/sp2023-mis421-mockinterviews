@@ -16,13 +16,13 @@
             <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="Q" class="control-label"></label>
-                <input asp-for="Q" class="form-control" />
+                <textarea asp-for="Q" class="form-control" placeholder="Type question here."></textarea>
                 <span asp-validation-for="Q" class="text-danger"></span>
             </div>
             <p></p>
             <div class="form-group">
                 <label asp-for="A" class="control-label"></label>
-                <input asp-for="A" class="form-control" />
+                <textarea asp-for="A" class="form-control" placeholder="Type answer here."></textarea>
                 <span asp-validation-for="A" class="text-danger"></span>
             </div>
             <p></p>

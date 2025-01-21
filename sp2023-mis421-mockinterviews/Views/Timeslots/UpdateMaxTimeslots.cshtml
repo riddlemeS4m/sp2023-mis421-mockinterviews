@@ -2,21 +2,33 @@
     ViewData["Title"] = "Update Duration";
 }
 
-<h1>Update the Maximum Number of Signups per Timeslot</h1>
+<h1>Update Max Signups</h1>
 
-<div class="row">
+<div id="center-everything" class="row">
     <div class="col-md-4">
-        <form asp-action="UpdateMaxSignupsConfirmed">
-            <div class="form-group">
-                <label for="maxsignups">New Duration:</label>
-                <input type="number" class="form-control" id="maxsignups" name="maxsignups" />
-            </div>
-            <button type="submit" class="btn btn-primary">Update</button>
-        </form>
+        <div>
+            <hr />
+            <p>
+                Changing this number affects the number of students that can sign up for all active timeslots. 
+            </p>
+            <p>
+                For example, if set to 8, up to 8 students can sign up for any active timeslot. If set to 0, no students can sign up for any active timeslot.
+            </p>
+        </div>
+        <div>
+            <form asp-action="UpdateMaxSignupsConfirmed">
+                <div class="form-group">
+                    <label for="maxsignups">New Duration:</label>
+                    <input type="number" class="form-control" id="maxsignups" name="maxsignups" />
+                </div>
+                <br />
+                <button type="submit" class="btn btn-primary">Update</button> | <a asp-action="Index">Back to List</a>
+            </form>
+        </div>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    
 </div>
 

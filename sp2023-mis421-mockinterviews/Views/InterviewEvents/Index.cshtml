@@ -246,8 +246,8 @@ else
                                 "<td>" + studentname + "</td>" +
                                 "<td>" + interviewEvent.status + "</td>" +
                                 "<td>" + time + "</td>" +
-                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.checkInTime + "</td>" +
-                                "<td>" + interviewEvent.interviewType + "</td>" +
+                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.checkedInAt + "</td>" +
+                                "<td>" + interviewEvent.type + "</td>" +
                                 "<td style='width:260px;'>" +
                                 "<a class='capture-data'>Assign</a> | " +
                                 "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
@@ -294,7 +294,7 @@ else
                                 "<td>" + interviewEvent.status + "</td>" +
                                 "<td>" + time + "</td>" +
                                 "<td>" + date + "</td>" +
-                                "<td>" + interviewEvent.interviewType + "</td>" +
+                                "<td>" + interviewEvent.type + "</td>" +
                                 "<td style='width:291px;'>" +
                                 "<a href='/InterviewEvents/StudentCheckIn/" + interviewEvent.id + "' style='color:#9E1B32'>Check In</a> | " +
                                 "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
@@ -567,7 +567,7 @@ else
 
                 setInterval(function () {
                     var currentTime = new Date();
-                    currentTime.setHours(currentTime.getHours() + 6);
+                    currentTime.setHours(currentTime.getHours());
                     var elapsedTime = currentTime - startTime;
 
                     var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
