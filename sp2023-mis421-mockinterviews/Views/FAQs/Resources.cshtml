@@ -31,58 +31,81 @@
 	
 </head>
 <body>
-    <h1>Point of Contact</h1>
-    <p style="font-size:20px; text-align:center; padding-top: 10px">
-        For sign-in issues or other questions, please contact Sam Riddle at <a href="mailto:swriddle@crimson.ua.edu">swriddle@crimson.ua.edu</a>.
-    </p>
-    <hr />
-    <h1>FAQs</h1>
-    @*<div class="wrapper">
-        <div class="container">
-            <div class="row">
-            @foreach (var faq in Model)
-            {
-                <div class="faq col-md-6">
-                    <div class="question">@faq.Question</div>
-                    <div class="answer">@faq.Answer</div>
+    
+    <div id="center-everything" class="row">
+        <h1>Resources</h1>
+
+    <div class="col-md-2"></div>
+    <div id="center-everything" class="col-md-8">
+        <div id="center-everything">
+            <hr />
+            <br />
+            <h3>Point of Contact</h3>
+            <p style="font-size:20px; text-align:center; padding-top: 10px">
+                For sign-in issues or other questions, please contact <strong>Kate Owens</strong> at <a target="_blank" href="mailto:nkowens@crimson.ua.edu">nkowens@crimson.ua.edu</a>.
+            </p>
+        </div>
+        
+        @if(Model.Any() && Model.Count() > 0)
+        {
+            <hr />
+            <br />
+            <div id="center-everything">
+                <h3>FAQs</h3>
+                <div class="row">
+                    @foreach (var faq in Model)
+                    {
+                            <div class="card" style="width:18rem;">
+                                <div class="card-body">
+                                    <h5 class="card-title">@faq.Q</h5>
+                                    <p class="card-text">@faq.A</p>
+                                </div>
+                            </div>
+                    }
                 </div>
-            }
             </div>
-        </div>
-    </div>*@
-    @foreach (var faq in Model)
-    {
-        <div class="faq">
-            <div class="question">@faq.Q</div>
-            <div class="answer">@faq.A</div>
-        </div>
-    }
-    @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
-    {
-        <hr />
-        <div>
-            <h1>
-                Ask a Question!
-            </h1>
-        </div>
-        <div>
-            <h4 style="text-align: center;">
-                <a asp-action="Create">Question Form</a>
-            </h4>
-        </div>
-    }
-    @if (User.IsInRole(RolesConstants.InterviewerRole))
-    {
-        <hr />
-        <div>
-            <h1>
-                Resources for Interviewers
-            </h1>
-        </div>
-        <div style="text-align:center">
-            <a id="manual-button" class="btn btn-primary" asp-controller="FAQs" asp-action="DownloadManual">Download Mock Interview Manual</a> | <a id="parking-button" class="btn btn-primary" asp-controller="FAQs" asp-action="DownloadParking">Download Parking Pass</a>
-        </div>
-    }
+        }
+
+        <br />
+        
+
+        @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
+        {
+            <hr />
+            <br />
+            <div id="center-everything">
+                <h3>
+                    Ask a Question!
+                </h3>
+            
+                <div>
+                    <h4 style="text-align: center;">
+                        <a asp-action="Create" class="btn btn-primary">Question Form</a>
+                    </h4>
+                </div>
+            </div>
+        }
+
+        <br />
+
+        @if (User.IsInRole(RolesConstants.InterviewerRole))
+        {
+            <hr />
+            <br />
+            <div id="center-everything">
+                <h3>
+                    Resources for Interviewers
+                </h3>
+                <div style="text-align:center">
+                    <a id="manual-button" class="btn btn-primary" asp-controller="FAQs" asp-action="DownloadManual">Download Mock Interview Manual</a> &nbsp;
+                    <a id="parking-button" class="btn btn-secondary" asp-controller="FAQs" asp-action="DownloadParking">Download Parking Pass</a>
+                </div>
+            </div>
+        }
+
+    </div>
+    <div class="col-md-2"></div>
+    </div>
 
     <script>
         var button = document.getElementById("manual-button");
@@ -94,7 +117,7 @@
         otherButton.addEventListener('click', (e) => {
             otherButton.classList.add("disabled");
         })
-    </script>
+    </script>   
 </body>
 
 </html>

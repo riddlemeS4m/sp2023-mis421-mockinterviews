@@ -60,7 +60,7 @@
                     @Html.DisplayFor(modelItem => item.Timeslot.MaxSignUps)
                 </td>
                 <td>
-                    @if (item.Timeslot.Time.Minute != 0)
+                    @* @if (item.Timeslot.Time.Minute != 0)
                     {
                         <a href="#" style="color:#999;pointer-events:none;text-decoration:none;">Edit</a>
                         <a> | </a>
@@ -69,7 +69,7 @@
                     {
                         <a asp-area="" asp-controller="Timeslots" asp-action="Edit" asp-route-id="@item.Timeslot.Id">Edit</a>
                         <a> | </a>
-                    }
+                    } *@
                     <a asp-area="" asp-controller="Timeslots" asp-action="Details" asp-route-id="@item.Timeslot.Id">Details</a>
                 </td>
             </tr>
