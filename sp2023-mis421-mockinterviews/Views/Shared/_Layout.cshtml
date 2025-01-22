@@ -37,6 +37,7 @@
 
     <!-- # Main Style Sheet -->
     <link rel="stylesheet" href="~/css/style.css">
+    <link rel="stylesheet" href="~/css/site.css">
     
 </head>
 
@@ -271,14 +272,14 @@
 
     <!-- Main Script -->
     <script src="~/js/script.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
 
     <!-- Data Tables -->
     <script src="https://cdn.datatables.net/1.13.3/js/jquery.dataTables.js" integrity="sha384-apERv/vfl/R6zmx+HUeBeGTjYRpHuiF1JRYCuBd9KhRME4NTtll1FkO+CelUWYgp" crossorigin="anonymous"></script>
-@*    <script src="~/js/site.js" asp-append-version="true"></script>
-*@
-    <!-- Signal R -->
-    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
 
+    <!-- Signal R -->
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js" integrity="sha384-/taWmisziXYpcfnYsumSUmNaiMvG/fF/OJOUCLnqCIYTrpOZy7WbFF6FfIxwOrfL" crossorigin="anonymous"></script>
+    
     <script type="text/javascript">
         //Add datatables formatting to all tables
         $(document).ready(function () {
@@ -314,28 +315,6 @@
                 loginContainer.style.paddingLeft = '120px';
             }
         }
-
-        //function adjustPaddingTwo() {
-        //    const navbarSupportedContent = document.getElementById('navbarSupportedContent');
-        //    const userRoleCheck = document.getElementById('userRoleGet').value;
-        //    console.log('here');
-
-        //    switch (userRoleCheck) {
-        //        case 'StudentRole':
-        //            navbarSupportedContent.style.paddingLeft = '100px';
-        //            break;
-        //        case 'InterviewerRole':
-        //            navbarSupportedContent.style.paddingLeft = '100px';
-        //            break;
-        //        case 'AdminRole':
-        //            navbarSupportedContent.style.paddingLeft = '0px';
-        //            console.log('adminhere');
-        //            break;
-        //        default:
-        //            navbarSupportedContent.style.paddingLeft = '0px';
-        //            break;
-        //    }
-        //}
 
         function adjustPaddingTwo(isLoggedIn) {
             //Bad name, but this refers to the navbar items and the other one is for the log in items; will refactor later
