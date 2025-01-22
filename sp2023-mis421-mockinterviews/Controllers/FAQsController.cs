@@ -1,20 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Claims;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Data.Constants;
@@ -202,7 +190,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = RolesConstants.AdminRole)]
-        public async Task<IActionResult> Edit(int id, [Bind("Id, Question, A")] Question faq)
+        public async Task<IActionResult> Edit(int id, [Bind("Id, Q, A")] Question faq)
         {
             if (id != faq.Id)
             {
