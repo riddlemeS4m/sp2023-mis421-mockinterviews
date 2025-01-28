@@ -6,11 +6,11 @@
 <head>
     <meta charset="utf-8">
     <title>@ViewData["Title"] - UA MIS Mock Interviews</title>
+    
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5">
     <meta name="description" content="The official platform for managing mock interviews for The University of Alabama MIS program.">
     <meta name="author" content="Themefisher">
-@*    <link rel="shortcut icon" href="images/ScriptA.png" type="image/x-icon">
-*@    
+   
     <meta property="og:title" content="@ViewData["Title"] - UA MIS Mock Interviews">
     <meta property="og:description" content="The official platform for managing mock interviews for The University of Alabama MIS program.">
     <meta property="og:image" content="images/ScriptA.png">
@@ -224,13 +224,14 @@
                         }
 
                     </ul>
-                </div>
-                <div id="loginContainer">
-                  <partial name="_LoginPartial"/>
-                </div>
+                    <div id="loginContainer">
+                        <partial name="_LoginPartial"/>
+                    </div>
+                </div> 
             </div>
         </nav>
     </header>
+
     <!-- /navigation -->
 
     <div class="container" style="padding-top: 20px; padding-bottom: 20px;">
@@ -253,9 +254,10 @@
                             <a class="text-black" href="@Url.Action("Privacy", "Home")">Privacy Policy</a>
                         </li>
                         <li class="list-inline-item me-8" style="padding-left: 10px; padding-right: 10px;">
-                            <a class="text-black" asp-area="Identity" asp-page="/Account/Login">Admin Login</a>
+                            <a class="text-black" href="@Url.Action("Credits", "Home")">Credits</a>
                         </li>
                     </ul>
+                    
                 </div>
                 <div class="col-lg-4 col-md-6 text-md-end mt-4 mt-md-0">
                     <p style="padding-top: 17px;">© 2023 - UA MIS Mock Interviews</p>
@@ -305,7 +307,7 @@
         });
     </script>
     
-    <script>
+    @* <script>
         function adjustPadding(isLoggedIn) {
             const loginContainer = document.getElementById('loginContainer');
 
@@ -332,7 +334,7 @@
             adjustPadding(@(User.Identity.IsAuthenticated.ToString().ToLower()));
             adjustPaddingTwo(@(User.Identity.IsAuthenticated.ToString().ToLower()));
         };
-    </script>
+    </script> *@
 
     @await RenderSectionAsync("Scripts", required: false)
 

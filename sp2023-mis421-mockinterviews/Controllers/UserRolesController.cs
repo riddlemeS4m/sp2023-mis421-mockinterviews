@@ -130,13 +130,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         public async Task<IActionResult> MassAssignPost(string[] SelectedEventIds1)
         {
-            //var count = 0;
             foreach (string x in SelectedEventIds1)
             {
-                    //++;
-                    //Console.WriteLine(x);
-                    
-                    await _userManager.AddToRoleAsync(await _userManager.FindByEmailAsync(x), RolesConstants.InterviewerRole);
+                await _userManager.AddToRoleAsync(await _userManager.FindByEmailAsync(x), RolesConstants.InterviewerRole);
             }
 
             return RedirectToAction("Index", "UserRoles");
@@ -175,12 +171,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
         [HttpPost]
         public async Task<IActionResult> MassAssignAdmin(string[] SelectedEventIds1)
         {
-            //var count = 0;
             foreach (string x in SelectedEventIds1)
             {
-                //++;
-                //Console.WriteLine(x);
-
                 await _userManager.AddToRoleAsync(await _userManager.FindByEmailAsync(x), RolesConstants.AdminRole);
             }
 

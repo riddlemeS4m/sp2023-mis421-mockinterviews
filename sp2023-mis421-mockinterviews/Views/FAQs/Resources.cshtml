@@ -3,75 +3,56 @@
 @using sp2023_mis421_mockinterviews.Data.Constants;
 @model IEnumerable<Question>
 
-<html>
-<head>
-	<title>FAQs</title>
-	<style>
-		.faq {
-			display: flex;
-			justify-content: center;
-			flex-direction: column;
-			align-items: center;
-			margin-bottom: 20px;
-			padding: 20px;
-			border: 1px solid #ccc;
-			border-radius: 5px;
-			text-align: center;
-		}
-		.question {
-			font-size: 24px;
-			font-weight: bold;
-			margin-bottom: 10px;
-		}
-		.answer {
-			font-size: 16px;
-			margin-left: 20px;
-		}
-	</style>
-	
-</head>
-<body>
-    
-    <div id="center-everything" class="row">
-        <h1>Resources</h1>
+@{
+    ViewData["Title"] = "Resources";
+}
+
+<div id="center-everything" class="row">
+    <h1>Resources</h1>
 
     <div class="col-md-2"></div>
     <div id="center-everything" class="col-md-8">
         <div id="center-everything">
-            <hr />
+            <hr style="width:100px;margin:auto;"/>
             <br />
             <h3>Point of Contact</h3>
-            <p style="font-size:20px; text-align:center; padding-top: 10px">
-                For sign-in issues or other questions, please contact <strong>Kate Owens</strong> at <a target="_blank" href="mailto:nkowens@crimson.ua.edu">nkowens@crimson.ua.edu</a>.
+            <p style="font-size:20px; text-align:center; padding-top: 10px; width: 75%; margin: auto; margin-bottom: 1rem;">
+                For sign-in issues or other questions not listed below, please contact <span style="font-weight: bold; color: black;">Kate Owens</span> at <a target="_blank" href="mailto:nkowens@crimson.ua.edu">nkowens@crimson.ua.edu</a>.
             </p>
         </div>
         
         @if(Model.Any() && Model.Count() > 0)
         {
-            <hr />
+            <hr style="width:100px;margin:auto;"/>
             <br />
             <div id="center-everything">
                 <h3>FAQs</h3>
                 <div class="row">
-                    @foreach (var faq in Model)
+                    @for(int i = 0; i < Model.Count(); i++)
                     {
-                            <div class="card" style="width:18rem;">
-                                <div class="card-body">
-                                    <h5 class="card-title">@faq.Q</h5>
-                                    <p class="card-text">@faq.A</p>
-                                </div>
+                        var faq = Model.ElementAt(i);
+
+                        <div class="card shadow-sm p-3 m-3 border-1 rounded col">
+                            <div class="card-body">
+                                <h5 class="card-title mb-3">@faq.Q</h5>
+                                <p class="card-text">@faq.A</p>
                             </div>
+                        </div>
+
+                        if(i % 2 != 0)
+                        {
+                            <div class="w-100"></div>
+                        }
                     }
                 </div>
             </div>
         }
 
         <br />
-        
 
         @if (User.IsInRole(RolesConstants.StudentRole) || User.IsInRole(RolesConstants.InterviewerRole))
         {
-            <hr />
+            <hr style="width:100px;margin:auto;"/>
             <br />
             <div id="center-everything">
                 <h3>
@@ -90,7 +71,7 @@
 
         @if (User.IsInRole(RolesConstants.InterviewerRole))
         {
-            <hr />
+            <hr style="width:100px;margin:auto;"/>
             <br />
             <div id="center-everything">
                 <h3>
@@ -105,19 +86,10 @@
 
     </div>
     <div class="col-md-2"></div>
-    </div>
+</div>
 
+@section Scripts {
     <script>
-        var button = document.getElementById("manual-button");
-        button.addEventListener('click', (e) => {
-            button.classList.add("disabled");
-        })
-
-        var otherButton = document.getElementById("parking-button");
-        otherButton.addEventListener('click', (e) => {
-            otherButton.classList.add("disabled");
-        })
-    </script>   
-</body>
-
-</html>
+        displayResources();
+    </script>
+}

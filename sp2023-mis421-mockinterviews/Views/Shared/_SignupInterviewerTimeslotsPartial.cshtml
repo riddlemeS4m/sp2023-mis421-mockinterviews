@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th>Student</th>
+                <th>Class</th>
                 <th>Interview Type</th>
                 <th>Timer</th>
                 <th>Update Status</th>
@@ -26,12 +27,11 @@
                     {
                         <td>@interviewEventViewModel.StudentName</td>
                     }
+                    <td>@interviewEventViewModel.Class</td>
                     <td>@interviewEventViewModel.InterviewEvent.Type</td>
                     <td id="timer-@interviewEventViewModel.InterviewEvent.Id">@interviewEventViewModel.InterviewEvent.StartedAt</td>
                     <td>
-@*                        <a asp-action="Edit" asp-route-id="@interviewEventViewModel.InterviewEvent.Id" asp-controller="InterviewEvents">Update</a>
-*@                        <a 
-                            id="canBeRemoved-@interviewEventViewModel.InterviewEvent.Id" 
+                        <a id="canBeRemoved-@interviewEventViewModel.InterviewEvent.Id" 
                             class="btn btn-primary"
                             asp-action="StudentComplete" 
                             asp-route-id="@interviewEventViewModel.InterviewEvent.Id" 
@@ -50,7 +50,7 @@ else
 {
     <p>No upcoming events</p>
 }
-<hr />
+<br />
 <h3>Interviewer Schedule</h3>
 @if (Model.InterviewerRangeViewModels.Count() > 0)
 {
@@ -129,7 +129,7 @@ else
 {
     <p>No upcoming events</p>
 }
-<hr />
+<br />
 <h3>Completed Interviews</h3>
 @if (Model.CompletedInterviews.Count() > 0)
 {
@@ -170,5 +170,4 @@ else
 {
     <p>No completed interviews</p>
 }
-<hr />
-
+<br />

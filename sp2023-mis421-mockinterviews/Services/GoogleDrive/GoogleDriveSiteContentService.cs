@@ -9,10 +9,10 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
     {
         private readonly string _folderId;
         private readonly DriveService _driveClient;
-        private readonly ILogger<GoogleDriveSiteContentService> _logger;
+        private readonly ILogger<IGoogleDrive> _logger;
         public GoogleDriveSiteContentService(string folderId, 
             DriveService driveClient, 
-            ILogger<GoogleDriveSiteContentService> logger)
+            ILogger<IGoogleDrive> logger)
         {
             _folderId = folderId;
             _driveClient = driveClient;
@@ -33,7 +33,8 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (download)
             {
-                request.MediaDownloader.ProgressChanged += GoogleDriveUtility.Download_ProgressChanged;
+                var googleDriveUtility = new GoogleDriveUtility(_logger);
+                request.MediaDownloader.ProgressChanged += googleDriveUtility.Download_ProgressChanged;
 
                 await request.DownloadAsync(stream);
             }
@@ -119,7 +120,8 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             FilesResource.CreateMediaUpload request = _driveClient.Files.Create(fileMetaData, fileStream, fileMetaData.MimeType);
 
-            request.ProgressChanged += GoogleDriveUtility.Upload_ProgressChanged;
+            var googleDriveUtility = new GoogleDriveUtility(_logger);
+            request.ProgressChanged += googleDriveUtility.Upload_ProgressChanged;
 
             var result = await request.UploadAsync();
 

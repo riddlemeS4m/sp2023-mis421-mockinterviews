@@ -82,10 +82,10 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Include(v => v.Timeslot)
                     .ThenInclude(v => v.Event)
                     .Where(v => v.InterviewerTimeslot.InterviewerSignup.InterviewerId == userId 
-                        && v.InterviewerTimeslot.Timeslot.Event.IsActive
-                        && (v.Status != StatusConstants.Completed
-                        || v.Status != StatusConstants.NoShow
-                        || v.Status != StatusConstants.Excused))
+                        && v.Timeslot.Event.IsActive
+                        && (v.Status == StatusConstants.Ongoing 
+                        || v.Status == StatusConstants.Completed 
+                        || v.Status == StatusConstants.CheckedIn))
                     .ToListAsync();
 
                 if (interviewEvents != null && interviewEvents.Count != 0)
@@ -101,7 +101,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{student.FirstName} {student.LastName}",
-                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}",
+                                Class = ClassConstants.GetClassText(student.Class)
                             });
                         }
                         else
@@ -178,7 +179,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{userFull.FirstName} {userFull.LastName}",
-                                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}"
+                                InterviewerName = $"{interviewer.FirstName} {interviewer.LastName}",
+                                Class = ClassConstants.GetClassText(userFull.Class)
                             });
                         }
                         else
@@ -187,6 +189,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{userFull.FirstName} {userFull.LastName}",
+                                Class = ClassConstants.GetClassText(userFull.Class),
                                 InterviewerName = "Not Assigned"
                             });
                         }
@@ -221,7 +224,8 @@ namespace sp2023_mis421_mockinterviews.Controllers
                             {
                                 InterviewEvent = interviewEvent,
                                 StudentName = $"{student.FirstName} {student.LastName}",
-                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}"
+                                InterviewerName = $"{userFull.FirstName} {userFull.LastName}",
+                                Class = ClassConstants.GetClassText(student.Class)
                             });
                         }
                         else

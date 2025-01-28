@@ -12,21 +12,11 @@
     </div>
 </form>
 
-<div onload="attemptLogin()">
-
-</div>
-
-@*<script>
-    function attemptLogin() {
-        console.log('made it')
-        var form = document.getElementById("external-login-form");
-        form.submit();
-    }
-</script>*@
+<div onload="attemptLogin()"></div>
 
 @section Scripts {
     <script>
-        window.onload = function () {
+        window.onload = () => {
             console.log('submitting form...')
             document.forms['external-login'].submit()
             console.log('form submitted!')

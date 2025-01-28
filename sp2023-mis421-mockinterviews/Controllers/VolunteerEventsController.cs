@@ -480,8 +480,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
         }
         private static DateTime CombineDateWithTimeString(DateTime date, string timeString)
         {
-            Console.WriteLine(date);
-            Console.WriteLine(timeString);
             DateTime dateTime = DateTime.ParseExact(timeString, "h:mm tt", CultureInfo.InvariantCulture);
             TimeSpan timeSpan = dateTime.TimeOfDay;
             return date.Date + timeSpan;

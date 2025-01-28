@@ -150,47 +150,9 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
-<!-- Select All Buttons -->
     <script>
-        // Attach a click event handler to the "Select All" buttons
-        var selectAllButtons = document.querySelectorAll('.selectAllButton');
-        selectAllButtons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                var target = this.getAttribute("data-target"); // "list1" or "list2"
-                var checkboxes = document.querySelectorAll('input[name="' + target + '"]');
-                var allChecked = Array.from(checkboxes).every(function (checkbox) {
-                    return checkbox.checked;
-                });
-
-                checkboxes.forEach(function (checkbox) {
-                    checkbox.checked = !allChecked;
-                });
-            });
-        });
-    </script>
-
-    <!-- Toggle Lunch Question -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var checkbox1 = document.querySelector("#InPerson[value='true']");
-            var checkbox2 = document.querySelector("#InPerson[value='false']");
-            var checkbox2Label = document.getElementById('annoyingLabel');
-            var divToToggle = document.getElementById('lunch-question'); // Replace 'divToToggle' with the actual ID of your target div
-
-            checkbox1.addEventListener('click', function () {
-                divToToggle.style.display = 'block';
-            });
-            checkbox2.addEventListener('click', function () {
-                divToToggle.style.display = 'none';
-            });
-            checkbox2Label.addEventListener('click', function () {
-                checkbox2.checked = !checkbox2.checked;
-                divToToggle.style.display = 'none';
-            });
-        });
+        selectAll();
     </script>
 }
