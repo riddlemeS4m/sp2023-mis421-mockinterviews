@@ -23,19 +23,22 @@ namespace sp2023_mis421_mockinterviews.Controllers
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
-        private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
         private readonly IHubContext<AvailableInterviewersHub> _hubContext;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ILogger<SignupInterviewersController> _logger;
 
         public SignupInterviewersController(MockInterviewDataDbContext context,
             ISendGridClient sendGridClient,
             IHubContext<AvailableInterviewersHub> hubContext,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ILogger<SignupInterviewersController> logger)
         {
             _context = context;
             _sendGridClient = sendGridClient;
             _hubContext = hubContext;
             _userManager = userManager;
+            _logger = logger;
         }
 
         // GET: SignupInterviewers
@@ -272,9 +275,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
             interviewers.Sort((x, y) => string.Compare(x.Name, y.Name));
 
-            Console.WriteLine("Requesting all clients to update their available interviewers lists...");
+            _logger.LogInformation("Requesting all clients to update their available interviewers lists...");
             await _hubContext.Clients.All.SendAsync("ReceiveAvailableInterviewersUpdate", interviewers);
-            Console.WriteLine("Requested.");
+            _logger.LogInformation("Requested.");
         }
     }
 }

@@ -1,0 +1,22 @@
+/* Adjust font size and padding on small screens */
+@media (max-width: 1000px) {
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+    
+    tbody {
+        display: table-row-group;
+    }
+    
+    thead {
+        display: table-header-group;
+    }
+    
+    th, td {
+        padding: 8px;
+        text-align: left;
+        white-space: nowrap; /* Prevents text wrapping */
+    }
+}

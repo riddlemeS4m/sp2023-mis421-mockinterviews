@@ -1,46 +1,11 @@
 ﻿@page
 @model LoginModel
 
-    @{
-        ViewData["Title"] = "Log In";
-    }
+@{
+    ViewData["Title"] = "Log In";
+}
 
-<h1 style="margin-top: 20px;">@ViewData["Title"]</h1>
 <div class="row">
-    @*<section>
-        <div class="row d-flex justify-content-center col-12">
-            <div class="col-4 border border-primary rounded m-20" style="margin-bottom: 20px">
-                <div class="d-flex justify-content-center">
-                    <h1 class="h3 my-3 font-weight-normal">For Students & Interviewers: </h1>
-                </div>
-                @{
-                    if ((Model.ExternalLogins?.Count ?? 0) == 0)
-                    {
-                        <div>
-                            <p>
-                                There are no external authentication services configured.
-                            </p>
-                        </div>
-                    }
-                    else
-                    {
-                        <form id="external-account" asp-page="./ExternalLogin" asp-route-returnUrl="@Model.ReturnUrl" method="post" class="form-horizontal">
-                            <div>
-                                <p>
-                                    @foreach (var provider in Model.ExternalLogins!)
-                                    {
-                                        <div class="form-group" style="display: flex; justify-content: center;">
-                                            <button type="submit" class="btn btn-primary" name="provider" value="@provider.Name" title="Log in using your @provider.DisplayName account">Sign in with @provider.DisplayName</button>
-                                        </div>
-                                    }
-                                </p>
-                            </div>
-                        </form>
-                    }
-                }
-            </div>
-        </div>
-    </section>*@
     <section>
         <div class="row d-flex justify-content-center col-12">
             <div class="col-4 border border-primary rounded m-20" style="margin-bottom: 20px">
@@ -49,7 +14,7 @@
                         <i class="icon-map-marker icon-4x text-success"></i>
                     </div>
                     <div class="d-flex justify-content-center">
-                        <h1 class="h3 mb-3 font-weight-normal">Login for Admins: </h1>
+                        <h1 class="h3 mb-3 font-weight-normal">Welcome!</h1>
                     </div>
                     <div class="form-group">
                         <input asp-for="Input.Email" class="form-control" placeholder="Email address" required autofocus />

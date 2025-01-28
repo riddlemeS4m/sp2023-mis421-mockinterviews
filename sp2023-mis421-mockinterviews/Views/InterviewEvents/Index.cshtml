@@ -118,6 +118,7 @@ else
         <tr>
             <th></th>
             <th>Student</th>
+            <th>Class</th>
             <th>Status</th>
             <th>Scheduled Start</th>
             <th>Has Waited For</th>
@@ -130,9 +131,10 @@ else
         {
             if (item.InterviewEvent.Status == StatusConstants.CheckedIn)
             {
-                <tr id="@item.InterviewEvent.Id">
+                <tr id="@item.InterviewEvent.Id" data-student-name="@item.StudentName" data-status="@item.InterviewEvent.Status" data-type="@item.InterviewEvent.Type">
                     <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
                     <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                    <td>@Html.DisplayFor(modelItem => item.Class)</td>
                     <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Status)</td>
                     <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)</td>
                     <td id="timer-@item.InterviewEvent.Id">@Html.DisplayFor(modelItem => item.InterviewEvent.CheckedInAt)</td>
@@ -159,6 +161,7 @@ else
         <tr>
             <th></th>
             <th>Student</th>
+            <th>Class</th>
             <th>Status</th>
             <th>Scheduled Start</th>
             <th>Date</th>
@@ -174,6 +177,7 @@ else
             <tr id="@item.InterviewEvent.Id">
                 <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
                 <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
+                <td>@Html.DisplayFor(modelItem => item.Class)</td>
                 <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Status)</td>
                 <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Time)</td>
                 <td>@Html.DisplayFor(modelItem => item.InterviewEvent.Timeslot.Event.Date)</td>
@@ -193,398 +197,11 @@ else
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <!-- Signal R - Interview Event Hub -->
-    <script>
-        var connection = new signalR.HubConnectionBuilder()
-            .withUrl("/interviewHub")
-            .build();
-
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        connection.on("ReceiveInterviewEventUpdate", function (interviewEvent, studentname, interviewername, time, date) {
-            var row = document.getElementById(interviewEvent.id);
-            if (studentname === 'delete') {
-                row.remove();
-
-                console.log(interviewEvent.status);
-                document.getElementById('edit-form-div').style.display = 'none';
-            }
-            else {
-                if (interviewEvent.status === 'Ongoing') {
-                    document.getElementById('edit-form-div').style.display = 'none';
-                }
-                //console.log(interviewEvent, interviewEvent.id, interviewEvent.status, studentname, interviewername, time, date);
-                if (row) {
-                    var newRow = document.createElement('tr');
-                    newRow.id = interviewEvent.id;
-                    try {
-                        if(interviewEvent.status === 'Ongoing')
-                        {
-                            console.log(`${studentname} has just been sent to an ongoing interview.`)
-                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
-                                "<td>" + studentname + "</td>" +
-                                "<td>" + interviewEvent.status + "</td>" +
-                                "<td>" + interviewername + "</td>" +
-                                "<td>" + interviewEvent.location.room + "</td>" +
-                                "<td>" + time + "</td>" +
-                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.startTime + "</td>" +
-                                "<td>" + interviewEvent.interviewType + "</td>" +
-                                "<td style='width:158px;'>" +
-                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
-                                "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'>Complete</a>" +
-                                "</td>";
-
-                            row.remove();
-                            document.getElementById('ongoing').appendChild(newRow);
-                            try{document.querySelector('#ongoing td[colspan="9"]').parentElement.remove();}catch{console.log('No need to clear table.')}
-                        }
-                        else if(interviewEvent.status === 'Checked In')
-                        {
-                            console.log(`${studentname} has just been checked in.`)
-                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
-                                "<td>" + studentname + "</td>" +
-                                "<td>" + interviewEvent.status + "</td>" +
-                                "<td>" + time + "</td>" +
-                                "<td id='timer-" + interviewEvent.id + "'>" + interviewEvent.checkedInAt + "</td>" +
-                                "<td>" + interviewEvent.type + "</td>" +
-                                "<td style='width:260px;'>" +
-                                "<a class='capture-data'>Assign</a> | " +
-                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
-                                "<a href='/InterviewEvents/StudentComplete/" + interviewEvent.id + "' style='color:#9E1B32'>Complete</a>" +
-                                "</td>";
-
-                            row.remove();
-                            document.getElementById('checkin').appendChild(newRow);
-                            try{document.querySelector('#checkin td[colspan="7"]').parentElement.remove();}catch{console.log('No need to clear table.')}
-
-                            var editLink = newRow.querySelector('.capture-data');
-                            editLink.addEventListener('click', function () {
-                                var sameRow = this.closest('tr');
-
-                                var id = sameRow.getAttribute('id');
-                                var studentName = sameRow.cells[1].textContent.trim();
-                                var status = sameRow.cells[2].textContent.trim();
-                                var interviewType = sameRow.cells[5].textContent.trim();
-
-                                console.log(id);
-
-                                if (interviewEvent.status !== 'Ongoing') {
-                                    $('#edit-form-div').show();
-                                }
-
-                                $('#student-name').text('Assign ' + studentName);
-
-                                document.getElementById('Id').value = id;
-                                document.getElementById('Status').value = status;
-                                document.getElementById('Type').value = interviewType;
-
-                                populateInterviewerSelectList(id, interviewType, status);
-                            });
-
-                            console.log(interviewEvent.status);
-                            document.getElementById('Status').value = interviewEvent.status;
-                            document.getElementById('Type').value = interviewEvent.interviewType;
-                        }
-                        else
-                        {
-                            console.log(`${studentname} has just been updated to status ${interviewEvent.status}.`)
-                            newRow.innerHTML = "<td style='color:white;' class='sorting_1'>" + interviewEvent.timeslotId + "</td>" +
-                                "<td>" + studentname + "</td>" +
-                                "<td>" + interviewEvent.status + "</td>" +
-                                "<td>" + time + "</td>" +
-                                "<td>" + date + "</td>" +
-                                "<td>" + interviewEvent.type + "</td>" +
-                                "<td style='width:291px;'>" +
-                                "<a href='/InterviewEvents/StudentCheckIn/" + interviewEvent.id + "' style='color:#9E1B32'>Check In</a> | " +
-                                "<a href='/InterviewEvents/Override/" + interviewEvent.id + "' style='color:#9E1B32'>Override</a> | " +
-                                "<a href='/InterviewEvents/StudentNoShow/" + interviewEvent.id + "' style='color:#9E1B32'>No Show</a>" +
-                                "</td>";
-
-                            row.remove();
-                            document.getElementById('upcoming').appendChild(newRow);
-                            try{document.querySelector('#upcoming td[colspan="7"]').parentElement.remove();}catch{console.log('No need to clear table.')}
-                        }
-
-                        var timers = document.querySelectorAll(`#timer-${interviewEvent.id}`);
-
-                        timers.forEach(function (timer) {
-                            var startTimeString = timer.innerText;
-                            var startTime = new Date(startTimeString).getTime();
-
-                            if (isNaN(startTime)) {
-                                console.error('Invalid start time:', startTimeString);
-                                return; // Skip this timer
-                            }
-
-                            console.log(`Start time: ${startTimeString}`);
-
-                            setInterval(function () {
-                                var currentTime = new Date().getTime();
-                                var elapsedTime = currentTime - startTime;
-
-                                var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-                                var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-                                var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-
-                                var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                                timer.innerText = formattedTime;
-
-                                // Change color if elapsed time is over 30 minutes
-                                if (minutes >= 30 || hours > 0) {
-                                    timer.style.color = 'red';
-                                    timer.style.fontWeight = 'bold';
-                                }
-                            }, 1000);
-                        });
-                    }
-                    catch
-                    {
-                        throw new Error('there was an error');
-                    }
-                }
-            }
-        })
-    </script>
+    <script src="~/js/signal-r-interviews.js" asp-append-version="true"></script>
 
     <!-- Signal R - Available Interviewers Hub -->
-    <script>
-        var connection = new signalR.HubConnectionBuilder().withUrl("/interviewershub").build();
-
-        connection.start().catch(function (err) {
-            return console.error(err.toString());
-        });
-
-        connection.on("ReceiveAvailableInterviewersUpdate", function (interviewers) {
-            console.log('Received available interviewers:', interviewers);
-            var selectBox = document.getElementById('InterviewerId');
-
-            // Sort the options in the select box alphabetically
-            if(selectBox.options.length !== 0)
-            {
-                populateInterviewerSelectList(document.getElementById('Id').value, 
-                    document.getElementById('Type').value, 
-                    document.getElementById('Status').value);
-            }
-
-            var availableInterviewersView = document.getElementById('availableInterviewers');
-            availableInterviewersView.innerHTML = '';
-
-            // Loop through each interviewer in the array
-            interviewers.forEach(interviewer => {
-                // Create a new list item element
-                var newListItem = document.createElement('li');
-                newListItem.setAttribute('id', interviewer.id);
-                newListItem.innerHTML = "<b><u>" + interviewer.name +
-                    "</u></b> is available to do <b><u>" + interviewer.interviewType +
-                    "</u></b> interviews in room <b><u>" + interviewer.room +
-                    "</u></b>.";
-                newListItem.setAttribute('style', 'color:black;')
-
-                // Add the new list item to the unordered list
-                availableInterviewersView.appendChild(newListItem);
-                console.log('Appended interviewer:', interviewer)
-            });        
-        });
-    </script>
+    <script src="~/js/signal-r-available-interviewers.js" asp-append-version="true"></script>
 
     <!-- Handle Edit Form -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var captureButtons = document.querySelectorAll('.capture-data');
-
-            captureButtons.forEach(function (button) {
-                button.addEventListener('click', function () {
-                    var row = this.closest('tr');
-
-                    var id = row.getAttribute('id');
-                    var studentName = row.cells[1].textContent.trim();
-                    var status = row.cells[2].textContent.trim();
-                    var interviewType = row.cells[5].textContent.trim();
-
-                    console.log(id);
-
-                    //$('#edit-form-div').show();
-                    $('#student-name').text('Assign ' + studentName);
-
-                    document.getElementById('Id').value = id;
-                    document.getElementById('Status').value = status;
-                    document.getElementById('Type').value = interviewType;
-
-                    populateInterviewerSelectList(id, interviewType, status);
-                });
-            });
-        });
-
-        let fetchedBehavioralInterviewers = [];
-        let fetchedTechnicalInterviewers = [];
-
-        function populateInterviewerSelectList(id, interviewType, status) {
-            console.log('fetching...')
-            var url = '/InterviewEvents/GetAvailableInterviewers/' + id;
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-                    const behavioralInterviewers = data.behavioralInterviewers;
-                    const technicalInterviewers = data.technicalInterviewers;
-
-                    fetchedBehavioralInterviewers = behavioralInterviewers;
-                    fetchedTechnicalInterviewers = technicalInterviewers;
-
-                    // Select the <select> element with id 'InterviewerId'
-                    const selectElement = document.getElementById('InterviewerId');
-
-                    // Clear previous options
-                    selectElement.innerHTML = '';
-
-                    if(interviewType === 'Technical'){
-                        parseOptions(selectElement, technicalInterviewers);
-                    } else {
-                        parseOptions(selectElement, behavioralInterviewers);
-                    }
-
-                    if(status !== 'Ongoing')
-                    {
-                        $('#edit-form-div').show();
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        }
-
-        function parseOptions(element, list){
-            list.forEach(interviewer => {
-                const option = document.createElement('option');
-                option.value = interviewer.value;
-                option.text = interviewer.text;
-                element.appendChild(option);
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Event listener for form submission
-            document.getElementById('editForm').addEventListener('submit', function (event) {
-                event.preventDefault();
-
-                // Fetch form data
-                let formData = new FormData(this);
-                fetch('/InterviewEvents/EditInline', {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => {
-                    if (response.ok) {
-                        console.log('Form submitted successfully');
-                    } else {
-                        console.error('Form submission failed');
-                    }
-
-                    return response.json();
-                })
-                .then(data => {
-                    console.log(data);
-
-                    document.getElementById('edit-form-div').style.display = 'none';
-
-                    // Update the modal content with fetched data
-                    const successMessage = `Successfully submitted! <b>${data.studentName}</b> has a <b>${data.interviewType}</b> interview with <b><u>${data.interviewerName}</u></b> in <b><u>${data.location}</u></b>.`;
-                    document.getElementById('successText').innerHTML = successMessage;
-
-                    // Show the modal
-                    let modal = document.getElementById('exampleModalCenter');
-                    let modalObject = $(modal);
-                    $(modalObject).modal('show');
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-            });
-        });
-
-        // Event listener for hiding the form
-        document.getElementById('hide-button').addEventListener('click', function () {
-            document.getElementById('editForm').reset();
-            document.getElementById('edit-form-div').style.display = 'none';
-        });
-
-        // Event listener for "Done" button in the modal
-        document.getElementById('hideModalButton').addEventListener('click', function () {
-            let modal = document.getElementById('exampleModalCenter');
-            let modalObject = $(modal);
-            $(modalObject).modal('hide');
-        });
-
-        $(document).ready(function () {
-            $('#Type').change(function () {
-                var selectedTypeText = $(this).children("option:selected").text();
-                var interviewerIdSelect = $('#InterviewerId');
-
-                if (selectedTypeText === 'Technical') {
-                    populateSelectBox(interviewerIdSelect, fetchedTechnicalInterviewers);
-                } else if (selectedTypeText === 'Behavioral') {
-                    populateSelectBox(interviewerIdSelect, fetchedBehavioralInterviewers);
-                }
-            });
-
-            function populateSelectBox(selectBox, items) {
-                // Clear existing options
-                selectBox.empty();
-
-                // Add new options based on the received items
-                $.each(items, function (index, item) {
-                    selectBox.append($('<option>', {
-                        value: item.value,
-                        text: item.text
-                    }));
-                });
-            }
-        });
-    </script>
-
-    <!-- Live Timer -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var timers = document.querySelectorAll('[id^="timer-"]');
-
-            timers.forEach(function (timer) {
-                var startTimeString = timer.innerText;
-                var startTime = new Date(startTimeString).getTime();
-
-                if (isNaN(startTime)) {
-                    console.error('Invalid start time:', startTimeString);
-                    return; // Skip this timer
-                }
-
-                console.log(`Start time: ${startTimeString}`);
-
-                setInterval(function () {
-                    var currentTime = new Date();
-                    currentTime.setHours(currentTime.getHours());
-                    var elapsedTime = currentTime - startTime;
-
-                    var hours = Math.floor(elapsedTime / (1000 * 60 * 60));
-                    var minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-                    var seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-
-                    var formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-
-                    timer.innerText = formattedTime;
-
-                    // Change color if elapsed time is over 30 minutes
-                    if (minutes >= 30 || hours > 0) {
-                        timer.style.color = 'red';
-                        timer.style.fontWeight = 'bold';
-                    }
-                }, 1000);
-            });
-        });
-    </script>
+    <script src="~/js/dynamic-interview-assignment-form.js" asp-append-version="true"></script>
 }

@@ -146,9 +146,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
 
                 if (result.Succeeded)
                 {
-                    // User successfully created
-                    // Redirect or return appropriate response
-
                     var newUser = await _userManager.FindByEmailAsync(model.Email) ?? throw new Exception($"User with email {model.Email} was not successfully created.");
                     var roleResult = await _userManager.AddToRoleAsync(newUser, RolesConstants.InterviewerRole);
 
@@ -158,8 +155,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     }
                     else
                     {
-                        // Handle errors in creating the user
-                        // Add model errors if needed
                         foreach (var error in result.Errors)
                         {
                             ModelState.AddModelError(string.Empty, error.Description);
@@ -168,8 +163,6 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 }
                 else
                 {
-                    // Handle errors in creating the user
-                    // Add model errors if needed
                     foreach (var error in result.Errors)
                     {
                         ModelState.AddModelError(string.Empty, error.Description);
@@ -199,6 +192,55 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 return StatusCode(500, $"An error occurred: {ex.Message}");
             }
+        }
+
+        [HttpGet]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        public async Task<IActionResult> ResetUserPassword(string userId)
+        {
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                return NotFound($"User with ID {userId} not found");
+            }
+
+            var model = new ResetPasswordViewModel { UserId = userId };
+            return View(model);
+        }
+
+        [HttpPost]
+        [Authorize(Roles = RolesConstants.AdminRole)]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> ResetUserPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                ViewBag.ErrorMessage = "User not found.";
+                return View(model);
+            }
+
+            var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+            if (!string.IsNullOrWhiteSpace(model.NewPassword))
+            {
+                var result = await _userManager.ResetPasswordAsync(user, token, model.NewPassword);
+
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("Index", "UserRoles");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
         }
     }
 }

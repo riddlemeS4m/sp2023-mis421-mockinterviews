@@ -70,84 +70,47 @@
                 <div>
                     <span asp-validation-for="SignupInterviewer.InPerson" class="text-danger"></span>
                 </div>
-@*                 </div>
-*@                <br />
-
-@*                 <div id="center-everything">
-                    <div id="lunch-question" style="display: none;">
-                        <label asp-for="SignupInterviewer.Lunch" class="control-label">Would you like us to provide you with lunch?</label>
-                        <br />
-                        <div class="form-check form-check-inline">
-                            <input 
-                                id="LunchTrue" 
-                                class="form-check-input" 
-                                type="radio" 
-                                name="Lunch" 
-                                value="true" 
-                                data-val="false">
-                            <label class="form-check-label" for="LunchTrue">Yes</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input 
-                                id="LunchFalse" 
-                                class="form-check-input" 
-                                type="radio" 
-                                name="Lunch" 
-                                value="false" 
-                                data-val="false">
-                            <label class="form-check-label" for="LunchFalse">No</label>
-                        </div>
-                        <div>
-                            <span asp-validation-for="SignupInterviewer.Lunch" class="text-danger"></span>
-                        </div>
-                        <br /><br />
-                    </div>
-                </div> *@
-
-@*                 <div id="center-everything">
- *@                    <label class="control-label">What types of interviews would you be comfortable giving?</label>
-                    <br />
-                    <div class="form-check form-check-inline">
-                        <input 
-                            id="IsTechnical" 
-                            class="form-check-input" 
-                            type="checkbox" 
-                            name="SignupInterviewer.IsTechnical" 
-                            value="true" 
-                            data-val="true" 
-                            data-val-required="Please select at least one">
-                        <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
-                    </div>
-                    <br />
-                    <div class="form-check form-check-inline">
-                        <input 
-                            id="IsBehavioral" 
-                            class="form-check-input" 
-                            type="checkbox" 
-                            name="SignupInterviewer.IsBehavioral" 
-                            value="true" 
-                            data-val="true" 
-                            data-val-required="Please select at least one">
-                        <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
-                    </div>
-                    <br />
-                    <div class="form-check form-check-inline">
-                        <input 
-                            id="IsCase" 
-                            class="form-check-input" 
-                            type="checkbox" 
-                            name="SignupInterviewer.IsCase" 
-                            value="true" 
-                            data-val="true" 
-                            data-val-required="Please select at least one">
-                        <label for="IsCase" class="form-check-label">Case Interviews</label>
-                    </div>
-                    <div>
-                        <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
-                    </div>
-@*                    <span asp-validation-for="SignupInterviewer.IsBehavioral" class="text-danger"></span>
-*@                @*</div>*@
-
+                <br />
+                <label class="control-label">What types of interviews would you be comfortable giving?</label>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input 
+                        id="IsTechnical" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsTechnical" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one">
+                    <label for="IsTechnical" class="form-check-label">Technical Interviews</label>
+                </div>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input 
+                        id="IsBehavioral" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsBehavioral" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one">
+                    <label for="IsBehavioral" class="form-check-label">Behavioral Interviews</label>
+                </div>
+                <br />
+                <div class="form-check form-check-inline">
+                    <input 
+                        id="IsCase" 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        name="SignupInterviewer.IsCase" 
+                        value="true" 
+                        data-val="true" 
+                        data-val-required="Please select at least one">
+                    <label for="IsCase" class="form-check-label">Case Interviews</label>
+                </div>
+                <div>
+                    <span asp-validation-for="SignupInterviewer.IsTechnical" class="text-danger"></span>
+                </div>
                 <br /><br />
                 <div class="row" id="center-everything">
                     <div class="col-md-6">
@@ -242,43 +205,9 @@
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
     <script>
-        // Attach a click event handler to the "Select All" buttons
-        var selectAllButtons = document.querySelectorAll('.selectAllButton');
-        selectAllButtons.forEach(function (button) {
-            button.addEventListener("click", function () {
-                var target = this.getAttribute("data-target"); // "list1" or "list2"
-                var checkboxes = document.querySelectorAll('input[name="' + target + '"]');
-                var allChecked = Array.from(checkboxes).every(function (checkbox) {
-                    return checkbox.checked;
-                });
-
-                checkboxes.forEach(function (checkbox) {
-                    checkbox.checked = !allChecked;
-                });
-            });
-        });
+        selectAll();
     </script>
-@*     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var checkbox1 = document.querySelector("#InPerson[value='true']");
-            var checkbox2 = document.querySelector("#InPerson[value='false']");
-            var checkbox2Label = document.getElementById('annoyingLabel');
-            var divToToggle = document.getElementById('lunch-question'); // Replace 'divToToggle' with the actual ID of your target div
-
-            checkbox1.addEventListener('click', function () {
-                divToToggle.style.display = 'block';
-            });
-            checkbox2.addEventListener('click', function () {
-                divToToggle.style.display = 'none';
-            });
-            checkbox2Label.addEventListener('click', function () {
-                checkbox2.checked = !checkbox2.checked;
-                divToToggle.style.display = 'none';
-            });
-        });
-    </script> *@
 }

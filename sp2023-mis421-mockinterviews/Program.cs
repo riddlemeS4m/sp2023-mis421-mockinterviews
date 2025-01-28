@@ -8,6 +8,7 @@ using Google.Apis.Services;
 using SendGrid;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
+using sp2023_mis421_mockinterviews.Interfaces.IServices;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
 using sp2023_mis421_mockinterviews.Services.SignalR;
 using sp2023_mis421_mockinterviews.Services.UserDb;
@@ -27,11 +28,6 @@ namespace sp2023_mis421_mockinterviews
             var configuration = builder.Configuration;
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                //options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
-		        //options.KnownProxies.Add(IPAddress.Parse("45.55.99.114"));
-		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.5"));
-		        //options.KnownProxies.Add(IPAddress.Parse("10.108.0.6"));
-
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 		        options.KnownNetworks.Clear();
 		        options.KnownProxies.Clear();            
@@ -125,21 +121,23 @@ namespace sp2023_mis421_mockinterviews
             services.AddScoped<GoogleDriveSiteContentService>(serviceProvider =>
             {
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
-                var logger = serviceProvider.GetRequiredService<ILogger<GoogleDriveSiteContentService>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<IGoogleDrive>>();
                 return new GoogleDriveSiteContentService(siteContentFolderId, driveService, logger);
             });
 
             services.AddScoped<GoogleDriveResumeService>(serviceProvider =>
             {
+                var logger = serviceProvider.GetRequiredService<ILogger<IGoogleDrive>>();
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
-                return new GoogleDriveResumeService(resumesFolderId, driveService);
+                return new GoogleDriveResumeService(resumesFolderId, driveService, logger);
             });
 
             services.AddScoped<GoogleDrivePfpService>(serviceProvider =>
             {
+                var logger = serviceProvider.GetRequiredService<ILogger<IGoogleDrive>>();
                 var driveService = serviceProvider.GetRequiredService<DriveService>();
                 var cacheService = serviceProvider.GetRequiredService<IMemoryCache>();
-                return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService);
+                return new GoogleDrivePfpService(pfpsFolderId, driveService, cacheService, logger);
             });
 
             services.AddScoped<InterviewService>(serviceProvider => {

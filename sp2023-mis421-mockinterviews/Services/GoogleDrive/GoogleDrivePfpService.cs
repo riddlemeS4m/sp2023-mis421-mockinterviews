@@ -11,14 +11,17 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
         private readonly string _folderId;
         private readonly DriveService _driveClient;
         private readonly IMemoryCache _memoryCache;
+        private readonly ILogger<IGoogleDrive> _logger;
 
         public GoogleDrivePfpService(string folderId, 
             DriveService driveClient,
-            IMemoryCache memoryCache)
+            IMemoryCache memoryCache,
+            ILogger<IGoogleDrive> logger)
         {
             _folderId = folderId;
             _driveClient = driveClient;
             _memoryCache = memoryCache;
+            _logger = logger;
         }
 
         public async Task<(Google.Apis.Drive.v3.Data.File, MemoryStream)> GetOneFile(string fileId, bool download = true)
@@ -51,18 +54,19 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
                     if (download)
                     {
-                        request.MediaDownloader.ProgressChanged += GoogleDriveUtility.Download_ProgressChanged;
+                        var googleDriveUtility = new GoogleDriveUtility(_logger);
+                        request.MediaDownloader.ProgressChanged += googleDriveUtility.Download_ProgressChanged;
 
                         await request.DownloadAsync(stream);
                     }
 
                     if (file == null)
                     {
-                        Console.WriteLine($"Did not find file with id '{fileId}'");
+                        _logger.LogWarning($"Did not find file with id '{fileId}'");
                         throw new FileNotFoundException("File not found.");
                     }
 
-                    Console.WriteLine($"File with id '{fileId}' found.");
+                    _logger.LogInformation($"File with id '{fileId}' found.");
 
                     stream.Position = 0;
                     cachedFile = (file, stream);
@@ -80,7 +84,7 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
                 }
             }
 
-            Console.WriteLine($"{cacheKey} cached on server successfully.");
+            _logger.LogInformation($"{cacheKey} cached on server successfully.");
             return cachedFile;
         }
 
@@ -90,12 +94,12 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (files == null || files.Count == 0)
             {
-                Console.WriteLine($"{nameof(files)} was empty.");
+                _logger.LogWarning($"{nameof(files)} was empty.");
                 return idList;
             }
             else
             {
-                Console.WriteLine($"Profile picture ids parsed.");
+                _logger.LogInformation($"Profile picture ids parsed.");
                 foreach (var file in files)
                 {
                     idList.Add(file.Id);
@@ -119,12 +123,12 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             if (result.Files == null || result.Files.Count == 0)
             {
-                Console.WriteLine($"Did not find query '{query}'");
+                _logger.LogWarning($"Did not find query '{query}'");
                 return new List<Google.Apis.Drive.v3.Data.File>();
             }
             else
             {
-                Console.WriteLine($"Found query '{query}'");
+                _logger.LogInformation($"Found query '{query}'");
                 return result.Files;
             }
         }
@@ -176,7 +180,8 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             FilesResource.CreateMediaUpload request = _driveClient.Files.Create(fileMetaData, fileStream, fileMetaData.MimeType);
 
-            request.ProgressChanged += GoogleDriveUtility.Upload_ProgressChanged;
+            var googleDriveUtility = new GoogleDriveUtility(_logger);
+            request.ProgressChanged += googleDriveUtility.Upload_ProgressChanged;
 
             var result = await request.UploadAsync();
 
@@ -187,7 +192,7 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
             else
             {
                 var fileId = request.ResponseBody.Id;
-                Console.WriteLine("Upload to Google Drive 'Profile Picture' folder succeeded.");
+                _logger.LogInformation("Upload to Google Drive 'Profile Picture' folder succeeded.");
 
                 await MakeFilePublicAsync(fileId);
 
@@ -206,7 +211,7 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
             {
                 var request = _driveClient.Files.Delete(fileId);
                 await request.ExecuteAsync();
-                Console.WriteLine($"File with id {fileId} was deleted successfully.");
+                _logger.LogInformation($"File with id {fileId} was deleted successfully.");
             }
             catch (Exception)
             {

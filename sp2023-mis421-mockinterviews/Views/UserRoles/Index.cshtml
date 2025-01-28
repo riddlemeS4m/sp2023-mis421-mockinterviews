@@ -15,9 +15,7 @@
             <th>Last Name</th>
             <th>Email</th>
             <th>Microsoft Id</th>
-@*            <th>Roles</th>
-*@            <th>Manage</th>
-            <th>Delete</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -27,13 +25,10 @@
                 <td>@user.FirstName</td>
                 <td>@user.LastName</td>
                 <td>@user.Email</td>
-                <td>@user.UserId</td>
-@*                <td>@string.Join(" , ", user.Roles.ToList())</td>
-*@                <td>
-                    <a class="btn btn-primary" asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Manage Roles</a>
-                </td>
-                <td>
-                    <a class="btn btn-primary" asp-controller="Users" asp-action="DeleteUser" asp-route-userId="@user.UserId">Delete</a>
+                <td>@user.UserId</td><td>
+                    <a asp-controller="UserRoles" asp-action="Manage" asp-route-userId="@user.UserId">Manage Roles</a> | 
+                    <a asp-controller="Users" asp-action="ResetUserPassword" asp-route-userId="@user.UserId">Reset Password</a> | 
+                    <a asp-controller="Users" asp-action="DeleteUser" asp-route-userId="@user.UserId">Delete</a>
                 </td>
             </tr>
         }

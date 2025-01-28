@@ -27,7 +27,7 @@ jobs:
             dotnet ef database update --verbose --context UserDataDbContext --connection ${{ secrets.USERS_CONNECTION_STRING }}
             dotnet ef database update --verbose --context MockInterviewDataDbContext --connection ${{ secrets.SIGNUPS_CONNECTION_STRING }}
             cd ..
-            dotnet build &&
+            dotnet build --no-restore --property WarningLevel=0 &&
             echo ${{ secrets.DROPLET_PASSWORD }} | sudo -S systemctl start kestrel-mockinterviews.service
 
       - name: Exit SSH

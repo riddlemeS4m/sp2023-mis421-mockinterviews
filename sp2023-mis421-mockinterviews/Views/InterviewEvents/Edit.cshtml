@@ -106,61 +106,10 @@ else
     </div>
 }
 
-@*<script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@8.0.0/dist/browser/signalr.min.js"></script>
-<script>
-    var connection = new signalR.HubConnectionBuilder().withUrl("/interviewhub").build();
-
-    connection.start().catch(function (err)
-    {
-        return console.error(err.toString());
-    });
-
-    var form = document.querySelector("form")
-    if(form == null)
-    {
-        throw new Error("Could not find form");
-    }
-    else
-    {
-        form.addEventListener("submit", function (event)
-        {
-            connection.invoke("SendInterviewEventUpdate", @Model.InterviewEvent.Id).catch(function (err)
-            {
-                return console.error(err.toString());
-            });
-            event.preventDefault();
-        });
-    }
-</script>*@
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 
     <script>
-        $(document).ready(function () {
-            $('#interviewType').change(function () {
-                var selectedTypeText = $(this).children("option:selected").text();
-                var interviewerIdSelect = $('#interviewerId');
-
-                if (selectedTypeText === 'Technical') {
-                    populateSelectBox(interviewerIdSelect, @Json.Serialize(Model.TechnicalInterviewers));
-                } else if (selectedTypeText === 'Behavioral') {
-                    populateSelectBox(interviewerIdSelect, @Json.Serialize(Model.BehavioralInterviewers));
-                }
-            });
-
-            function populateSelectBox(selectBox, items) {
-                // Clear existing options
-                selectBox.empty();
-
-                // Add new options based on the received items
-                $.each(items, function (index, item) {
-                    selectBox.append($('<option>', {
-                        value: item.value,
-                        text: item.text
-                    }));
-                });
-            }
-        });
+        editInterviewAssignments(@Json.Serialize(Model.TechnicalInterviewers), @Json.Serialize(Model.BehavioralInterviewers));
     </script>
 }

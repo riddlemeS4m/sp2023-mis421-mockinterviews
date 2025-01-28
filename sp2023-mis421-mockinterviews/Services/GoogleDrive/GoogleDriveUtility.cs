@@ -1,13 +1,19 @@
 using Google.Apis.Download;
-using Google.Apis.Drive.v3;
 using Google.Apis.Upload;
-using Microsoft.AspNetCore.Mvc;
+using sp2023_mis421_mockinterviews.Interfaces.IServices;
 using System.Text.Json;
 
 namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 {
     public class GoogleDriveUtility
     {
+        private readonly ILogger<IGoogleDrive> _logger;
+
+        public GoogleDriveUtility(ILogger<IGoogleDrive> logger)
+        {
+            _logger = logger;
+        }
+
         private static readonly Dictionary<string, string> MimeTypes = new()
         {
             { ".pdf", "application/pdf" },
@@ -44,40 +50,34 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
             return JsonSerializer.Serialize(googleCredentialJson);
         }
 
-        public static void Upload_ProgressChanged(IUploadProgress progress)
+        public void Upload_ProgressChanged(IUploadProgress progress)
         {
             switch (progress.Status)
             {
                 case UploadStatus.Uploading:
-                    // Optionally, log the progress of the upload
-                    Console.WriteLine($"Uploading: {progress.BytesSent} bytes sent.");
+                    _logger.LogInformation($"Uploading: {progress.BytesSent} bytes sent.");
                     break;
                 case UploadStatus.Completed:
-                    // Optionally, log the completion of the upload
-                    Console.WriteLine("Upload completed successfully.");
+                    _logger.LogInformation("Upload completed successfully.");
                     break;
                 case UploadStatus.Failed:
-                    // Optionally, log the failure of the upload
-                    Console.WriteLine($"Upload failed: {progress.Exception.Message}");
+                    _logger.LogError($"Upload failed: {progress.Exception.Message}");
                     break;
             }
         }
 
-        public static void Download_ProgressChanged(IDownloadProgress progress)
+        public void Download_ProgressChanged(IDownloadProgress progress)
         {
             switch (progress.Status)
             {
                 case DownloadStatus.Downloading:
-                    // Optionally, log the progress of the download
-                    Console.WriteLine($"Downloading: {progress.BytesDownloaded} bytes downloaded.");
+                    _logger.LogInformation($"Downloading: {progress.BytesDownloaded} bytes downloaded.");
                     break;
                 case DownloadStatus.Completed:
-                    // Optionally, log the completion of the download
-                    Console.WriteLine("Download completed successfully.");
+                    _logger.LogInformation("Download completed successfully.");
                     break;
                 case DownloadStatus.Failed:
-                    // Optionally, log the failure of the download
-                    Console.WriteLine($"Download failed: {progress.Exception.Message}");
+                    _logger.LogError($"Download failed: {progress.Exception.Message}");
                     break;
             }
         }

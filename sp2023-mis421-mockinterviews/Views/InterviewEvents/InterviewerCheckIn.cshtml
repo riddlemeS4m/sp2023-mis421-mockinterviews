@@ -47,20 +47,6 @@
 
 @section Scripts {
     <script>
-        $(document).ready(function () {
-            if(@Model.CheckedIn.ToString().ToLower() === true){
-                console.log('showing modal...')
-                let modal = document.getElementById('exampleModalCenter');
-                let modalObject = $(modal);
-                $(modalObject).modal('show');
-
-            }
-        });
-
-        $(document).ready(function () {
-            $('#hideModalButton').click(function () {
-                $('#exampleModalCenter').modal('hide');
-            });
-        });
+        interviewerSelfCheckIn(@Model.CheckedIn.ToString().ToLower());
     </script>
 }
