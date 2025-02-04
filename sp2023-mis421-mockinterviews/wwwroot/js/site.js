@@ -87,7 +87,12 @@ const applyTimers = () => {
 }
 
 const populateInlineForm = () => {
-    $(document).on('click', '.capture-data', function () {
+    $(document).on('click', '.capture-data', function (e) {
+        e.preventDefault();
+        $("html, body").animate({
+            scrollTop: $("#availableInterviewers").offset().top
+          }, 0);
+
         const row = $(this).closest('tr');
 
         const id = row.attr('id');
