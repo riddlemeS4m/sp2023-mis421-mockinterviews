@@ -149,7 +149,8 @@ else
             if (item.InterviewEvent.Status == StatusConstants.CheckedIn)
             {
                 <tr id="@item.InterviewEvent.Id" data-student-name="@item.StudentName" data-status="@item.InterviewEvent.Status"
-                    data-type="@item.InterviewEvent.Type">
+                    data-type="@item.InterviewEvent.Type" data-interviewer-name="@item.InterviewerName" 
+                    data-interviewer-id="@item.InterviewEvent.InterviewerTimeslot?.InterviewerSignup.InterviewerId">
                     <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
                     <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
                     <td>@Html.DisplayFor(modelItem => item.Class)</td>
@@ -194,7 +195,8 @@ else
             if (item.InterviewEvent.Status != StatusConstants.Ongoing && item.InterviewEvent.Status !=
             StatusConstants.CheckedIn)
             {
-                <tr id="@item.InterviewEvent.Id">
+                <tr id="@item.InterviewEvent.Id" data-interviewer-name="@item.InterviewerName" 
+                    data-interviewer-id="@item.InterviewEvent.InterviewerTimeslot?.InterviewerSignup.InterviewerId">
                     <td style="color:white;">@Html.DisplayFor(modelItem => item.InterviewEvent.TimeslotId)</td>
                     <td>@Html.DisplayFor(modelItem => item.StudentName)</td>
                     <td>@Html.DisplayFor(modelItem => item.Class)</td>

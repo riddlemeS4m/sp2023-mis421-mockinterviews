@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Metadata;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Interfaces.IDbContext
@@ -18,6 +19,8 @@ namespace sp2023_mis421_mockinterviews.Interfaces.IDbContext
         public DbSet<RosteredStudent> RosteredStudents { get; set; }
         public DbSet<Setting> Settings { get; set; }
         public DbSet<EmailTemplate> EmailTemplates { get; set; }
+        IModel Model { get; }
+
 
         DbSet<T> Set<T>() where T : class;
         void Add<T>(T entity) where T : class;
@@ -26,5 +29,6 @@ namespace sp2023_mis421_mockinterviews.Interfaces.IDbContext
         void Remove<T>(T entity) where T : class;
         EntityEntry<T> Entry<T>(T entity) where T : class;
         Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        IEnumerable<EntityEntry<T>> GetChangeTracker<T>() where T : class;
     }
 }

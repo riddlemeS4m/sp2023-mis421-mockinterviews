@@ -1,7 +1,7 @@
 function populateSelectBox(selectBox, items) {
     selectBox.empty();
 
-    $.each(items, function (index, item) {
+    $.each(items, (item) => {
         selectBox.append($('<option>', {
             value: item.value,
             text: item.text

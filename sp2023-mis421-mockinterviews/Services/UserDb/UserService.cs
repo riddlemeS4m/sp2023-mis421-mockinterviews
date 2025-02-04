@@ -45,6 +45,11 @@ namespace sp2023_mis421_mockinterviews.Services.UserDb
             return names;
         }
 
+        public async Task<Dictionary<string, ApplicationUser>> GetUsersByIds(IEnumerable<string> userIds)
+        {
+            return await _dbSet.Where(x => userIds.Contains(x.Id)).ToDictionaryAsync(x => x.Id, x => x);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetUsersByRole(string roleName)
         {
             return await _userManager.GetUsersInRoleAsync(roleName);

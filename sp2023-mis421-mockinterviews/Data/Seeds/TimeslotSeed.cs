@@ -9,7 +9,8 @@ namespace sp2023_mis421_mockinterviews.Data.Seeds
     public class TimeslotSeed
     {
         public static int MaxSignups { get; set; } = 0;
-        public static readonly string[] Times = { "8:00 AM",
+        public static readonly string[] Times = { 
+            "8:00 AM",
             "8:30 AM",
             "9:00 AM",
             "9:30 AM",

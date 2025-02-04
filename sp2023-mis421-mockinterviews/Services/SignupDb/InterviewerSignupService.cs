@@ -6,8 +6,10 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 {
     public class InterviewerSignupService : GenericSignupDbService<InterviewerSignup>
     {
-        public InterviewerSignupService(ISignupDbContext context) : base(context)
+        private readonly ILogger<InterviewerSignupService> _logger;
+        public InterviewerSignupService(ISignupDbContext context, ILogger<InterviewerSignupService> logger) : base(context)
         {
+            _logger = logger;
         }
 
         public async Task<Dictionary<string,string>> GetCheckedInAndAvailableInterviewerIdsWithTypes(IEnumerable<string> busyInterviewers)
@@ -17,13 +19,8 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
                 .ToDictionaryAsync(x => x.Id, x => x.Type);
         }
 
-        ///<summary>
-        ///     Parameters: Takes a Dictionary of InterviewId, InterviewerSignupId <br />
-        ///     Returns: A Dictionary of InterviewerSignupId, InterviewerSignup.InterviewerId
-        ///</summary>
         public async Task<Dictionary<int, string>> GetInterviewerIdsFromInterviews(Dictionary<int, int> interviews)
         {
-            
             return await _dbSet.Where(x => interviews.Values.Contains(x.Id))
                 .Select(x => new {x.Id, x.InterviewerId})
                 .ToDictionaryAsync(x => x.Id, x => x.InterviewerId);

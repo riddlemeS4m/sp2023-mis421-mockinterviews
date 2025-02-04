@@ -6,8 +6,10 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 {
     public class InterviewerLocationService : GenericSignupDbService<InterviewerLocation>
     {
-        public InterviewerLocationService(ISignupDbContext context) : base(context)
+        private readonly ILogger<InterviewerLocationService> _logger;
+        public InterviewerLocationService(ISignupDbContext context, ILogger<InterviewerLocationService> logger) : base(context)
         {
+            _logger = logger;
         }
 
         public async Task<Dictionary<string, string>> GetInterviewersRoomsByIds(IEnumerable<string> userIds)

@@ -23,6 +23,7 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
         [ValidateNever]
         public Timeslot Timeslot { get; set; }
+
         public override string ToString()
         {
             return $"[Interviewer Timeslots] Id: {Id}, Interviewer Signup Id: {InterviewerSignupId}, Timeslots Id: {TimeslotId}";

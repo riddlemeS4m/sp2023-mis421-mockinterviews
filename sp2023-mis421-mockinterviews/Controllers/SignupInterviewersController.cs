@@ -1,40 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
-using SendGrid;
-using SendGrid.Helpers.Mail;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
-using sp2023_mis421_mockinterviews.Data.Constants;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using SendGrid;
 using sp2023_mis421_mockinterviews.Models.ViewModels;
 using sp2023_mis421_mockinterviews.Models.UserDb;
+using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 using sp2023_mis421_mockinterviews.Services.SignalR;
+using sp2023_mis421_mockinterviews.Services.UserDb;
 using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Data.Constants;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class SignupInterviewersController : Controller
     {
         private readonly MockInterviewDataDbContext _context;
+        private readonly UserService _userService;
         private readonly ISendGridClient _sendGridClient;
         private readonly IHubContext<AvailableInterviewersHub> _hubContext;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<SignupInterviewersController> _logger;
 
         public SignupInterviewersController(MockInterviewDataDbContext context,
+            UserService userService,
             ISendGridClient sendGridClient,
             IHubContext<AvailableInterviewersHub> hubContext,
             UserManager<ApplicationUser> userManager,
             ILogger<SignupInterviewersController> logger)
         {
             _context = context;
+            _userService = userService;
             _sendGridClient = sendGridClient;
             _hubContext = hubContext;
             _userManager = userManager;
@@ -77,7 +74,27 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 return NotFound();
             }
 
-            return View(signupInterviewer);
+            var vm = new SignupInterviewerViewModel {
+                SignupInterviewer = signupInterviewer
+            };
+
+            var studentIds = await _context.Interviews
+                .Where(x => x.InterviewerTimeslot.InterviewerSignupId == id)
+                .Select(x => x.StudentId)
+                .ToListAsync();
+            
+            if(studentIds.Count > 0)
+            {
+                var students = await _userService.GetUsersByIds(studentIds);
+                var dictionary = students.Values.ToDictionary(x => x.GetFullName(), x => $"https://drive.google.com/file/d/{x.Resume}");
+                vm.Resumes = dictionary;
+            }
+            else
+            {
+                vm.Resumes = new Dictionary<string, string>();
+            }  
+        
+            return View(vm);
         }
 
         // GET: SignupInterviewers/Create
