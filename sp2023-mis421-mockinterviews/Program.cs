@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.SignalR;
 using Google.Apis.Drive.v3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
@@ -10,6 +11,7 @@ using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
 using sp2023_mis421_mockinterviews.Services.GoogleDrive;
+using sp2023_mis421_mockinterviews.Services.Controllers;
 using sp2023_mis421_mockinterviews.Services.SignalR;
 using sp2023_mis421_mockinterviews.Services.UserDb;
 using sp2023_mis421_mockinterviews.Services.SignupDb;
@@ -67,7 +69,7 @@ namespace sp2023_mis421_mockinterviews
             pfpsFolderId = configuration[$"{googleDriveFolderPrefix}PFPs"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}PFPs' not stored yet.");
 
             services.AddDbContext<IUserDbContext, UserDataDbContext>(options =>
-                options.UseSqlServer(userDataConnectionString),
+                options.UseSqlServer(userDataConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
                 ServiceLifetime.Scoped);
 
             //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
@@ -80,7 +82,7 @@ namespace sp2023_mis421_mockinterviews
             //this is to account for using two different database sets for the two different environments
 
             services.AddDbContext<ISignupDbContext, MockInterviewDataDbContext>(options =>
-                options.UseSqlServer(mockInterviewDataConnectionString),
+                options.UseSqlServer(mockInterviewDataConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
                 ServiceLifetime.Scoped);
 
             //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
@@ -148,7 +150,8 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddScoped<SettingsService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new SettingsService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<SettingsService>>();
+                return new SettingsService(dbContext, logger);
             });
 
             services.AddScoped<TimeslotService>(serviceProvider => {
@@ -165,17 +168,20 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddScoped<InterviewerSignupService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new InterviewerSignupService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<InterviewerSignupService>>();
+                return new InterviewerSignupService(dbContext, logger);
             });
 
             services.AddScoped<InterviewerLocationService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new InterviewerLocationService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<InterviewerLocationService>>();
+                return new InterviewerLocationService(dbContext, logger);
             });
 
             services.AddScoped<InterviewerTimeslotService>(serviceProvider => {
                 var dbContext = serviceProvider.GetRequiredService<ISignupDbContext>();
-                return new InterviewerTimeslotService(dbContext);
+                var logger = serviceProvider.GetRequiredService<ILogger<InterviewerTimeslotService>>();
+                return new InterviewerTimeslotService(dbContext, logger);
             });
 
             services.AddScoped<UserService>(serviceProvider => {
@@ -184,9 +190,21 @@ namespace sp2023_mis421_mockinterviews
                 return new UserService(dbContext, userManager);
             });
 
+            services.AddScoped<ISignupDbServiceFactory, SignupDbServiceFactory>();
+
             services.AddSignalR();
 
             services.AddHttpClient();
+
+            services.AddTransient<IManageInterviews, ManageInterviewsService>(serviceProvider => {
+                var factory = serviceProvider.GetRequiredService<ISignupDbServiceFactory>();
+                var users = serviceProvider.GetRequiredService<UserService>();
+                var sendGrid = serviceProvider.GetRequiredService<ISendGridClient>();
+                var interviews = serviceProvider.GetRequiredService<IHubContext<AssignInterviewsHub>>();
+                var interviewers = serviceProvider.GetRequiredService<IHubContext<AvailableInterviewersHub>>();
+                var logger = serviceProvider.GetRequiredService<ILogger<ManageInterviewsService>>();
+                return new ManageInterviewsService(factory, users, sendGrid, interviews, interviewers, logger);
+            });
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

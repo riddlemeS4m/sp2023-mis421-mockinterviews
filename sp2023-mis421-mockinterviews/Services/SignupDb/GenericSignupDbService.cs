@@ -51,6 +51,44 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
             return entity;
         }
 
+        public async Task UpdateRangeAsync(IEnumerable<T> entities)
+        {
+            foreach (var entity in entities)
+            {
+                var trackedEntity = _context.GetChangeTracker<T>()
+                    .FirstOrDefault(e => e.Entity.Equals(entity));
+
+                if (trackedEntity != null)
+                {
+                    trackedEntity.CurrentValues.SetValues(entity);
+                }
+                else
+                {
+                    var key = _context.Model.FindEntityType(typeof(T))
+                                .FindPrimaryKey()
+                                .Properties
+                                .Select(x => x.Name)
+                                .FirstOrDefault();
+
+                    var keyValue = typeof(T).GetProperty(key)?.GetValue(entity);
+
+                    var existingEntity = await _dbSet.FindAsync(keyValue);
+                    if (existingEntity != null)
+                    {
+                        _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+                    }
+                    else
+                    {
+                        _dbSet.Attach(entity);
+                        _context.Entry(entity).State = EntityState.Modified;
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+
         public async Task<bool> DeleteAsync(object id)
         {
             var entity = await _dbSet.FindAsync(id);

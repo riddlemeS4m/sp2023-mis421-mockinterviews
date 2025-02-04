@@ -50,6 +50,43 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
                 .ToListAsync();
         }
 
+        /// <summary>
+        /// Retrieves all active interview events, including related location, interviewer timeslot, 
+        /// interviewer signups, and associated event details, ordered by timeslot ID.
+        /// </summary>
+        /// <returns>A collection of active <see cref="Interview"/> entities.</returns>
+        public async Task<IEnumerable<Interview>> GetAllActiveInterviews()
+        {
+            var interviewEvents = await _dbSet
+                .Include(i => i.Location)
+                .Include(i => i.InterviewerTimeslot)
+                .ThenInclude(i => i.InterviewerSignup)
+                .Include(i => i.Timeslot)
+                .ThenInclude(j => j.Event)
+                .Where(i => i.Timeslot.Event.IsActive
+                    && i.Status == StatusConstants.Default)
+                .OrderBy(i => i.Timeslot.Time)
+                .ToListAsync();
+            
+            return interviewEvents;
+        }
+
+        public async Task<IEnumerable<Interview>> GetAllActiveInterviewsByIds(List<int> ids)
+        {
+            var interviewEvents = await _dbSet
+                .Include(i => i.Location)
+                .Include(i => i.InterviewerTimeslot)
+                .ThenInclude(i => i.InterviewerSignup)
+                .Include(i => i.Timeslot)
+                .ThenInclude(j => j.Event)
+                .Where(i => i.Timeslot.Event.IsActive
+                    && ids.Contains(i.Id))
+                .OrderBy(i => i.Timeslot.Time)
+                .ToListAsync();
+            
+            return interviewEvents;
+        }
+
         public async Task<IEnumerable<Interview>> GetActiveInterviewsForOneStudent(string userId)
         {
             return await _dbSet.Include(x => x.Timeslot)

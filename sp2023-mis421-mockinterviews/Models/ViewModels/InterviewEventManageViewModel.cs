@@ -11,5 +11,6 @@ namespace sp2023_mis421_mockinterviews.Models.ViewModels
         public List<SelectListItem> RequestedInterviewers { get; set; }
         public string InterviewerId { get; set; }
         public string StudentName { get; set; }
+        public string StudentClass { get; set; }
     }
 }

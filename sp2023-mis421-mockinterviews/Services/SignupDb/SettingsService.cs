@@ -7,8 +7,10 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 {
     public class SettingsService : GenericSignupDbService<Setting>
     {
-        public SettingsService(ISignupDbContext context) : base(context)
+        private readonly ILogger<SettingsService> _logger;
+        public SettingsService(ISignupDbContext context, ILogger<SettingsService> logger) : base(context)
         {
+            _logger = logger;
         }
 
         public async Task<Setting> GetSettingByName(string name, string defaultValue = "")

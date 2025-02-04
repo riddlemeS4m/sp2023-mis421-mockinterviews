@@ -12,14 +12,14 @@ using sp2023_mis421_mockinterviews.Data.Contexts;
 namespace sp2023_mis421_mockinterviews.Data.Migrations.UserDb
 {
     [DbContext(typeof(UserDataDbContext))]
-    [Migration("20240718003558_hostResume")]
-    partial class hostResume
+    [Migration("20250204171036_reinitialize")]
+    partial class reinitialize
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "6.0.23")
+                .HasAnnotation("ProductVersion", "6.0.32")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);

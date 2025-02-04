@@ -18,31 +18,37 @@ $(document).ready(() => {
         $availableInterviewersView.empty();
 
         interviewers.forEach(interviewer => {
-            const $newListItem = createInterviewerListItem(interviewer);
+            const $newListItem = createInterviewerCard(interviewer);
             $availableInterviewersView.append($newListItem);
         });
     });
 
     // Helper function to create a list item for an interviewer
-    const createInterviewerListItem = (interviewer) => {
-        const $listItem = $('<li></li>').attr('id', interviewer.id).css('color', 'black');
+    const createInterviewerCard = (interviewer) => {
+        const $card = $('<div></div>')
+            .addClass('interviewer-card')
+            .attr('id', interviewer.id)
 
-        const $name = $('<b></b>')
-            .append($('<u></u>').text(interviewer.name));
+        const $cardinner = $('<div></div>')
+            .addClass('card-inner')
 
-        const $type = $('<b></b>')
-            .append($('<u></u>').text(interviewer.interviewType));
+        const $cardfront = $('<div></div>')
+            .addClass('card-front');
 
-        const $room = $('<b></b>')
-            .append($('<u></u>').text(interviewer.room));
+        const $cardback = $('<div></div>')
+            .addClass('card-back');
 
-        $listItem.append($name)
-            .append(' is available to do ')
-            .append($type)
-            .append(' interviews in room ')
-            .append($room)
-            .append('.');
+        const $name = $('<div></div>').text(interviewer.name).addClass('interviewer-name');
+        const $type = $('<div></div>').text(interviewer.interviewType).addClass('interview-type');
+        const $room = $('<div></div>').text(interviewer.room).addClass('room-location');
 
-        return $listItem;
-    }
+        $cardfront.append($name, $type);
+        $cardback.append($room);
+
+        $cardinner.append($cardfront, $cardback);
+    
+        $card.append($cardinner);
+    
+        return $card;
+    };    
 });

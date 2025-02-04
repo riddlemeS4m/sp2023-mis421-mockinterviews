@@ -87,11 +87,18 @@ const applyTimers = () => {
 }
 
 const populateInlineForm = () => {
-    $(document).on('click', '.capture-data', function () {
+    $(document).on('click', '.capture-data', function (e) {
+        e.preventDefault();
+        $("html, body").animate({
+            scrollTop: $("#edit-form-div").offset().top
+          }, 0);
+
         const row = $(this).closest('tr');
 
         const id = row.attr('id');
         const studentName = row.data('student-name');
+        const interviewerName = row.data('interviewer-name');
+        const interviewerId = row.data('interviewer-id');
         const status = row.data('status');
         const interviewType = row.data('type');
 
@@ -100,7 +107,28 @@ const populateInlineForm = () => {
         $('#Status').val(status);
         $('#Type').val(interviewType);
 
-        populateInterviewerSelectList(id, interviewType, status);
+        const $interviewerSelect = $('#InterviewerId');
+
+        if (interviewerName !== "" && interviewerName !== "Not Assigned") {
+            console.log("Student already has interviewer assigned.");
+            console.log(`InterviewerId: ${interviewerId}, InterviewerName: ${interviewerName}`);
+
+            if ($interviewerSelect.find(`option[value="${interviewerId}"]`).length === 0) {
+                console.log("Appending item...");
+                $interviewerSelect.append($('<option>', {
+                    value: interviewerId,
+                    text: interviewerName
+                }));
+            }
+
+            console.log("Setting value...");
+            $interviewerSelect.val(interviewerId);
+            $interviewerSelect.prop("disabled", true);
+            $('#Type').prop("disabled", true);
+            $('#edit-form-div').show();
+        } else {
+            populateInterviewerSelectList(id, interviewType, status);
+        }
     });
 }
 

@@ -53,5 +53,10 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
         {
             return $"[Interviewer Signup] Id: {Id}, Interviewer Id: {InterviewerId}, First Name: {FirstName}, Last Name: {LastName}";
         }
+
+        public string GetInterviewerName()
+        {
+            return $"{FirstName} {LastName}";
+        }
     }
 }
