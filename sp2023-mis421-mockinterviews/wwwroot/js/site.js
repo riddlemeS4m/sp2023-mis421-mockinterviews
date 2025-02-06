@@ -123,8 +123,8 @@ const populateInlineForm = () => {
 
             console.log("Setting value...");
             $interviewerSelect.val(interviewerId);
-            $interviewerSelect.prop("disabled", true);
-            $('#Type').prop("disabled", true);
+            // $interviewerSelect.prop("disabled", true);
+            // $('#Type').prop("disabled", true);
             $('#edit-form-div').show();
         } else {
             populateInterviewerSelectList(id, interviewType, status);

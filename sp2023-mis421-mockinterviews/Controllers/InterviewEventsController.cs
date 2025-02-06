@@ -1022,9 +1022,24 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         .FirstOrDefaultAsync();
 
                     interviewEvent.InterviewerTimeslot = signupInterviewTimeslot;
-                    interviewEvent.Location = location.Location;
                     interviewEvent.InterviewerTimeslotId = signupInterviewTimeslot.Id;
-                    interviewEvent.LocationId = location.Location.Id;
+
+                    if(location != null)
+                    {
+                        interviewEvent.LocationId = location.Location.Id;
+                        interviewEvent.Location = location.Location;
+                    } 
+
+                    if(interviewEvent.Status == StatusConstants.Ongoing)
+                    {
+                        interviewEvent.StartedAt = DateTime.Now;
+                    } else if (interviewEvent.Status == StatusConstants.CheckedIn)
+                    {
+                        interviewEvent.CheckedInAt = DateTime.Now;
+                    } else if (interviewEvent.Status == StatusConstants.Completed)
+                    {
+                        interviewEvent.EndedAt = DateTime.Now;
+                    }
                 }
 
                 try
