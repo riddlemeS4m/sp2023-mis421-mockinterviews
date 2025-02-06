@@ -54,7 +54,7 @@ const applyTimers = () => {
             const currentTime = Date.now();
             const elapsedTime = currentTime - startTime;
 
-            const hours = Math.floor(elapsedTime / (1000 * 60 * 60));
+            const hours = Math.floor(elapsedTime / (1000 * 60 * 60)) + 7;
             const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
             const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
 
