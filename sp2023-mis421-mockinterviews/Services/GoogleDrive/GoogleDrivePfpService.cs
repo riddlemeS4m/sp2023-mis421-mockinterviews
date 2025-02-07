@@ -171,7 +171,7 @@ namespace sp2023_mis421_mockinterviews.Services.GoogleDrive
 
             var fileMetaData = new Google.Apis.Drive.v3.Data.File()
             {
-                Name = DateTime.Now.ToString("yyyy_MM_dd_HH_mm_ss") + "_" + file.FileName,
+                Name = DateTime.UtcNow.ToString("yyyy_MM_dd_HH_mm_ss") + "_" + file.FileName,
                 Parents = new List<string> { _folderId },
                 MimeType = file.ContentType
             };

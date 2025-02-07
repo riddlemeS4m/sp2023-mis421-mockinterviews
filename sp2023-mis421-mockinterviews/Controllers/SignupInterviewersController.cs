@@ -278,7 +278,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Select(x => x.FirstName + " " + x.LastName)
                     .FirstOrDefaultAsync();
 
-                var date = DateTime.Now.Date;
+                var date = DateTime.UtcNow.Date;
                 //var date = new DateTime(2024, 2, 8);
 
                 iv.Room = await _context.InterviewerLocations

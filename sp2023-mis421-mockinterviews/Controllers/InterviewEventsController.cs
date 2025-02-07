@@ -157,7 +157,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Select(x => x.FirstName + " " + x.LastName)
                     .FirstOrDefaultAsync();
 
-                var date = DateTime.Now.Date;
+                var date = DateTime.UtcNow.Date;
                 //var date = new DateTime(2024, 2, 8);
 
                 iv.Room = await _context.InterviewerLocations
@@ -1002,43 +1002,46 @@ namespace sp2023_mis421_mockinterviews.Controllers
                         .Where(x => x.TimeslotId == interviewEvent.TimeslotId && x.InterviewerSignup.InterviewerId == InterviewerId)
                         .FirstOrDefaultAsync();
 
-                    var interviewerPreference = "";
-                    if (signupInterviewTimeslot.InterviewerSignup.IsVirtual && signupInterviewTimeslot.InterviewerSignup.InPerson)
+                    if(signupInterviewTimeslot != null)
                     {
-                        interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
-                    }
-                    else if (signupInterviewTimeslot.InterviewerSignup.IsVirtual)
-                    {
-                        interviewerPreference = InterviewLocationConstants.IsVirtual;
-                    }
-                    else if (signupInterviewTimeslot.InterviewerSignup.InPerson)
-                    {
-                        interviewerPreference = InterviewLocationConstants.InPerson;
-                    }
+                        var interviewerPreference = "";
+                        if (signupInterviewTimeslot.InterviewerSignup.IsVirtual && signupInterviewTimeslot.InterviewerSignup.InPerson)
+                        {
+                            interviewerPreference = InterviewLocationConstants.InPerson + "/" + InterviewLocationConstants.IsVirtual;
+                        }
+                        else if (signupInterviewTimeslot.InterviewerSignup.IsVirtual)
+                        {
+                            interviewerPreference = InterviewLocationConstants.IsVirtual;
+                        }
+                        else if (signupInterviewTimeslot.InterviewerSignup.InPerson)
+                        {
+                            interviewerPreference = InterviewLocationConstants.InPerson;
+                        }
 
-                    var location = await _context.InterviewerLocations
-                        .Include(x => x.Location)
-                        .Where(x => x.InterviewerId == InterviewerId && x.Preference == interviewerPreference && x.EventId == signupInterviewTimeslot.Timeslot.EventId && x.LocationId != null)
-                        .FirstOrDefaultAsync();
+                        var location = await _context.InterviewerLocations
+                            .Include(x => x.Location)
+                            .Where(x => x.InterviewerId == InterviewerId && x.Preference == interviewerPreference && x.EventId == signupInterviewTimeslot.Timeslot.EventId && x.LocationId != null)
+                            .FirstOrDefaultAsync();
 
-                    interviewEvent.InterviewerTimeslot = signupInterviewTimeslot;
-                    interviewEvent.InterviewerTimeslotId = signupInterviewTimeslot.Id;
+                        interviewEvent.InterviewerTimeslot = signupInterviewTimeslot;
+                        interviewEvent.InterviewerTimeslotId = signupInterviewTimeslot.Id;
 
-                    if(location != null)
-                    {
-                        interviewEvent.LocationId = location.Location.Id;
-                        interviewEvent.Location = location.Location;
-                    } 
+                        if(location != null)
+                        {
+                            interviewEvent.LocationId = location.Location.Id;
+                            interviewEvent.Location = location.Location;
+                        } 
 
-                    if(interviewEvent.Status == StatusConstants.Ongoing)
-                    {
-                        interviewEvent.StartedAt = DateTime.Now;
-                    } else if (interviewEvent.Status == StatusConstants.CheckedIn)
-                    {
-                        interviewEvent.CheckedInAt = DateTime.Now;
-                    } else if (interviewEvent.Status == StatusConstants.Completed)
-                    {
-                        interviewEvent.EndedAt = DateTime.Now;
+                        if(interviewEvent.Status == StatusConstants.Ongoing)
+                        {
+                            interviewEvent.StartedAt = DateTime.UtcNow;
+                        } else if (interviewEvent.Status == StatusConstants.CheckedIn)
+                        {
+                            interviewEvent.CheckedInAt = DateTime.UtcNow;
+                        } else if (interviewEvent.Status == StatusConstants.Completed)
+                        {
+                            interviewEvent.EndedAt = DateTime.UtcNow;
+                        }
                     }
                 }
 
@@ -1513,7 +1516,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             interviewEvent.Status = StatusConstants.CheckedIn;
-            interviewEvent.CheckedInAt = DateTime.Now;
+            interviewEvent.CheckedInAt = DateTime.UtcNow;
 
             try
             {
@@ -1556,7 +1559,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             interviewEvent.Status = StatusConstants.Completed;
-            interviewEvent.EndedAt = DateTime.Now;
+            interviewEvent.EndedAt = DateTime.UtcNow;
 
             try
             {
@@ -1599,7 +1602,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             }
 
             interviewEvent.Status = StatusConstants.NoShow;
-            interviewEvent.EndedAt = DateTime.Now;
+            interviewEvent.EndedAt = DateTime.UtcNow;
 
             try
             {
@@ -1664,7 +1667,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 if (signupInterviewTimeslot != null && interviewEvent.Status == StatusConstants.CheckedIn)
                 {
                     interviewEvent.Status = StatusConstants.Ongoing;
-                    interviewEvent.StartedAt = DateTime.Now;
+                    interviewEvent.StartedAt = DateTime.UtcNow;
                 }
 
                 var interviewerPreference = "";
@@ -1900,7 +1903,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                 vm.CheckInMessage = "You have been checked in automatically! Please take a seat until event staff calls you.";
 
                 ie.Status = StatusConstants.CheckedIn;
-                ie.CheckedInAt = DateTime.Now;
+                ie.CheckedInAt = DateTime.UtcNow;
                 _context.Update(ie);
                 await _context.SaveChangesAsync();
 
@@ -1998,7 +2001,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
             {
                 string interviewerId = interviewer.InterviewerId;
 
-                var date = DateTime.Now.Date;
+                var date = DateTime.UtcNow.Date;
                 //var date = new DateTime(2024, 2, 3);
 
                 var li = await _context.InterviewerLocations
@@ -2201,7 +2204,7 @@ namespace sp2023_mis421_mockinterviews.Controllers
                     .Select(x => x.FirstName + " " + x.LastName)
                     .FirstOrDefaultAsync();
 
-                var date = DateTime.Now.Date;
+                var date = DateTime.UtcNow.Date;
                 //var date = new DateTime(2024, 2, 8);
 
                 iv.Room = await _context.InterviewerLocations

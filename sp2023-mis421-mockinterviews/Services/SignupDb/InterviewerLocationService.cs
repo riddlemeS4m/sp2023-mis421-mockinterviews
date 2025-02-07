@@ -14,7 +14,7 @@ namespace sp2023_mis421_mockinterviews.Services.SignupDb
 
         public async Task<Dictionary<string, string>> GetInterviewersRoomsByIds(IEnumerable<string> userIds)
         {
-            var dict = await _dbSet.Where(x => userIds.Contains(x.InterviewerId) && x.Event.Date.Date == DateTime.Now.Date)
+            var dict = await _dbSet.Where(x => userIds.Contains(x.InterviewerId) && x.Event.Date.Date == DateTime.UtcNow.Date)
                 .Select(x => new {Id = x.InterviewerId, x.Location.Room})
                 .ToDictionaryAsync(x => x.Id, x => x.Room);
 

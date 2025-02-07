@@ -46,26 +46,19 @@ const applyTimers = () => {
     $('[id^="timer-"]').each(function () {
         const $timer = $(this);
         const startTimeString = $timer.text().trim();
-        const startTime = new Date(startTimeString).getTime();
-
-        // console.log(`Start time: ${startTimeString}`);
+        const startTime = new Date(startTimeString);
 
         const updateTimer = () => {
-            const currentTime = Date.now();
-            const elapsedTime = currentTime - startTime;
+            const currentTime = new Date(Date.now());
+            const hours = currentTime.getUTCHours() - startTime.getHours() >= 0 ? currentTime.getUTCHours() - startTime.getHours() : (24 + currentTime.getUTCHours() - startTime.getHours());
+            const minutes = currentTime.getUTCMinutes() - startTime.getMinutes() >= 0 ? currentTime.getUTCMinutes() - startTime.getMinutes() : (60 + currentTime.getUTCMinutes() - startTime.getMinutes());
+            const seconds = currentTime.getUTCSeconds() - startTime.getSeconds() >= 0 ? currentTime.getUTCSeconds() - startTime.getSeconds() : (60 + currentTime.getUTCSeconds() - startTime.getSeconds());
 
-            const hours = Math.floor(elapsedTime / (1000 * 60 * 60)) + 7;
-            const minutes = Math.floor((elapsedTime % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((elapsedTime % (1000 * 60)) / 1000);
-
-            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes
-                .toString()
-                .padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const formattedTime = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
             $timer.text(formattedTime);
 
-            // Update the timer style if elapsed time is over 30 minutes
-            if (elapsedTime >= 30 * 60 * 1000) {
+            if (minutes >= 30 || hours > 0) {
                 $timer.css({
                     color: 'red',
                     fontWeight: 'bold',
