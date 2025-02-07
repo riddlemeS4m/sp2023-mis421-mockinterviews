@@ -81,6 +81,8 @@ $(document).ready(() => {
           }
         });
         
+        console.log(`Received interview start time: ${interview.startedAt}...`)
+        console.log(`Received interview check in time: ${interview.checkedInAt}...`);
         applyTimers();
         populateInlineForm();
       }

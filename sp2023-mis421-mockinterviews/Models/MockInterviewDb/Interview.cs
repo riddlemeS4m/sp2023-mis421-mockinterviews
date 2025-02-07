@@ -49,14 +49,18 @@ namespace sp2023_mis421_mockinterviews.Models.MockInterviewDb
 
         [ValidateNever]
         public InterviewerTimeslot? InterviewerTimeslot { get; set; }
+
         [Display(Name = "Check-In Time")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss'Z'}", ApplyFormatInEditMode = true)]
 
         public DateTime? CheckedInAt { get; set; }
 
         [Display(Name = "Interview Timer")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss'Z'}", ApplyFormatInEditMode = true)]
         public DateTime? StartedAt { get; set; }
 
         [Display(Name = "Interview End Time")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-ddTHH:mm:ss'Z'}", ApplyFormatInEditMode = true)]
         public DateTime? EndedAt { get; set; }
 
         public override string ToString()
