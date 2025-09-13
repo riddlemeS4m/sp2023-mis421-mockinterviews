@@ -7,6 +7,8 @@ using Google.Apis.Drive.v3;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Services;
 using SendGrid;
+using VaultSharp;
+using VaultSharp.V1.AuthMethods.Token;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
@@ -35,9 +37,53 @@ namespace sp2023_mis421_mockinterviews
 		        options.KnownProxies.Clear();            
             });
 
-            configuration.AddUserSecrets<Program>();
 
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+            if (environment == Environments.Production)
+            {
+                try
+                {
+                    var tokenFile = Environment.GetEnvironmentVariable("VAULT_TOKEN_FILE")
+                        ?? "/vault/tokens/app-token";
+
+                    string vaultToken;
+                    if (File.Exists(tokenFile))
+                    {
+                        vaultToken = File.ReadAllText(tokenFile).Trim();
+                    }
+                    else
+                    {
+                        vaultToken = Environment.GetEnvironmentVariable("VAULT_TOKEN");
+                    }
+
+                    var vaultUrl = Environment.GetEnvironmentVariable("VAULT_URL")
+                        ?? "http://vault:8200";
+
+                    var authMethod = new TokenAuthMethodInfo(vaultToken);
+                    var vaultClientSettings = new VaultClientSettings(vaultUrl, authMethod);
+                    var vaultClient = new VaultClient(vaultClientSettings);
+
+                    var secrets = await vaultClient.V1.Secrets.KeyValue.V2
+                        .ReadSecretAsync(path: "mockinterviews/production", mountPoint: "secret");
+
+                    var vaultConfig = new Dictionary<string, string>();
+                    foreach (var kvp in secrets.Data.Data)
+                    {
+                        vaultConfig[kvp.Key] = kvp.Value?.ToString();
+                    }
+
+                    configuration.AddInMemoryCollection(vaultConfig);
+                }
+                catch
+                {
+                    throw;
+                }
+            }
+            else if (environment == Environments.Development)
+            {
+                configuration.AddUserSecrets<Program>();
+            }
 
             string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
 
@@ -218,6 +264,7 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddControllersWithViews();
             services.AddRazorPages();
+            services.AddHealthChecks();
 
             //want to see if I can get this to work someday
             //services.AddAuthentication(options =>
@@ -235,7 +282,7 @@ namespace sp2023_mis421_mockinterviews
                     microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"] ?? throw new InvalidOperationException("Azure AD Client ID not found.");
                     microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"] ?? throw new InvalidOperationException("Azure AD Client Secret not found.");
                 });
-	   
+
             var app = builder.Build();
 
             if (app.Environment.IsDevelopment())
@@ -276,6 +323,7 @@ namespace sp2023_mis421_mockinterviews
             });
 
             app.MapRazorPages();
+            app.MapHealthChecks("/health");
 
             //look at this later
             using (var scope = app.Services.CreateScope())
