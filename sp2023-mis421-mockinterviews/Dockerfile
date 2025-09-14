@@ -1,30 +1,37 @@
-# sp2023-mis421-mockinterviews/Dockerfile
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 WORKDIR /app
 EXPOSE 8001
 
-FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+# ---- Build stage (SDK 8) ----
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
-COPY ["sp2023-mis421-mockinterviews.csproj", "./"]
-RUN dotnet restore "sp2023-mis421-mockinterviews.csproj"
+
+COPY Directory.Packages.props ./
+COPY sp2023-mis421-mockinterviews.csproj ./
+COPY global.json ./
+
+RUN dotnet restore ./sp2023-mis421-mockinterviews.csproj
+
 COPY . .
-RUN dotnet build "sp2023-mis421-mockinterviews.csproj" -c Release -o /app/build
 
+RUN dotnet build ./sp2023-mis421-mockinterviews.csproj -c Release -o /app/build --no-restore
+
+# ---- Publish stage ----
 FROM build AS publish
-RUN dotnet publish "sp2023-mis421-mockinterviews.csproj" -c Release -o /app/publish /p:UseAppHost=false
+RUN dotnet publish ./sp2023-mis421-mockinterviews.csproj -c Release -o /app/publish \
+    --no-restore /p:UseAppHost=false
 
+# ---- Final runtime image ----
 FROM base AS final
 WORKDIR /app
-COPY --from=publish /app/publish .
+COPY --from=publish /app/publish ./
 
-# Set port to 8001
 ENV ASPNETCORE_URLS=http://+:8001
 
-# Add curl for health checks
-RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Health check
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-  CMD curl -f http://localhost:8001/health || exit 1
+  CMD curl -fsS http://localhost:8001/health || exit 1
 
 ENTRYPOINT ["dotnet", "sp2023-mis421-mockinterviews.dll"]
