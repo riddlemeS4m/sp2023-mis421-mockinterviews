@@ -1,8 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>net6.0</TargetFramework>
-    <Nullable>disable</Nullable>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UserSecretsId>aspnet-sp2023_mis421_mockinterviews-6d184366-7fbc-4612-b0c8-5e40c252810f</UserSecretsId>
     <RootNamespace>sp2023_mis421_mockinterviews</RootNamespace>
@@ -11,66 +11,45 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Google.Apis.Drive.v3" Version="1.68.0.3466" />
-    <PackageReference Include="MessagePack" Version="2.5.187" />
-    <PackageReference Include="microsoft.aspnetcore.authentication.microsoftaccount" Version="6.0.32" />
-    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="6.0.32" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="6.0.32" />
-    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="6.0.32" />
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="8.0.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.32">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.32" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.32">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="8.0.1" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="8.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.34.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.17" />
-    <PackageReference Include="Npgsql" Version="6.0.11" />
-    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="6.0.8" />
-    <PackageReference Include="sendgrid" Version="9.29.3" />
-    <PackageReference Include="System.Drawing.Common" Version="4.7.2" />
-    <PackageReference Include="System.Formats.Asn1" Version="6.0.1" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.34.0" />
-    <PackageReference Include="System.Net.Http" Version="4.3.4" />
-    <PackageReference Include="System.Text.Json" Version="8.0.5" />
-    <PackageReference Include="System.Text.RegularExpressions" Version="4.3.1" />
-    <PackageReference Include="VaultSharp" Version="1.13.0.1" />
-  </ItemGroup>
+    <!-- Microsoft / ASP.NET Core -->
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.MicrosoftAccount" />
+    <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.UI" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" />
 
-  <ItemGroup>
-    <Folder Include="Areas\AppConfiguration\Controllers\" />
-    <Folder Include="Areas\AppConfiguration\Data\" />
-    <Folder Include="Areas\AppConfiguration\Models\" />
-    <Folder Include="Areas\AppConfiguration\Views\" />
-    <Folder Include="Areas\EventConfiguration\Controllers\" />
-    <Folder Include="Areas\EventConfiguration\Data\" />
-    <Folder Include="Areas\EventConfiguration\Models\" />
-    <Folder Include="Areas\EventConfiguration\Views\" />
-    <Folder Include="Areas\EventRegistration\Controllers\" />
-    <Folder Include="Areas\EventRegistration\Data\" />
-    <Folder Include="Areas\EventRegistration\Models\" />
-    <Folder Include="Areas\EventRegistration\Views\" />
-    <Folder Include="Areas\FeedbackPortal\Controllers\" />
-    <Folder Include="Areas\FeedbackPortal\Data\" />
-    <Folder Include="Areas\FeedbackPortal\Models\" />
-    <Folder Include="Areas\FeedbackPortal\Views\" />
-    <Folder Include="Areas\InterviewManagement\Controllers\" />
-    <Folder Include="Areas\InterviewManagement\Data\" />
-    <Folder Include="Areas\InterviewManagement\Models\" />
-    <Folder Include="Areas\InterviewManagement\Views\" />
-    <Folder Include="Areas\Reports\Data\" />
-    <Folder Include="Areas\Reports\Models\" />
-    <Folder Include="Areas\UserManagement\Controllers\" />
-    <Folder Include="Areas\UserManagement\Data\" />
-    <Folder Include="Areas\UserManagement\Models\" />
-    <Folder Include="Areas\UserManagement\Views\" />
+    <!-- EF Core (Design/Tools keep PrivateAssets/IncludeAssets) -->
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+
+    <!-- Extensions & config -->
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" />
+
+    <!-- IdentityModel stack -->
+    <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" />
+
+    <!-- Data providers -->
+    <PackageReference Include="Npgsql" />
+    <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+
+    <!-- Third-party libs -->
+    <PackageReference Include="Google.Apis.Drive.v3" />
+    <PackageReference Include="MessagePack" />
+    <PackageReference Include="SendGrid" />
+    <PackageReference Include="VaultSharp" />
+
+    <!-- System.* (keep only what you truly need on net8.0) -->
+    <PackageReference Include="System.Text.Json" />
   </ItemGroup>
 
 </Project>
