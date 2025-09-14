@@ -7,11 +7,11 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 WORKDIR /src
 
 COPY Directory.Packages.props ./
-COPY sp2023-mis421-mockinterviews.csproj ./
+COPY sp2023-mis421-mockinterviews/sp2023-mis421-mockinterviews.csproj ./
 
 RUN dotnet restore ./sp2023-mis421-mockinterviews.csproj
 
-COPY . .
+COPY sp2023-mis421-mockinterviews/ ./
 
 RUN dotnet build ./sp2023-mis421-mockinterviews.csproj -c Release -o /app/build --no-restore
 
