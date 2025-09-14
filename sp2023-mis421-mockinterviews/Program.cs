@@ -271,7 +271,7 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            if (environment == Environments.Production)
+            if (environment == Environments.Production || environment == Environments.Staging)
             {
                 services.AddIdentity<ApplicationUser, IdentityRole>()
                     .AddEntityFrameworkStores<UsersDbContext>()
