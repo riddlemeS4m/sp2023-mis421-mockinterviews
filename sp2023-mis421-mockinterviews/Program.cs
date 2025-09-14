@@ -38,11 +38,12 @@ namespace sp2023_mis421_mockinterviews
             });
 
 
-            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+            var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
+                ?? "Development";
 
             // secrets
 
-            if (environment == Environments.Production)
+            if (environment == Environments.Production || environment == Environments.Staging)
             {
                 try
                 {
@@ -66,8 +67,9 @@ namespace sp2023_mis421_mockinterviews
                     var vaultClientSettings = new VaultClientSettings(vaultUrl, authMethod);
                     var vaultClient = new VaultClient(vaultClientSettings);
 
+                    var path = $"mockinterviews/{environment.ToLowerInvariant()}";
                     var secrets = await vaultClient.V1.Secrets.KeyValue.V2
-                        .ReadSecretAsync(path: "mockinterviews/production", mountPoint: "secret");
+                        .ReadSecretAsync(path: path, mountPoint: "secret");
 
                     var vaultConfig = new Dictionary<string, string>();
                     foreach (var kvp in secrets.Data.Data)
@@ -92,13 +94,13 @@ namespace sp2023_mis421_mockinterviews
             string usersConnectionString;
             string signupsConnectionString;
 
-            if (environment == Environments.Production)
+            if (environment == Environments.Production || environment == Environments.Staging)
             {
-                usersConnectionString = configuration["ConnectionStrings:Postgres:Production:Users"]
-                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Production:Users' has not been stored yet.");
+                usersConnectionString = configuration[$"ConnectionStrings:Postgres:{environment.ToLowerInvariant()}:Users"]
+                    ?? throw new InvalidOperationException($"User secret 'ConnectionStrings:Postgres:{environment.ToLowerInvariant()}:Users' has not been stored yet.");
 
-                signupsConnectionString = configuration["ConnectionStrings:Postgres:Production:Signups"]
-                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Production:Signups' has not been stored yet.");
+                signupsConnectionString = configuration[$"ConnectionStrings:Postgres:{environment.ToLowerInvariant()}:Signups"]
+                    ?? throw new InvalidOperationException($"User secret 'ConnectionStrings:Postgres:{environment.ToLowerInvariant()}:Signups' has not been stored yet.");
 
                 services.AddDbContext<IUserDbContext, UsersDbContext>(options =>
                     options.UseNpgsql(usersConnectionString));
@@ -143,22 +145,12 @@ namespace sp2023_mis421_mockinterviews
 
             // google drive
 
-            string siteContentFolderId;
-            string resumesFolderId;
-            string pfpsFolderId;
-
-            if (environment == Environments.Production)
-            {
-                siteContentFolderId = configuration["GoogleDriveFolders:Production:SiteContent"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:SiteContent' not stored yet.");
-                resumesFolderId = configuration["GoogleDriveFolders:Production:Resumes"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:Resumes' not stored yet.");
-                pfpsFolderId = configuration["GoogleDriveFolders:Production:PFPs"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:PFPs' not stored yet.");
-            }
-            else
-            {
-                siteContentFolderId = configuration["GoogleDriveFolders:Development:SiteContent"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:SiteContent' not stored yet.");
-                resumesFolderId = configuration["GoogleDriveFolders:Development:Resumes"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:Resumes' not stored yet.");
-                pfpsFolderId = configuration["GoogleDriveFolders:Development:PFPs"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:PFPs' not stored yet.");
-            }
+            string siteContentFolderId = configuration[$"GoogleDriveFolders:{environment.ToLowerInvariant()}:SiteContent"]
+                ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:{environment.ToLowerInvariant()}:SiteContent' not stored yet.");
+            string resumesFolderId = configuration[$"GoogleDriveFolders:{environment.ToLowerInvariant()}:Resumes"]
+                ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:{environment.ToLowerInvariant()}:Resumes' not stored yet.");
+            string pfpsFolderId = configuration[$"GoogleDriveFolders:{environment.ToLowerInvariant()}:PFPs"]
+                ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:{environment.ToLowerInvariant()}:PFPs' not stored yet.");
 
             string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
 
