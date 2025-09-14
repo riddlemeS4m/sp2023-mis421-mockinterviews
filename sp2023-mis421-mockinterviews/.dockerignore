@@ -1,11 +1,51 @@
-bin/
-obj/
-.vs/
-*.user
+# ---- Git/OS clutter ----
 .git/
 .gitignore
-Dockerfile
-.dockerignore
-README.md
-.env
-appsettings.Development.json
+.gitattributes
+.DS_Store
+
+# ---- IDE/Editor ----
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# ---- Build outputs ----
+**/bin/
+**/obj/
+**/out/
+TestResults/
+*.trx
+*.coverage
+*.coveragexml
+coverage/
+coverage*.xml
+
+# ---- Package managers / tooling ----
+# Keep central package mgmt + NuGet config INCLUDED for restore caching!
+# (So we DO NOT ignore Directory.Packages.props, NuGet.config, global.json)
+node_modules/
+**/node_modules/
+packages/
+
+# ---- Local DB files ----
+*.mdf
+*.ldf
+*.dbmdl
+
+# ---- Misc ----
+*.log
+*.cache
+*.swp
+*.tmp
+*.pid
+
+# ---- Project launch/debug artifacts (not used in containers) ----
+**/Properties/launchSettings.json
+
+# ---- Docker / compose extras (optional) ----
+docker-compose*.yml
+.docker/
