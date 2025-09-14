@@ -101,10 +101,10 @@ namespace sp2023_mis421_mockinterviews
                     ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Production:Signups' has not been stored yet.");
 
                 services.AddDbContext<IUserDbContext, UsersDbContext>(options =>
-                    options.UseNpgsql("Host=127.0.0.1;Database=placeholder;Username=placeholder;Password=placeholder"));
+                    options.UseNpgsql(usersConnectionString));
 
                 services.AddDbContext<ISignupDbContext, MockInterviewsDbContext>(options =>
-                    options.UseNpgsql("Host=127.0.0.1;Database=placeholder;Username=placeholder;Password=placeholder"));
+                    options.UseNpgsql(signupsConnectionString));
             }
             else
             {
@@ -279,10 +279,20 @@ namespace sp2023_mis421_mockinterviews
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<UserDataDbContext>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders();
+            if (environment == Environments.Production)
+            {
+                services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<UsersDbContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
+            }
+            else
+            {
+                services.AddIdentity<ApplicationUser, IdentityRole>()
+                    .AddEntityFrameworkStores<UserDataDbContext>()
+                    .AddDefaultUI()
+                    .AddDefaultTokenProviders();
+            }
 
             services.AddScoped<RoleManager<IdentityRole>>();
             services.AddScoped<UserManager<ApplicationUser>>();
