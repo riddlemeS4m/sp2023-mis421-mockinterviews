@@ -41,7 +41,7 @@ jobs:
       - name: Build and Push Docker image
         uses: docker/build-push-action@v4
         with:
-          context: ./sp2023-mis421-mockinterviews
+          context: .
           file: ./sp2023-mis421-mockinterviews/Dockerfile
           push: true
           tags: ${{ steps.meta.outputs.tags }}
