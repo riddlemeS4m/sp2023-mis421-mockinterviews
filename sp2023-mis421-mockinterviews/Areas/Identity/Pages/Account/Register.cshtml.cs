@@ -22,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.UserDb;
 
 namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
@@ -35,7 +36,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
         private readonly IUserEmailStore<ApplicationUser> _emailStore;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
-        private readonly MockInterviewDataDbContext _context;
+        private readonly ISignupDbContext _context;
 
         public RegisterModel(
             UserManager<ApplicationUser> userManager,
@@ -43,7 +44,7 @@ namespace sp2023_mis421_mockinterviews.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender,
-            MockInterviewDataDbContext context)
+            ISignupDbContext context)
         {
             _userManager = userManager;
             _userStore = userStore;
