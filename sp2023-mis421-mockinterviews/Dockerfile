@@ -8,7 +8,6 @@ WORKDIR /src
 
 COPY Directory.Packages.props ./
 COPY sp2023-mis421-mockinterviews.csproj ./
-COPY ./global.json ./
 
 RUN dotnet restore ./sp2023-mis421-mockinterviews.csproj
 
