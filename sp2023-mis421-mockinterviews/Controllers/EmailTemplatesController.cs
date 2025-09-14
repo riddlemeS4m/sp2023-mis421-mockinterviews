@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Data.Contexts;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 using sp2023_mis421_mockinterviews.Models.MockInterviewDb;
 
 namespace sp2023_mis421_mockinterviews.Controllers
@@ -10,9 +11,9 @@ namespace sp2023_mis421_mockinterviews.Controllers
     [Authorize(Roles = RolesConstants.AdminRole)]
     public class EmailTemplatesController : Controller
     {
-        private readonly MockInterviewDataDbContext _context;
+        private readonly ISignupDbContext _context;
 
-        public EmailTemplatesController(MockInterviewDataDbContext context)
+        public EmailTemplatesController(ISignupDbContext context)
         {
             _context = context;
         }

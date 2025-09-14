@@ -12,19 +12,20 @@ using sp2023_mis421_mockinterviews.Data.Constants;
 using sp2023_mis421_mockinterviews.Data.Access.Reports;
 using sp2023_mis421_mockinterviews.Data.Access.Emails;
 using sp2023_mis421_mockinterviews.Interfaces.IServices;
+using sp2023_mis421_mockinterviews.Interfaces.IDbContext;
 
 namespace sp2023_mis421_mockinterviews.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly MockInterviewDataDbContext _context;
+        private readonly ISignupDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ISendGridClient _sendGridClient;
         private readonly ILogger<HomeController> _logger;
 
 
         public HomeController(
-            MockInterviewDataDbContext context, 
+            ISignupDbContext context, 
             UserManager<ApplicationUser> userManager,
             ISendGridClient sendGridClient,
             ILogger<HomeController> logger)
