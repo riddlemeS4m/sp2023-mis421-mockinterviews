@@ -40,6 +40,8 @@ namespace sp2023_mis421_mockinterviews
 
             var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
+            // secrets
+
             if (environment == Environments.Production)
             {
                 try
@@ -85,66 +87,89 @@ namespace sp2023_mis421_mockinterviews
                 configuration.AddUserSecrets<Program>();
             }
 
-            string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
+            // database
 
-            string userDataConnectionString;
-            string mockInterviewDataConnectionString;
+            string usersConnectionString;
+            string signupsConnectionString;
+
+            if (environment == Environments.Production)
+            {
+                usersConnectionString = configuration["ConnectionStrings:Postgres:Production:Users"]
+                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Production:Users' has not been stored yet.");
+
+                signupsConnectionString = configuration["ConnectionStrings:Postgres:Production:Signups"]
+                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Production:Signups' has not been stored yet.");
+
+                services.AddDbContext<IUserDbContext, UsersDbContext>(options =>
+                    options.UseNpgsql("Host=127.0.0.1;Database=placeholder;Username=placeholder;Password=placeholder"));
+
+                services.AddDbContext<ISignupDbContext, MockInterviewsDbContext>(options =>
+                    options.UseNpgsql("Host=127.0.0.1;Database=placeholder;Username=placeholder;Password=placeholder"));
+            }
+            else
+            {
+                usersConnectionString = configuration["ConnectionStrings:SqlServer:Development:Users"]
+                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Development:Users' has not been stored yet.");
+
+                signupsConnectionString = configuration["ConnectionStrings:SqlServer:Development:Signups"]
+                    ?? throw new InvalidOperationException("User secret 'ConnectionStrings:Postgres:Development:Signups' has not been stored yet.");
+
+                services.AddDbContext<IUserDbContext, UserDataDbContext>(options =>
+                    options.UseSqlServer(usersConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
+                    ServiceLifetime.Scoped);
+
+                //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
+                //1. create the entity framework migration
+                //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
+                //2. specify database environment which you want to update
+                //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
+                //3. update the database 
+                //update-database -context userdatadbcontext -startupproject sp2023-mis421-mockinterviews
+                //this is to account for using two different database sets for the two different environments
+
+                services.AddDbContext<ISignupDbContext, MockInterviewDataDbContext>(options =>
+                    options.UseSqlServer(signupsConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
+                    ServiceLifetime.Scoped);
+
+                //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
+                //1. create the entity framework migration
+                //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
+                //2. specify database environment which you want to update
+                //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
+                //3. update the database 
+                //update-database -context mockinterviewdatadbcontext -startupproject sp2023-mis421-mockinterviews
+                //this is to account for using two different database sets for the two different environments
+            }
+
+            // google drive
+
             string siteContentFolderId;
             string resumesFolderId;
             string pfpsFolderId;
 
-            var connectionStringPrefix = $"ConnectionStrings:SqlServer:{environment}:";
-            var googleDriveFolderPrefix = $"GoogleDriveFolders:{environment}:";
-
-            if (string.IsNullOrEmpty(environment) || environment == Environments.Development)
+            if (environment == Environments.Production)
             {
-                connectionStringPrefix = "ConnectionStrings:SqlServer:Development:";
-                googleDriveFolderPrefix = "GoogleDriveFolders:Development:";
+                siteContentFolderId = configuration["GoogleDriveFolders:Production:SiteContent"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:SiteContent' not stored yet.");
+                resumesFolderId = configuration["GoogleDriveFolders:Production:Resumes"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:Resumes' not stored yet.");
+                pfpsFolderId = configuration["GoogleDriveFolders:Production:PFPs"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Production:PFPs' not stored yet.");
             }
             else
             {
-                connectionStringPrefix = "ConnectionStrings:SqlServer:Production:";
-                googleDriveFolderPrefix = "GoogleDriveFolders:Production:";
+                siteContentFolderId = configuration["GoogleDriveFolders:Development:SiteContent"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:SiteContent' not stored yet.");
+                resumesFolderId = configuration["GoogleDriveFolders:Development:Resumes"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:Resumes' not stored yet.");
+                pfpsFolderId = configuration["GoogleDriveFolders:Development:PFPs"] ?? throw new InvalidOperationException($"User secret 'GoogleDriveFolders:Development:PFPs' not stored yet.");
             }
 
-            userDataConnectionString = configuration[$"{connectionStringPrefix}Users"] ?? throw new InvalidOperationException($"Connection string '{connectionStringPrefix}Users' not found.");
-            mockInterviewDataConnectionString = configuration[$"{connectionStringPrefix}Signups"] ?? throw new InvalidOperationException($"Connection string '{connectionStringPrefix}Signups' not found.");
+            string adminPwd = configuration["SeededAdminPwd"] ?? throw new InvalidOperationException("User secret 'SeededAdminPwd' not stored yet.");
 
-            siteContentFolderId = configuration[$"{googleDriveFolderPrefix}SiteContent"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}SiteContent' not stored yet.");
-            resumesFolderId = configuration[$"{googleDriveFolderPrefix}Resumes"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}Resumes' not stored yet.");
-            pfpsFolderId = configuration[$"{googleDriveFolderPrefix}PFPs"] ?? throw new InvalidOperationException($"User secret '{googleDriveFolderPrefix}PFPs' not stored yet.");
-
-            services.AddDbContext<IUserDbContext, UserDataDbContext>(options =>
-                options.UseSqlServer(userDataConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
-                ServiceLifetime.Scoped);
-
-            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
-            //1. create the entity framework migration
-            //add-migration <migrationname> -context userdatadbcontext -outputdir Data\Migrations\UserDb
-            //2. specify database environment which you want to update
-            //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
-            //3. update the database 
-            //update-database -context userdatadbcontext -startupproject sp2023-mis421-mockinterviews
-            //this is to account for using two different database sets for the two different environments
-
-            services.AddDbContext<ISignupDbContext, MockInterviewDataDbContext>(options =>
-                options.UseSqlServer(mockInterviewDataConnectionString, sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()),
-                ServiceLifetime.Scoped);
-
-            //when updating the userdb, run the following commands in the package manager console... (otherwise, you'll need to run the equivalent dotnet commands in the terminal)
-            //1. create the entity framework migration
-            //add-migration <migrationname> -context mockinterviewdatadbcontext -outputdir Data\Migrations\MockInterviewDb
-            //2. specify database environment which you want to update
-            //$env:ASPNETCORE_ENVIRONMENT = "Development" OR $env:ASPNETCORE_ENVIRONMENT = "Production"
-            //3. update the database 
-            //update-database -context mockinterviewdatadbcontext -startupproject sp2023-mis421-mockinterviews
-            //this is to account for using two different database sets for the two different environments
-
+            // look into distributed memory cache soon
             services.AddMemoryCache();
 
+            // sendgrid
             var sendGridApiKey = configuration["SendGrid:ApiKey"];
             services.AddSingleton<ISendGridClient>(_ => new SendGridClient(sendGridApiKey));
 
+            // google drive upload
             var googleCredentialSection = configuration.GetSection("GoogleCredential");
             services.AddSingleton(_ => {
                 string applicationName = "Mock Interviews App ASP.Net Core MVC";
