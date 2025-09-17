@@ -33,8 +33,15 @@ public static class StartupTasks
             await TimeslotSeed.SeedTimeslots(eventsSvc, timeslots);
             await SettingsSeed.SeedSettings(settings);
 
-            // Optional: Google Drive checks
-            await new GoogleDriveServiceSeed(drive, signupDb).Test();
+            try
+            {
+                await new GoogleDriveServiceSeed(drive, signupDb).Test();
+                logger.LogInformation("Google Drive connectivity verified.");
+            }
+            catch (Exception ex)
+            {
+                logger.LogWarning(ex, "Google Drive connectivity check failed - continuing without Google Drive features.");
+            }
 
             logger.LogInformation("Startup tasks completed.");
         }
